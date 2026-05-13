@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V30.2 • App</title>
+<title>HAIA OS V30.2.1.1 • App</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -246,7 +246,7 @@ textarea{min-height:110px;resize:vertical}
 @media(max-width:1100px){.v291-section-grid{grid-template-columns:1fr}.v291-row{display:block}}
 
 
-/* HAIA OS V30.2 - PWA / App polish */
+/* HAIA OS V30.2.1 - PWA / App polish */
 html{
   overscroll-behavior:none;
 }
@@ -364,7 +364,7 @@ body{
 }
 
 
-/* HAIA OS V30.2 fixes */
+/* HAIA OS V30.2.1 fixes */
 .public-portal{
   min-height:100svh;
   padding:28px;
@@ -417,7 +417,7 @@ body{
 }
 
 
-/* HAIA OS V30.2 - infraestrutura */
+/* HAIA OS V30.2.1 - infraestrutura */
 .infra-status{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -461,7 +461,7 @@ body{
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.2</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.2.1</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -543,7 +543,7 @@ body{
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.2</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.2.1</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -836,11 +836,11 @@ function renderPlaceholder(name){return `<div class="panel"><h2>${name}</h2><p>M
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V30.2 • infra real</div>
+<div class="v29-mobile-ready">V30.2.1 • botões corrigidos</div>
 
 
 <script>
-/* HAIA OS V30.2 - correção definitiva dos módulos operacionais */
+/* HAIA OS V30.2.1 - correção definitiva dos módulos operacionais */
 
 function renderPlans(){
   return `<div class="panel">
@@ -1083,11 +1083,11 @@ function setTopAction(name){
     <button class="ghost-btn" onclick="document.getElementById('installCard').classList.remove('active')">Fechar</button>
   </div>
 </div>
-<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.2 • app</div>
+<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.2.1 • app</div>
 
 
 <script>
-/* HAIA OS V30.2 - PWA */
+/* HAIA OS V30.2.1 - PWA */
 let deferredInstallPrompt = null;
 
 window.addEventListener("beforeinstallprompt", function(event){
@@ -1117,7 +1117,7 @@ if("serviceWorker" in navigator){
 
 
 <script>
-/* HAIA OS V30.2 - login manual, portal público e botões funcionais */
+/* HAIA OS V30.2.1 - login manual, portal público e botões funcionais */
 
 function getClientSlugFromURL(){
   const params = new URLSearchParams(window.location.search);
@@ -1441,7 +1441,7 @@ document.addEventListener("DOMContentLoaded", initV301);
 
 
 <script>
-/* HAIA OS V30.2 - Infraestrutura real */
+/* HAIA OS V30.2.1 - Infraestrutura real */
 
 const HAIA_VERSION = "V30.2";
 let routeMode = "admin";
@@ -1738,6 +1738,211 @@ async function initV302(){
 }
 
 document.addEventListener("DOMContentLoaded", initV302);
+</script>
+
+
+<script>
+/* HAIA OS V30.2.1 - correção dos botões de Serviços & Planos */
+
+function planOptions(){
+  return plans.map((p,i)=>`<option value="${i}">${p.name}</option>`).join("");
+}
+
+function clientOptions(){
+  return clients.map((c,i)=>`<option value="${i}">${c.name}</option>`).join("") || "<option>Nenhum cliente cadastrado</option>";
+}
+
+function openEditPlan(index){
+  const p = plans[index] || {};
+  const modal = document.getElementById("quickModal");
+  document.getElementById("quickModalTitle").textContent = "Editar plano";
+  document.getElementById("quickModalText").textContent = "Ajuste nome, valor, entregas e escopo do plano.";
+  document.getElementById("quickModalBody").innerHTML = `
+    <div class="form-grid">
+      <input id="editPlanName" value="${p.name || ""}" placeholder="Nome do plano">
+      <input id="editPlanValue" value="${p.value || ""}" placeholder="Valor">
+      <input id="editPlanReels" value="${p.reels || ""}" placeholder="Qtd. Reels">
+      <input id="editPlanPosts" value="${p.posts || ""}" placeholder="Qtd. Posts">
+      <input id="editPlanStories" value="${p.stories || ""}" placeholder="Stories">
+      <select id="editPlanStatus">
+        <option ${p.status==="Ativo"?"selected":""}>Ativo</option>
+        <option ${p.status==="Pausado"?"selected":""}>Pausado</option>
+        <option ${p.status==="Encerrado"?"selected":""}>Encerrado</option>
+      </select>
+    </div>
+    <textarea id="editPlanScope" style="margin-top:12px" placeholder="Escopo">${p.scope || ""}</textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="saveEditedPlan(${index})">Salvar alterações</button>
+  `;
+  modal.classList.add("active");
+}
+
+function saveEditedPlan(index){
+  if(!plans[index]) return;
+  plans[index] = {
+    ...plans[index],
+    name: document.getElementById("editPlanName").value || plans[index].name,
+    value: document.getElementById("editPlanValue").value || plans[index].value,
+    reels: document.getElementById("editPlanReels").value || plans[index].reels,
+    posts: document.getElementById("editPlanPosts").value || plans[index].posts,
+    stories: document.getElementById("editPlanStories").value || plans[index].stories,
+    status: document.getElementById("editPlanStatus").value || plans[index].status,
+    scope: document.getElementById("editPlanScope").value || plans[index].scope
+  };
+  closeQuickModal();
+  showToast("Plano atualizado visualmente.");
+  showModule("planos");
+}
+
+function openLinkClientToPlan(index){
+  const p = plans[index] || {};
+  const modal = document.getElementById("quickModal");
+  document.getElementById("quickModalTitle").textContent = "Vincular cliente";
+  document.getElementById("quickModalText").textContent = `Vincule o plano ${p.name || ""} a um cliente.`;
+  document.getElementById("quickModalBody").innerHTML = `
+    <div class="form-grid">
+      <select id="linkClientSelect">${clientOptions()}</select>
+      <input value="${p.name || ""}" readonly>
+    </div>
+    <textarea style="margin-top:12px" placeholder="Observações sobre o escopo contratado"></textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="confirmLinkClientToPlan()">Confirmar vínculo</button>
+  `;
+  modal.classList.add("active");
+}
+
+function confirmLinkClientToPlan(){
+  const select = document.getElementById("linkClientSelect");
+  const clientName = select && clients[select.value] ? clients[select.value].name : "cliente";
+  closeQuickModal();
+  showToast("Plano vinculado visualmente a " + clientName + ".");
+}
+
+function openNewServiceModal(){
+  const modal = document.getElementById("quickModal");
+  document.getElementById("quickModalTitle").textContent = "Novo serviço";
+  document.getElementById("quickModalText").textContent = "Cadastre um serviço avulso para compor os planos da agência.";
+  document.getElementById("quickModalBody").innerHTML = `
+    <div class="form-grid">
+      <input id="serviceName" placeholder="Nome do serviço">
+      <select id="serviceCategory">
+        <option>Estratégia</option>
+        <option>Conteúdo</option>
+        <option>Design</option>
+        <option>Tráfego</option>
+        <option>Consultoria</option>
+      </select>
+    </div>
+    <textarea id="serviceDescription" style="margin-top:12px" placeholder="Descrição do serviço"></textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="saveServiceVisual()">Salvar serviço</button>
+  `;
+  modal.classList.add("active");
+}
+
+function saveServiceVisual(){
+  const name = document.getElementById("serviceName")?.value || "Novo serviço";
+  closeQuickModal();
+  showToast(name + " criado visualmente.");
+}
+
+function openEditServiceModal(name, desc){
+  const modal = document.getElementById("quickModal");
+  document.getElementById("quickModalTitle").textContent = "Editar serviço";
+  document.getElementById("quickModalText").textContent = "Ajuste nome, categoria e descrição do serviço.";
+  document.getElementById("quickModalBody").innerHTML = `
+    <div class="form-grid">
+      <input id="editServiceName" value="${name}" placeholder="Nome do serviço">
+      <select id="editServiceCategory">
+        <option>Estratégia</option>
+        <option>Conteúdo</option>
+        <option>Design</option>
+        <option>Tráfego</option>
+        <option>Consultoria</option>
+      </select>
+    </div>
+    <textarea id="editServiceDescription" style="margin-top:12px">${desc}</textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="saveMockAction('Serviço')">Salvar serviço</button>
+  `;
+  modal.classList.add("active");
+}
+
+function openAddServiceModal(name){
+  const modal = document.getElementById("quickModal");
+  document.getElementById("quickModalTitle").textContent = "Adicionar serviço";
+  document.getElementById("quickModalText").textContent = `Adicione ${name} a um plano ou cliente.`;
+  document.getElementById("quickModalBody").innerHTML = `
+    <div class="form-grid">
+      <select>${planOptions()}</select>
+      <select>${clientOptions()}</select>
+    </div>
+    <textarea style="margin-top:12px" placeholder="Observação sobre este serviço dentro do escopo"></textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="saveMockAction('Serviço adicionado')">Adicionar serviço</button>
+  `;
+  modal.classList.add("active");
+}
+
+function renderPlans(){
+  const services = [
+    ["Gestão estratégica de Instagram","Estratégia recorrente, posicionamento e direção mensal."],
+    ["Planejamento mensal","Calendário, temas, formatos, roteiro e distribuição."],
+    ["Criação de Reels","Roteiros, ideias, ganchos e direção de gravação."],
+    ["Design de carrossel","Peças educativas, autoridade, prova social e conversão."],
+    ["Relatório de performance","Leitura de métricas, conclusões e plano de ação."],
+    ["Identidade visual","Direção visual, moodboard, estética e padronização."],
+    ["Tráfego pago","Campanhas, criativos e otimização de anúncios."],
+    ["Consultoria estratégica","Diagnóstico, plano de crescimento e decisões de marca."]
+  ];
+
+  return `<div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Serviços & Planos</h2>
+        <p>Crie planos, defina escopos e vincule serviços aos clientes.</p>
+      </div>
+      <button class="primary-btn" onclick="openPlanModal()">+ Novo plano</button>
+    </div>
+
+    <div class="v291-section-grid">
+      ${plans.map((p,i)=>`<div class="v291-card">
+        <div class="client-head">
+          <div>
+            <h3>${p.name}</h3>
+            <span class="badge">${p.status}</span>
+          </div>
+          <strong>${p.value}</strong>
+        </div>
+        <p style="margin-top:10px">${p.scope}</p>
+        <div class="v29-pill-row">
+          <span class="v29-pill">${p.reels} Reels</span>
+          <span class="v29-pill">${p.posts} Posts</span>
+          <span class="v29-pill">${p.stories} Stories</span>
+        </div>
+        <div class="v291-actions">
+          <button class="ghost-btn" onclick="openEditPlan(${i})">Editar plano</button>
+          <button class="primary-btn" onclick="openLinkClientToPlan(${i})">Vincular cliente</button>
+        </div>
+      </div>`).join("")}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Serviços disponíveis</h2>
+        <p>Serviços que podem compor qualquer plano da agência.</p>
+      </div>
+      <button class="ghost-btn" onclick="openNewServiceModal()">+ Novo serviço</button>
+    </div>
+
+    <div class="operation-list">
+      ${services.map(s=>`<div class="v291-row">
+        <div><strong>${s[0]}</strong><p>${s[1]}</p></div>
+        <div class="v291-actions">
+          <button class="ghost-btn" onclick="openEditServiceModal('${s[0].replaceAll("'","")}','${s[1].replaceAll("'","")}')">Editar</button>
+          <button class="primary-btn" onclick="openAddServiceModal('${s[0].replaceAll("'","")}')">Adicionar</button>
+        </div>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
 </script>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V22.1 • Correção Topo</title>
+<title>HAIA OS V23.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -458,6 +458,51 @@ textarea{min-height:105px;resize:vertical}
   margin-top:16px;
 }
 
+
+.files-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:18px;
+}
+.file-card-premium{
+  padding:18px;
+  border-radius:22px;
+  background:rgba(255,255,255,.48);
+  border:1px solid rgba(255,255,255,.68);
+  box-shadow:0 16px 44px rgba(75,53,39,.07);
+}
+.file-icon{
+  width:54px;
+  height:54px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(244,222,180,.9),rgba(231,201,143,.45));
+  color:#7d5a2c;
+  font-size:24px;
+  margin-bottom:14px;
+}
+.file-category{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(231,201,143,.26);
+  color:#7d5a2c;
+  font-size:12px;
+  font-weight:800;
+  margin-top:10px;
+}
+.file-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+@media(max-width:1180px){.files-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -465,9 +510,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V22</div>
+    <div class="eyebrow">HAIA OS • V23</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com link de workspace, convite WhatsApp e portal do cliente.</p>
+    <p>Sistema operacional premium com arquivos por cliente, portal e links de workspace.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -840,6 +885,10 @@ function showModule(name, btn){
   } else if(name === "portal"){
     document.getElementById("moduleText").textContent = "Visão premium e simplificada para o cliente acompanhar a operação.";
     content.innerHTML = renderClientPortalModule();
+  } else if(name === "arquivos"){
+    document.getElementById("moduleText").textContent = "Central de arquivos por cliente: briefing, relatórios, referências, contratos e entregas.";
+    content.innerHTML = renderFilesModule();
+    renderFilesList();
   } else {
     document.getElementById("moduleText").textContent = "Este módulo será construído na próxima etapa do HAIA OS.";
     content.innerHTML = "";
@@ -1083,6 +1132,108 @@ async function saveDNA(){
 
 
 
+
+let fileItems = [
+  {client_name:"Studio Cristal", file_name:"Planejamento Junho.pdf", file_category:"Estratégia", file_url:"#", description:"Planejamento mensal da operação."},
+  {client_name:"Mariah Biquínis", file_name:"Moodboard Coleção.png", file_category:"Branding", file_url:"#", description:"Referências visuais da próxima campanha."},
+  {client_name:"Kaife Fitness", file_name:"Roteiro Reels Feira.docx", file_category:"Conteúdo", file_url:"#", description:"Roteiro base para gravação."}
+];
+
+function renderFilesModule(){
+  return `<div class="panel fade-in">
+    <div class="eyebrow">Arquivos</div>
+    <h2>Novo arquivo</h2>
+    <p>Organize materiais, briefings, referências e entregas por cliente.</p>
+
+    <div class="form-grid" style="margin-top:18px">
+      <select id="fileClient">
+        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
+      </select>
+      <select id="fileCategory">
+        <option>Estratégia</option>
+        <option>Conteúdo</option>
+        <option>Branding</option>
+        <option>Financeiro</option>
+        <option>Aprovação</option>
+        <option>Referências</option>
+      </select>
+      <input id="fileName" placeholder="Nome do arquivo">
+      <input id="fileUrl" placeholder="Link do arquivo ou pasta">
+    </div>
+
+    <textarea id="fileDescription" style="margin-top:12px" placeholder="Descrição ou observações"></textarea>
+
+    <div class="top-actions" style="margin-top:14px">
+      <button class="primary-btn" onclick="saveFileItem()">Adicionar arquivo</button>
+      <button class="ghost-btn" onclick="alert('Upload direto por Supabase Storage entra no próximo ciclo.')">Upload real</button>
+    </div>
+  </div>
+
+  <div class="panel fade-in">
+    <div class="section-head">
+      <div class="left"><h2>Arquivos da operação</h2><span class="badge">V23 integrado</span></div>
+    </div>
+    <div class="files-grid" id="filesGrid"></div>
+  </div>`;
+}
+
+function renderFilesList(){
+  const grid = document.getElementById("filesGrid");
+  if(!grid) return;
+
+  grid.innerHTML = fileItems.map((item,index)=>`
+    <div class="file-card-premium">
+      <div class="file-icon">📎</div>
+      <h3>${item.file_name}</h3>
+      <p>${item.client_name}</p>
+      <span class="file-category">${item.file_category}</span>
+      <p style="margin-top:10px">${item.description || ""}</p>
+      <div class="file-actions">
+        <button class="primary-btn" onclick="openFileItem(${index})">Abrir</button>
+        <button class="ghost-btn" onclick="copyFileLink(${index})">Copiar link</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function saveFileItem(){
+  const item = {
+    client_name:fileClient.value,
+    file_name:fileName.value || "Arquivo sem nome",
+    file_category:fileCategory.value,
+    file_url:fileUrl.value || "#",
+    description:fileDescription.value
+  };
+
+  fileItems.unshift(item);
+
+  try{
+    await supabaseClient.from("haia_client_files").insert([item]);
+  }catch(e){}
+
+  fileName.value = "";
+  fileUrl.value = "";
+  fileDescription.value = "";
+  renderFilesList();
+}
+
+function openFileItem(index){
+  const url = fileItems[index]?.file_url;
+  if(url && url !== "#") window.open(url,"_blank");
+  else alert("Este arquivo ainda não tem link cadastrado.");
+}
+
+async function copyFileLink(index){
+  const url = fileItems[index]?.file_url || "";
+  try{
+    await navigator.clipboard.writeText(url);
+    alert("Link copiado.");
+  }catch(e){
+    alert(url || "Sem link cadastrado.");
+  }
+}
+
+
 function getPortalClient(){
   const params = new URLSearchParams(window.location.search);
   const clientSlug = params.get("cliente");
@@ -1147,6 +1298,7 @@ function renderClientPortalModule(){
       <div class="file-card"><strong>Planejamento mensal</strong><p>Documento estratégico da operação.</p></div>
       <div class="file-card"><strong>Relatório de performance</strong><p>Resumo de resultados do mês.</p></div>
       <div class="file-card"><strong>Briefing atualizado</strong><p>Base de comunicação da marca.</p></div>
+      <button class="ghost-btn" style="margin-top:14px" onclick="showModule('arquivos')">Ver central de arquivos</button>
     </div>
 
     <div class="panel">

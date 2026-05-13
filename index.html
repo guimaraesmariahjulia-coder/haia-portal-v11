@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V29.1.1 • Correções Operacionais</title>
+<title>HAIA OS V29.2.1 • Correções Operacionais</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -252,7 +252,7 @@ textarea{min-height:110px;resize:vertical}
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V29.1</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V29.2</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -297,7 +297,7 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V29.1</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V29.2</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -590,7 +590,243 @@ initSession();
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V29.1 • corrigido</div>
+<div class="v29-mobile-ready">V29.2 • módulos corrigidos</div>
+
+
+<script>
+/* HAIA OS V29.2 - correção definitiva dos módulos operacionais */
+
+function renderPlans(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Serviços & Planos</h2>
+        <p>Crie planos, defina escopos e vincule serviços aos clientes.</p>
+      </div>
+      <button class="primary-btn" onclick="openPlanModal()">+ Novo plano</button>
+    </div>
+
+    <div class="v291-section-grid">
+      ${plans.map(p=>`<div class="v291-card">
+        <div class="client-head">
+          <div>
+            <h3>${p.name}</h3>
+            <span class="badge">${p.status}</span>
+          </div>
+          <strong>${p.value}</strong>
+        </div>
+        <p style="margin-top:10px">${p.scope}</p>
+        <div class="v29-pill-row">
+          <span class="v29-pill">${p.reels} Reels</span>
+          <span class="v29-pill">${p.posts} Posts</span>
+          <span class="v29-pill">${p.stories} Stories</span>
+        </div>
+        <div class="v291-actions">
+          <button class="ghost-btn">Editar plano</button>
+          <button class="primary-btn">Vincular cliente</button>
+        </div>
+      </div>`).join("")}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Serviços disponíveis</h2>
+        <p>Serviços que podem compor qualquer plano da agência.</p>
+      </div>
+      <button class="ghost-btn">+ Novo serviço</button>
+    </div>
+
+    <div class="operation-list">
+      ${[
+        ["Gestão estratégica de Instagram","Estratégia recorrente, posicionamento e direção mensal."],
+        ["Planejamento mensal","Calendário, temas, formatos, roteiro e distribuição."],
+        ["Criação de Reels","Roteiros, ideias, ganchos e direção de gravação."],
+        ["Design de carrossel","Peças educativas, autoridade, prova social e conversão."],
+        ["Relatório de performance","Leitura de métricas, conclusões e plano de ação."],
+        ["Identidade visual","Direção visual, moodboard, estética e padronização."],
+        ["Tráfego pago","Campanhas, criativos e otimização de anúncios."],
+        ["Consultoria estratégica","Diagnóstico, plano de crescimento e decisões de marca."]
+      ].map(s=>`<div class="v291-row">
+        <div><strong>${s[0]}</strong><p>${s[1]}</p></div>
+        <div class="v291-actions"><button class="ghost-btn">Editar</button><button class="primary-btn">Adicionar</button></div>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderCommunication(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Comunicação</h2>
+        <p>WhatsApp, mensagens prontas e canais por cliente.</p>
+      </div>
+      <button class="primary-btn">+ Nova mensagem</button>
+    </div>
+
+    <div class="v291-section-grid">
+      <div class="v291-card">
+        <h3>Grupo operacional</h3>
+        <p>Link do WhatsApp vinculado ao workspace do cliente.</p>
+        <button class="primary-btn" style="margin-top:14px">Abrir grupo</button>
+      </div>
+      <div class="v291-card">
+        <h3>Mensagem de onboarding</h3>
+        <p>Texto pronto com link do portal do cliente.</p>
+        <button class="ghost-btn" style="margin-top:14px">Copiar texto</button>
+      </div>
+      <div class="v291-card">
+        <h3>Feedback rápido</h3>
+        <p>Canal para ajustes, dúvidas, aprovações e alinhamentos.</p>
+        <button class="ghost-btn" style="margin-top:14px">Ver feedbacks</button>
+      </div>
+    </div>
+
+    <div class="message-card">
+      <strong>Mensagem padrão de envio do portal</strong>
+      <p>Oi! Seu portal HAIA já está disponível. Por lá você acompanha entregas, aprovações, calendário e arquivos da operação.</p>
+    </div>
+  </div>`;
+}
+
+function renderContent(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Conteúdos</h2><p>Banco de conteúdos, roteiros e publicações.</p></div>
+      <button class="primary-btn">+ Novo conteúdo</button>
+    </div>
+
+    <div class="mini-board">
+      <div class="mini-column">
+        <h3>Ideias</h3>
+        <div class="message-card"><strong>Reels autoridade</strong><p>Studio Cristal • roteiro inicial</p></div>
+        <div class="message-card"><strong>Carrossel educativo</strong><p>Mariah Biquínis • conteúdo de valor</p></div>
+      </div>
+      <div class="mini-column">
+        <h3>Em produção</h3>
+        <div class="message-card"><strong>Stories de venda</strong><p>Kaife Fitness • sequência comercial</p></div>
+      </div>
+      <div class="mini-column">
+        <h3>Pronto</h3>
+        <div class="message-card"><strong>Post prova social</strong><p>Noir Makeup • aguardando aprovação</p></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTasks(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Tarefas</h2><p>Checklist operacional da equipe HAIA.</p></div>
+      <button class="primary-btn">+ Nova tarefa</button>
+    </div>
+
+    <div class="operation-list">
+      ${[
+        ["Revisar calendário Studio Cristal","Hoje","Alta"],
+        ["Finalizar carrossel Mariah Biquínis","Amanhã","Média"],
+        ["Enviar relatório Kaife Fitness","Sexta","Alta"],
+        ["Atualizar DNA do cliente","Semana atual","Média"],
+        ["Checar aprovações pendentes","Hoje","Alta"]
+      ].map(t=>`<div class="v291-row">
+        <div><strong>${t[0]}</strong><p>${t[1]} • prioridade ${t[2]}</p></div>
+        <button class="ghost-btn">Concluir</button>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderDNA(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>DNA dos Clientes</h2><p>Base estratégica usada pela IA contextual.</p></div>
+      <button class="primary-btn">Salvar DNA</button>
+    </div>
+
+    <div class="form-grid">
+      <select>${clients.map(c=>`<option>${c.name}</option>`).join("") || "<option>Selecione um cliente</option>"}</select>
+      <input placeholder="Nicho">
+      <input placeholder="Tom de voz">
+      <input placeholder="Estética">
+      <input placeholder="Objetivo principal">
+      <input placeholder="CTA principal">
+      <input placeholder="Palavras-chave">
+      <input placeholder="Restrições / evitar">
+    </div>
+    <textarea style="margin-top:12px" placeholder="Referências, diferenciais, campanhas anteriores e observações estratégicas."></textarea>
+  </div>`;
+}
+
+function renderAI(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>IA HAIA</h2><p>Inteligência contextual por cliente.</p></div>
+      <span class="badge">Contextual</span>
+    </div>
+
+    <div class="form-grid">
+      <select>${clients.map(c=>`<option>${c.name}</option>`).join("") || "<option>Selecione um cliente</option>"}</select>
+      <select>
+        <option>Criar calendário</option>
+        <option>Gerar Reels</option>
+        <option>Criar legenda</option>
+        <option>Analisar perfil</option>
+        <option>Criar campanha</option>
+      </select>
+    </div>
+    <textarea style="margin-top:12px" placeholder="Peça uma estratégia, calendário, legenda ou diagnóstico..."></textarea>
+    <button class="primary-btn" style="margin-top:12px">Gerar com IA HAIA</button>
+
+    <div class="message-card">
+      <strong>Resposta contextual aparecerá aqui</strong>
+      <p>A IA usará o DNA do cliente, serviços contratados, calendário e histórico.</p>
+    </div>
+  </div>`;
+}
+
+function renderFiles(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Arquivos</h2><p>Central de documentos e materiais por cliente.</p></div>
+      <button class="primary-btn" onclick="alert('Upload real entra no V30 com Supabase Storage.')">+ Novo arquivo</button>
+    </div>
+    <div class="v291-upload-box">
+      <strong>Área de upload</strong>
+      <p>Briefings, contratos, referências, relatórios e criativos.</p>
+    </div>
+    <div class="v29-filter-row">
+      <button class="ghost-btn">Todos</button>
+      <button class="ghost-btn">Estratégia</button>
+      <button class="ghost-btn">Branding</button>
+      <button class="ghost-btn">Conteúdo</button>
+      <button class="ghost-btn">Financeiro</button>
+    </div>
+    <div class="grid-3" id="filesGrid"></div>
+  </div>`;
+}
+
+function renderClients(){
+  const first = selectedClient || clients[0];
+  return `<div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Clientes cadastrados</h2>
+        <p>${clients.length} clientes ativos no banco.</p>
+      </div>
+      <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
+    </div>
+    ${clients.length ? `<div class="grid-3">${clients.map(clientCard).join("")}</div>` : `<div class="client-card"><h3>Nenhum cliente cadastrado</h3><p>Cadastre o primeiro cliente para gerar workspace e link.</p></div>`}
+  </div>
+  ${first ? clientMiniCRM(first) : ""}`;
+}
+
+function setTopAction(name){
+  const btn = document.getElementById("topActionBtn");
+  if(btn) btn.style.display = "none";
+}
+</script>
 
 </body>
 </html>

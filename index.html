@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V27 • Estável</title>
+<title>HAIA OS V28 • Módulos Operacionais</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -180,6 +180,45 @@ textarea{min-height:110px;resize:vertical}
   .sidebar{height:auto;position:relative}
   .grid-4,.grid-3,.approval-board,.calendar-board,.form-grid{grid-template-columns:1fr}
 }
+
+.operation-list{display:grid;gap:12px;margin-top:16px}
+.operation-item{
+  padding:16px;
+  border-radius:20px;
+  background:rgba(255,255,255,.46);
+  border:1px solid rgba(255,255,255,.68);
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+}
+.service-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.service-tag{
+  display:inline-flex;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(233,201,135,.28);
+  color:#7c5a2d;
+  font-size:12px;
+  font-weight:900;
+}
+.mini-board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.mini-column{
+  min-height:220px;
+  padding:14px;
+  border-radius:22px;
+  background:rgba(255,255,255,.40);
+  border:1px solid rgba(255,255,255,.62);
+}
+.message-card{
+  padding:16px;
+  border-radius:20px;
+  background:rgba(255,255,255,.46);
+  border:1px solid rgba(255,255,255,.68);
+  margin-top:12px;
+}
+@media(max-width:1100px){.mini-board{grid-template-columns:1fr}.operation-item{display:block}}
+
 </style>
 </head>
 <body>
@@ -187,7 +226,7 @@ textarea{min-height:110px;resize:vertical}
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V27</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V28</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Versão estável com dashboard, clientes reais, calendário, aprovações, arquivos e portal.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -232,7 +271,7 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V27</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V28</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>

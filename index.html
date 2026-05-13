@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V16 • DNA Contextual</title>
+<title>HAIA OS V17 • Refinamento Premium</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -138,6 +138,80 @@ textarea{min-height:105px;resize:vertical}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .client-mode-note{padding:12px 14px;border-radius:16px;background:rgba(231,201,143,.22);color:#7d5a2c;font-weight:700;margin-top:12px}
 @media(max-width:860px){.dna-grid{grid-template-columns:1fr}}
+
+.primary-btn,
+.ghost-btn,
+.danger-btn,
+.open-btn,
+.nav button,
+.tabs button{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1 !important;
+  vertical-align:middle !important;
+  white-space:nowrap;
+}
+
+.primary-btn{
+  height:48px;
+  min-height:48px;
+  padding:0 22px !important;
+}
+
+.ghost-btn,
+.danger-btn{
+  height:44px;
+  min-height:44px;
+  padding:0 16px !important;
+}
+
+.open-btn{
+  min-height:40px;
+  height:40px;
+  padding:0 14px !important;
+}
+
+.nav button{
+  min-height:48px;
+}
+
+.tabs button{
+  min-height:44px;
+}
+
+.primary-btn,
+.ghost-btn,
+.danger-btn,
+.open-btn,
+.client-card,
+.panel,
+.metric{
+  transition:transform .22s ease, box-shadow .22s ease, background .22s ease;
+}
+
+.primary-btn:hover,
+.ghost-btn:hover,
+.danger-btn:hover,
+.open-btn:hover{
+  transform:translateY(-1px);
+}
+
+.client-card:hover,
+.panel:hover{
+  box-shadow:0 22px 64px rgba(75,53,39,.10);
+}
+
+#topActionBtn{
+  min-width:168px;
+  text-align:center;
+}
+
+.section-head .primary-btn{
+  min-width:168px;
+}
+
+
 </style>
 </head>
 
@@ -145,9 +219,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V16</div>
+    <div class="eyebrow">HAIA OS • V17</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com DNA contextual, IA HAIA e modo cliente/admin.</p>
+    <p>Sistema operacional premium com DNA contextual, IA HAIA e refinamento visual.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -461,7 +535,7 @@ function showModule(name, btn){
   document.getElementById("workspace").classList.remove("active");
   document.getElementById("createClientModule").classList.remove("active");
   document.getElementById("genericModule").classList.add("active");
-  document.getElementById("moduleTitle").textContent = name.charAt(0).toUpperCase()+name.slice(1);
+  document.getElementById("moduleTitle").textContent = name === "dna" ? "DNA" : name.charAt(0).toUpperCase()+name.slice(1);
   const content = document.getElementById("moduleContent");
 
   updateTopAction(name);
@@ -500,7 +574,7 @@ function updateTopAction(screen){
     btn.textContent = "+ Novo cliente";
   } else if(screen === "dna"){
     btn.style.display = "inline-flex";
-    btn.textContent = "+ Salvar DNA";
+    btn.textContent = "DNA contextual";
   } else {
     btn.style.display = "none";
   }

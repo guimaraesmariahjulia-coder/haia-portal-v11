@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V21.1 • Correção Topo</title>
+<title>HAIA OS V22.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -429,6 +429,35 @@ textarea{min-height:105px;resize:vertical}
 }
 @media(max-width:1000px){.client-portal-grid,.portal-actions{grid-template-columns:1fr}}
 
+
+.workspace-link-box{
+  padding:14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.48);
+  border:1px solid rgba(255,255,255,.68);
+  word-break:break-all;
+  color:#6f6255;
+  margin-top:12px;
+}
+.success-icon{
+  width:58px;
+  height:58px;
+  border-radius:20px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,var(--champagne-2),var(--champagne));
+  color:#201915;
+  font-size:26px;
+  font-weight:900;
+  margin-bottom:16px;
+}
+.invite-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+
 </style>
 </head>
 
@@ -436,9 +465,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V21</div>
+    <div class="eyebrow">HAIA OS • V22</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com portal do cliente, aprovações e comunicação integrada.</p>
+    <p>Sistema operacional premium com link de workspace, convite WhatsApp e portal do cliente.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -545,6 +574,7 @@ textarea{min-height:105px;resize:vertical}
           <input id="newClientDate" placeholder="Data. Ex: 15 MAI">
           <input id="newClientResponsible" placeholder="Responsável. Ex: Mariah">
           <input id="newClientWhatsapp" placeholder="Link do grupo WhatsApp">
+          <input id="newClientPhone" placeholder="WhatsApp do cliente com DDI. Ex: 5521999999999">
         </div>
         <textarea id="newClientNotes" placeholder="Observações sobre serviços contratados"></textarea>
         <button class="primary-btn" onclick="saveClient()" style="margin-top:14px">Salvar cliente</button>
@@ -622,10 +652,20 @@ function openApp(){
   loadAll();
   updateTopAction('dashboard');
   setTimeout(()=>{
+    const params = new URLSearchParams(window.location.search);
+    const clientSlug = params.get("cliente");
+    if(clientSlug){
+      const found = findClientBySlug(clientSlug);
+      if(found){
+        selectedClient = found;
+        showModule("portal");
+        return;
+      }
+    }
     if(profile && profile.role === "cliente"){
       showModule("portal");
     }
-  },400);
+  },500);
 }
 
 async function loadAll(){
@@ -856,6 +896,7 @@ function renderClientsAdminModule(){
         <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}%</small></div>
         <p><strong>Responsável:</strong> ${c.responsible || "Mariah"}</p>
         <p><strong>Próxima entrega:</strong> ${c.delivery || "Planejamento"}</p>
+        <p><strong>Link:</strong> ${createWorkspaceUrl(c.workspace_slug || getInitials(c.name).toLowerCase())}</p>
         <div class="top-actions" style="margin-top:18px">
           <button class="ghost-btn" onclick="openWorkspace(${i})">Abrir</button>
           <button class="ghost-btn" onclick="openEditClient(${i})">Editar</button>
@@ -1043,6 +1084,12 @@ async function saveDNA(){
 
 
 function getPortalClient(){
+  const params = new URLSearchParams(window.location.search);
+  const clientSlug = params.get("cliente");
+  if(clientSlug){
+    const found = findClientBySlug(clientSlug);
+    if(found) return found;
+  }
   if(profile && profile.role === "cliente" && profile.client_name){
     return clients.find(c=>c.name === profile.client_name) || clients[0];
   }
@@ -1468,6 +1515,67 @@ function openCreateClient(){
   document.getElementById("createClientModule").classList.add("active");
 }
 
+
+function createClientSlug(name){
+  return String(name || "cliente")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
+
+function createWorkspaceUrl(slug){
+  const baseUrl = window.location.origin + window.location.pathname;
+  return `${baseUrl}?cliente=${encodeURIComponent(slug)}`;
+}
+
+function findClientBySlug(slug){
+  return clients.find(c => (c.workspace_slug || createClientSlug(c.name)) === slug);
+}
+
+function showClientCreatedModal(client){
+  const slug = client.workspace_slug || createClientSlug(client.name);
+  const url = client.workspace_url || createWorkspaceUrl(slug);
+  window.__lastWorkspaceUrl = url;
+  window.__lastCreatedClient = client;
+
+  document.getElementById("createdClientName").textContent = `Workspace de ${client.name}`;
+  document.getElementById("createdWorkspaceLink").textContent = url;
+  document.getElementById("clientCreatedModal").classList.add("active");
+}
+
+function closeClientCreatedModal(){
+  document.getElementById("clientCreatedModal").classList.remove("active");
+}
+
+function openCreatedWorkspace(){
+  if(window.__lastWorkspaceUrl){
+    window.open(window.__lastWorkspaceUrl, "_blank");
+  }
+}
+
+async function copyCreatedLink(){
+  const url = window.__lastWorkspaceUrl || document.getElementById("createdWorkspaceLink").textContent;
+  try{
+    await navigator.clipboard.writeText(url);
+    alert("Link copiado.");
+  }catch(e){
+    alert(url);
+  }
+}
+
+function sendWorkspaceWhatsapp(){
+  const client = window.__lastCreatedClient || {};
+  const url = window.__lastWorkspaceUrl || createWorkspaceUrl(createClientSlug(client.name));
+  const phone = client.client_phone || "";
+  const message = `Oi, ${client.name || "tudo bem"}! Tudo bem?\n\nSeu portal da HAIA já está disponível. Por aqui você vai conseguir acompanhar entregas, aprovações, calendário, arquivos e comunicação da operação.\n\nAcesse aqui:\n${url}\n\nQualquer dúvida, seguimos também pelo nosso grupo no WhatsApp.`;
+  const encoded = encodeURIComponent(message);
+  const whatsappUrl = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+  window.open(whatsappUrl, "_blank");
+}
+
+
 async function saveClient(){
   const item = {
     name:newClientName.value,
@@ -1478,17 +1586,41 @@ async function saveClient(){
     date:newClientDate.value,
     responsible:newClientResponsible.value || "Mariah",
     whatsapp_url:newClientWhatsapp.value,
+    client_phone:newClientPhone ? newClientPhone.value : "",
     service_notes:newClientNotes.value,
     approvals:0,
     content:0,
     performance:0,
     color:"var(--champagne-3)"
   };
-  const { error } = await supabaseClient.from("haia_os_clients").insert([item]);
-  if(error){ alert("Não salvou no Supabase, mas adicionou visualmente para teste."); clients.unshift(item); }
-  newClientName.value = newClientInitials.value = newClientPlan.value = newClientProgress.value = newClientDelivery.value = newClientDate.value = newClientResponsible.value = newClientWhatsapp.value = newClientNotes.value = "";
+
+  const slug = createClientSlug(item.name);
+  item.workspace_slug = slug;
+  item.workspace_url = createWorkspaceUrl(slug);
+
+  const { error, data } = await supabaseClient.from("haia_os_clients").insert([item]).select().maybeSingle();
+
+  if(error){
+    clients.unshift(item);
+  }
+
+  const saved = data || item;
+  window.__lastCreatedClient = saved;
+
+  newClientName.value = "";
+  newClientInitials.value = "";
+  newClientPlan.value = "";
+  newClientProgress.value = "";
+  newClientDelivery.value = "";
+  newClientDate.value = "";
+  newClientResponsible.value = "";
+  newClientWhatsapp.value = "";
+  if(newClientPhone) newClientPhone.value = "";
+  newClientNotes.value = "";
+
   await loadAll();
   showAdminHome();
+  showClientCreatedModal(saved);
 }
 
 async function saveService(){
@@ -1548,6 +1680,29 @@ initSession();
     </div>
 
     <div id="editClientMsg" class="notice" style="display:none"></div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop" id="clientCreatedModal">
+  <div class="modal">
+    <div class="success-icon">✓</div>
+    <div class="eyebrow">Cliente criado</div>
+    <h2 id="createdClientName">Workspace criado</h2>
+    <p>Agora você pode abrir o portal, copiar o link ou enviar a mensagem pronta pelo WhatsApp.</p>
+
+    <div class="workspace-link-box" id="createdWorkspaceLink"></div>
+
+    <div class="invite-actions">
+      <button class="primary-btn" onclick="openCreatedWorkspace()">Abrir workspace</button>
+      <button class="ghost-btn" onclick="copyCreatedLink()">Copiar link</button>
+      <button class="primary-btn whatsapp-btn" onclick="sendWorkspaceWhatsapp()">Enviar por WhatsApp</button>
+      <button class="ghost-btn" onclick="closeClientCreatedModal()">Fechar</button>
+    </div>
+
+    <div class="notice" style="margin-top:14px">
+      A mensagem já vai pronta com o link do portal do cliente.
+    </div>
   </div>
 </div>
 

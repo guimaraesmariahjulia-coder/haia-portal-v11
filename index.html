@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V15 • IA Contextual</title>
+<title>HAIA OS V16 • DNA Contextual</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -130,6 +130,14 @@ textarea{min-height:105px;resize:vertical}
 .whatsapp-btn{background:#25D366;color:white;box-shadow:0 14px 34px rgba(37,211,102,.22)}
 @media(max-width:1280px){.metrics{grid-template-columns:repeat(2,1fr)}.client-grid{grid-template-columns:repeat(2,1fr)}.lower-grid{grid-template-columns:1fr}}
 @media(max-width:860px){body{padding:12px}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;top:0}.topbar{flex-direction:column;align-items:stretch}.client-grid,.metrics,.form-grid{grid-template-columns:1fr}}
+
+.dna-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+.dna-item{padding:16px;border-radius:18px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.62)}
+.dna-item small{display:block;color:var(--muted);font-weight:800;margin-bottom:6px}
+.fade-in{animation:fadeIn .28s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.client-mode-note{padding:12px 14px;border-radius:16px;background:rgba(231,201,143,.22);color:#7d5a2c;font-weight:700;margin-top:12px}
+@media(max-width:860px){.dna-grid{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -137,9 +145,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V15</div>
+    <div class="eyebrow">HAIA OS • V16</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com IA contextual por cliente.</p>
+    <p>Sistema operacional premium com DNA contextual, IA HAIA e modo cliente/admin.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -159,6 +167,7 @@ textarea{min-height:105px;resize:vertical}
       <button onclick="showModule('conteudos',this)">Conteúdos</button>
       <button onclick="showModule('aprovacoes',this)">Aprovações <span class="count">8</span></button>
       <button onclick="showModule('tarefas',this)">Tarefas <span class="count">12</span></button>
+      <button onclick="showModule('dna',this)">DNA dos Clientes</button>
       <button onclick="showModule('ia',this)">IA HAIA</button>
     </nav>
     <div class="quick">
@@ -172,7 +181,7 @@ textarea{min-height:105px;resize:vertical}
       <input class="search" placeholder="Buscar no sistema...">
       <div class="top-actions">
         <button class="ghost-btn">🔔</button>
-        <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
+        <button class="primary-btn" id="topActionBtn" onclick="handleTopAction()">+ Novo cliente</button>
       </div>
     </div>
 
@@ -217,6 +226,7 @@ textarea{min-height:105px;resize:vertical}
       <div class="tabs">
         <button class="active" onclick="renderWorkspaceTab('resumo',this)">Resumo</button>
         <button onclick="renderWorkspaceTab('servicos',this)">Serviços</button>
+        <button onclick="renderWorkspaceTab('dna',this)">DNA</button>
         <button onclick="renderWorkspaceTab('comunicacao',this)">Comunicação</button>
         <button onclick="renderWorkspaceTab('calendario',this)">Calendário</button>
         <button onclick="renderWorkspaceTab('aprovacoes',this)">Aprovações</button>
@@ -308,6 +318,7 @@ function openApp(){
   document.getElementById("userName").textContent = profile.name || "Mariah";
   document.getElementById("userRole").textContent = profile.role || "Admin";
   loadAll();
+  updateTopAction('dashboard');
 }
 
 async function loadAll(){
@@ -396,6 +407,22 @@ function renderWorkspaceTab(tab, btn){
     box.innerHTML = `<div class="panel"><h2>Serviços & Operação contratada</h2><p>${c.service_notes || "Serviços personalizados para este cliente."}</p><div style="margin-top:18px">${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name}</span>`).join("")}</div></div>`;
   }
 
+  if(tab === "dna"){
+    box.innerHTML = `<div class="panel fade-in">
+      <div class="eyebrow">DNA DO CLIENTE</div>
+      <h2>${c.name}</h2>
+      <p>Base contextual usada pela IA HAIA para gerar estratégias, conteúdos, diagnósticos e campanhas.</p>
+      <div class="dna-grid">
+        <div class="dna-item"><small>Nicho</small>${c.niche || "Cadastrar no módulo DNA dos Clientes"}</div>
+        <div class="dna-item"><small>Tom de voz</small>${c.tone || "Premium, estratégico e claro"}</div>
+        <div class="dna-item"><small>Estética</small>${c.visual_identity || "Visual alinhado à marca"}</div>
+        <div class="dna-item"><small>Objetivo</small>${c.goals || "Autoridade, relacionamento e conversão"}</div>
+        <div class="dna-item"><small>Serviços</small>${c.service_notes || "Operação personalizada"}</div>
+        <div class="dna-item"><small>CTA</small>${c.cta || "Direcionar para ação principal"}</div>
+      </div>
+    </div>`;
+  }
+
   if(tab === "comunicacao"){
     const wa = c.whatsapp_url || "";
     box.innerHTML = `<div class="panel whatsapp-card">
@@ -425,6 +452,7 @@ function showAdminHome(btn){
   document.getElementById("workspace").classList.remove("active");
   document.getElementById("genericModule").classList.remove("active");
   document.getElementById("createClientModule").classList.remove("active");
+  updateTopAction("dashboard");
   if(btn) setActiveNav(btn);
 }
 
@@ -436,12 +464,20 @@ function showModule(name, btn){
   document.getElementById("moduleTitle").textContent = name.charAt(0).toUpperCase()+name.slice(1);
   const content = document.getElementById("moduleContent");
 
-  if(name === "planos"){
+  updateTopAction(name);
+
+  if(name === "clientes"){
+    document.getElementById("moduleText").textContent = "Gerencie clientes, workspaces e operações ativas.";
+    content.innerHTML = renderClientsAdminModule();
+  } else if(name === "planos"){
     document.getElementById("moduleText").textContent = "Crie planos, serviços e vincule operações personalizadas aos clientes.";
     content.innerHTML = renderPlansModule();
   } else if(name === "comunicacao"){
     document.getElementById("moduleText").textContent = "Configure grupos de WhatsApp, responsáveis e canais diretos por cliente.";
     content.innerHTML = renderCommunicationModule();
+  } else if(name === "dna"){
+    document.getElementById("moduleText").textContent = "Edite o DNA estratégico que alimenta a IA contextual de cada cliente.";
+    content.innerHTML = renderDNAModule();
   } else if(name === "ia"){
     document.getElementById("moduleText").textContent = "IA contextual baseada no DNA estratégico de cada cliente.";
     content.innerHTML = renderIAModule();
@@ -453,6 +489,115 @@ function showModule(name, btn){
   if(btn) setActiveNav(btn);
 }
 
+
+
+function updateTopAction(screen){
+  const btn = document.getElementById("topActionBtn");
+  if(!btn) return;
+
+  if(screen === "clientes"){
+    btn.style.display = "inline-flex";
+    btn.textContent = "+ Novo cliente";
+  } else if(screen === "dna"){
+    btn.style.display = "inline-flex";
+    btn.textContent = "+ Salvar DNA";
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+function handleTopAction(){
+  const activeText = document.querySelector(".nav button.active")?.textContent || "";
+  if(activeText.includes("Clientes")){
+    openCreateClient();
+  } else if(activeText.includes("DNA")){
+    alert("Use o formulário de DNA abaixo para salvar as informações do cliente.");
+  }
+}
+
+function renderClientsAdminModule(){
+  return `<div class="section-head">
+    <div class="left"><h2>Clientes cadastrados</h2><span class="badge">${clients.length} ativos</span></div>
+    <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
+  </div>
+  <section class="client-grid fade-in">
+    ${clients.map((c,i)=>`
+      <div class="client-card">
+        <div class="client-head">
+          <div style="display:flex;gap:14px">
+            <div class="client-logo">${c.initials || getInitials(c.name)}</div>
+            <div><h3>${c.name}</h3><span class="plan">${c.plan || "Operação Personalizada"}</span></div>
+          </div>
+          <strong>${c.status || "ativo"}</strong>
+        </div>
+        <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}%</small></div>
+        <p><strong>Responsável:</strong> ${c.responsible || "Mariah"}</p>
+        <p><strong>Próxima entrega:</strong> ${c.delivery || "Planejamento"}</p>
+        <div class="top-actions" style="margin-top:18px">
+          <button class="ghost-btn" onclick="openWorkspace(${i})">Abrir</button>
+          <button class="ghost-btn" onclick="alert('Edição completa entra no próximo ciclo visual.')">Editar</button>
+        </div>
+      </div>
+    `).join("")}
+  </section>`;
+}
+
+function renderDNAModule(){
+  return `<div class="panel fade-in">
+    <div class="eyebrow">DNA CONTEXTUAL</div>
+    <h2>Base estratégica da IA HAIA</h2>
+    <p>Cadastre o contexto que a IA deve considerar antes de responder para cada cliente.</p>
+
+    <div class="form-grid" style="margin-top:18px">
+      <select id="dnaClient">
+        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
+      </select>
+      <input id="dnaNiche" placeholder="Nicho. Ex: beleza, moda praia, fitness">
+      <input id="dnaTone" placeholder="Tom de voz. Ex: premium, popular, editorial">
+      <input id="dnaVisual" placeholder="Estética. Ex: claro/glow, dark/neon, fashion">
+      <input id="dnaGoals" placeholder="Objetivo. Ex: autoridade, conversão, agendamento">
+      <input id="dnaKeywords" placeholder="Palavras-chave">
+      <input id="dnaCTA" placeholder="CTA principal">
+      <input id="dnaRestrictions" placeholder="Restrições / evitar">
+    </div>
+
+    <textarea id="dnaReferences" style="margin-top:12px" placeholder="Referências, observações, campanhas anteriores, diferenciais e detalhes importantes."></textarea>
+
+    <button class="primary-btn" style="margin-top:14px" onclick="saveDNA()">Salvar DNA contextual</button>
+    <div id="dnaSavedMsg" class="client-mode-note" style="display:none">DNA salvo. A IA HAIA poderá usar esse contexto nas próximas respostas.</div>
+  </div>
+
+  <div class="panel fade-in">
+    <h2>Como a IA vai usar isso</h2>
+    <div class="dna-grid">
+      <div class="dna-item"><small>Nicho</small>Evita respostas genéricas e entende o mercado do cliente.</div>
+      <div class="dna-item"><small>Tom de voz</small>Ajusta linguagem, energia e posicionamento.</div>
+      <div class="dna-item"><small>Estética</small>Direciona sugestões visuais coerentes com a marca.</div>
+      <div class="dna-item"><small>Objetivos</small>Faz a IA priorizar autoridade, vendas, agenda ou comunidade.</div>
+    </div>
+  </div>`;
+}
+
+async function saveDNA(){
+  const item = {
+    client_name:dnaClient.value,
+    niche:dnaNiche.value,
+    tone:dnaTone.value,
+    visual_identity:dnaVisual.value,
+    goals:dnaGoals.value,
+    keywords:dnaKeywords.value,
+    restrictions:dnaRestrictions.value,
+    cta:dnaCTA.value,
+    references_text:dnaReferences.value
+  };
+
+  try{
+    await supabaseClient.from("haia_client_dna").insert([item]);
+    document.getElementById("dnaSavedMsg").style.display = "block";
+  }catch(e){
+    document.getElementById("dnaSavedMsg").style.display = "block";
+  }
+}
 
 function renderIAModule(){
   return `<div class="panel">

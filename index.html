@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V23.1 • Correção Topo</title>
+<title>HAIA OS V24.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -503,6 +503,89 @@ textarea{min-height:105px;resize:vertical}
 }
 @media(max-width:1180px){.files-grid{grid-template-columns:1fr}}
 
+
+.v24-calendar-board{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+.v24-day{
+  min-height:220px;
+  border-radius:24px;
+  padding:14px;
+  background:rgba(255,255,255,.44);
+  border:1px solid rgba(255,255,255,.66);
+}
+.v24-day-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:12px;
+}
+.v24-day-head strong{
+  font-size:15px;
+}
+.v24-day-head small{
+  color:var(--muted);
+}
+.v24-event{
+  padding:11px;
+  border-radius:16px;
+  margin-top:9px;
+  border:1px solid rgba(255,255,255,.55);
+}
+.v24-event b{
+  display:block;
+  font-size:13px;
+  margin-bottom:4px;
+}
+.v24-event small{
+  display:block;
+  color:rgba(40,35,30,.72);
+  line-height:1.35;
+}
+.v24-event.reels{background:rgba(255,126,168,.18);color:#9d315f}
+.v24-event.carrossel{background:rgba(160,112,255,.16);color:#5f42bc}
+.v24-event.stories{background:rgba(243,161,66,.18);color:#9a5d12}
+.v24-event.reuniao{background:rgba(116,167,255,.18);color:#2f64b9}
+.v24-event.entrega{background:rgba(231,201,143,.34);color:#7d5a2c}
+.v24-event.publicado{background:rgba(116,200,130,.18);color:#2e8746}
+.status-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  margin-top:8px;
+  background:rgba(255,255,255,.48);
+}
+.calendar-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+.calendar-summary{
+  padding:15px;
+  border-radius:20px;
+  background:rgba(255,255,255,.44);
+  border:1px solid rgba(255,255,255,.66);
+}
+.calendar-summary strong{
+  display:block;
+  font-size:26px;
+  letter-spacing:-.05em;
+  margin-top:8px;
+}
+@media(max-width:1180px){
+  .v24-calendar-board{grid-template-columns:1fr}
+  .calendar-summary-grid{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 
@@ -510,9 +593,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V23</div>
+    <div class="eyebrow">HAIA OS • V24</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com arquivos por cliente, portal e links de workspace.</p>
+    <p>Sistema operacional premium com calendário real da operação, arquivos e portal do cliente.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -875,7 +958,7 @@ function showModule(name, btn){
     content.innerHTML = renderIAModule();
     loadAIHistory();
   } else if(name === "calendario"){
-    document.getElementById("moduleText").textContent = "Calendário operacional editável por cliente, com posts, reuniões e entregas.";
+    document.getElementById("moduleText").textContent = "Calendário real da operação com status de gravação, edição, aprovação, postagem e publicação.";
     content.innerHTML = renderCalendarModule();
     renderCalendarItems();
   } else if(name === "aprovacoes"){
@@ -1438,11 +1521,28 @@ let calendarItems = [
   {client_name:"Studio Cristal", item_date:"SEX", item_time:"15:00", title:"Entrega planejamento", type:"entrega", status:"Pendente"}
 ];
 
+
+let calendarItems = [
+  {client_name:"Studio Cristal", item_date:"SEG", item_time:"09:00", title:"Gravar Reels Vale Responde", type:"reels", status:"Gravar"},
+  {client_name:"Mariah Biquínis", item_date:"TER", item_time:"11:00", title:"Carrossel lançamento", type:"carrossel", status:"Editar"},
+  {client_name:"Kaife Fitness", item_date:"QUA", item_time:"12:00", title:"Sequência de Stories feira", type:"stories", status:"Aprovar"},
+  {client_name:"Studio Cristal", item_date:"QUI", item_time:"15:00", title:"Reunião de alinhamento", type:"reuniao", status:"Confirmado"},
+  {client_name:"Mariah Biquínis", item_date:"SEX", item_time:"18:00", title:"Postar campanha coleção", type:"publicado", status:"Postar"}
+];
+
 function renderCalendarModule(){
   return `<div class="panel fade-in">
-    <div class="eyebrow">Calendário operacional</div>
-    <h2>Agenda criativa da HAIA</h2>
-    <p>Organize conteúdos, reuniões, entregas e aprovações por cliente.</p>
+    <div class="eyebrow">Calendário real da operação</div>
+    <h2>Planejamento semanal HAIA</h2>
+    <p>Organize conteúdos, reuniões, aprovações, entregas e publicações por cliente.</p>
+
+    <div class="calendar-summary-grid">
+      <div class="calendar-summary"><small>Gravar</small><strong id="sumGravar">0</strong></div>
+      <div class="calendar-summary"><small>Editar</small><strong id="sumEditar">0</strong></div>
+      <div class="calendar-summary"><small>Aprovar</small><strong id="sumAprovar">0</strong></div>
+      <div class="calendar-summary"><small>Postar</small><strong id="sumPostar">0</strong></div>
+      <div class="calendar-summary"><small>Total</small><strong id="sumTotal">0</strong></div>
+    </div>
 
     <div class="form-grid" style="margin-top:18px">
       <select id="calClient">
@@ -1452,20 +1552,22 @@ function renderCalendarModule(){
         <option>SEG</option><option>TER</option><option>QUA</option><option>QUI</option><option>SEX</option><option>SÁB</option><option>DOM</option>
       </select>
       <input id="calTime" placeholder="Horário. Ex: 08:00">
-      <input id="calTitle" placeholder="Título do item">
+      <input id="calTitle" placeholder="Título do conteúdo ou tarefa">
       <select id="calType">
         <option value="reels">Reels</option>
         <option value="carrossel">Carrossel</option>
-        <option value="story">Stories</option>
+        <option value="stories">Stories</option>
         <option value="reuniao">Reunião</option>
         <option value="entrega">Entrega</option>
+        <option value="publicado">Publicado</option>
       </select>
       <select id="calStatus">
-        <option>Planejado</option>
-        <option>Em produção</option>
-        <option>Aguardando aprovação</option>
-        <option>Aprovado</option>
+        <option>Gravar</option>
+        <option>Editar</option>
+        <option>Aprovar</option>
+        <option>Postar</option>
         <option>Publicado</option>
+        <option>Confirmado</option>
       </select>
     </div>
 
@@ -1474,26 +1576,53 @@ function renderCalendarModule(){
 
   <div class="panel fade-in">
     <div class="section-head">
-      <div class="left"><h2>Semana operacional</h2><span class="badge">V19 editável</span></div>
+      <div class="left"><h2>Semana da operação</h2><span class="badge">V24 calendário real</span></div>
     </div>
-    <div class="calendar-board" id="calendarBoard"></div>
+    <div class="v24-calendar-board" id="calendarBoard"></div>
   </div>`;
 }
 
 function renderCalendarItems(){
   const board = document.getElementById("calendarBoard");
   if(!board) return;
-  const days = ["SEG","TER","QUA","QUI","SEX","SÁB","DOM"];
+
+  const days = [
+    {key:"SEG",label:"Segunda"},
+    {key:"TER",label:"Terça"},
+    {key:"QUA",label:"Quarta"},
+    {key:"QUI",label:"Quinta"},
+    {key:"SEX",label:"Sexta"},
+    {key:"SÁB",label:"Sábado"},
+    {key:"DOM",label:"Domingo"}
+  ];
+
   board.innerHTML = days.map(day=>{
-    const items = calendarItems.filter(i=>i.item_date === day);
-    return `<div class="calendar-day">
-      <strong>${day}</strong>
-      ${items.map(i=>`<div class="calendar-item ${i.type}">
-        <b>${i.item_time || ""}</b> ${i.title}<br>
-        <small>${i.client_name} • ${i.status}</small>
+    const items = calendarItems.filter(i=>i.item_date === day.key);
+    return `<div class="v24-day">
+      <div class="v24-day-head">
+        <strong>${day.label}</strong>
+        <small>${items.length} itens</small>
+      </div>
+      ${items.map((i,index)=>`<div class="v24-event ${i.type}">
+        <b>${i.item_time || ""} • ${i.title}</b>
+        <small>${i.client_name}</small>
+        <span class="status-chip">${i.status}</span>
       </div>`).join("")}
     </div>`;
   }).join("");
+
+  updateCalendarSummary();
+}
+
+function updateCalendarSummary(){
+  const total = calendarItems.length;
+  const count = (status)=>calendarItems.filter(i=>String(i.status).toLowerCase() === status.toLowerCase()).length;
+  const set = (id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val; };
+  set("sumGravar", count("Gravar"));
+  set("sumEditar", count("Editar"));
+  set("sumAprovar", count("Aprovar"));
+  set("sumPostar", count("Postar"));
+  set("sumTotal", total);
 }
 
 async function saveCalendarItem(){
@@ -1501,10 +1630,11 @@ async function saveCalendarItem(){
     client_name:calClient.value,
     item_date:calDay.value,
     item_time:calTime.value,
-    title:calTitle.value,
+    title:calTitle.value || "Item sem título",
     type:calType.value,
     status:calStatus.value
   };
+
   calendarItems.push(item);
 
   try{
@@ -1515,6 +1645,7 @@ async function saveCalendarItem(){
   calTitle.value = "";
   renderCalendarItems();
 }
+
 
 async function loadAIHistory(){
   const list = document.getElementById("aiHistoryList");

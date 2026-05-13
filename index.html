@@ -1,254 +1,340 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA V11 | Operação Premium</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAIA V12 • Status Operacional</title>
+
 <style>
-:root{--bg:#050505;--panel:#11100d;--text:#f7efe2;--muted:#a99f91;--line:rgba(247,239,226,.12);--gold:#d7b56d;--beige:#efe0c8;--green:#9be6b4;--red:#ff9b9b;--blue:#a7c7ff}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at top left,rgba(215,181,109,.18),transparent 28%),linear-gradient(135deg,#050505,#0d0c0a 55%,#050505);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.login{min-height:100vh;display:grid;place-items:center;padding:20px}
-.login-card,.card,.hero{background:rgba(17,16,13,.9);border:1px solid var(--line);border-radius:32px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.25)}
-.login-card{width:min(520px,100%)}
-.logo{width:62px;height:62px;border-radius:21px;background:linear-gradient(135deg,var(--beige),var(--gold));display:grid;place-items:center;color:#111;font-weight:950;margin-bottom:18px}
-.app{display:none;grid-template-columns:300px 1fr;gap:22px;max-width:1540px;margin:0 auto;padding:22px}
-aside{position:sticky;top:22px;height:calc(100vh - 44px);overflow:auto;background:rgba(17,16,13,.88);border:1px solid var(--line);border-radius:36px;padding:24px}
-h1,h2,h3{margin:0;letter-spacing:-.045em}p{color:var(--muted);line-height:1.55}
-.eyebrow{color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:.18em;font-weight:900;margin-bottom:12px}
-nav{display:grid;gap:8px;margin-top:22px}
-nav button{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:17px;padding:13px;text-align:left;font-weight:850;cursor:pointer}
-nav button.active,nav button:hover{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--line)}
-main{display:flex;flex-direction:column;gap:18px}
-.hero h1{font-size:clamp(38px,7vw,78px);line-height:.92;max-width:900px}
-.module{display:none;flex-direction:column;gap:18px}.module.active{display:flex}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr)}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
-input,textarea,select{width:100%;background:rgba(255,255,255,.055);border:1px solid var(--line);color:var(--text);border-radius:18px;padding:14px 15px;outline:none;font-size:15px;font-family:inherit}
-textarea{min-height:100px;resize:vertical}label{display:block;color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:850;margin:12px 0 7px}
-button.primary{background:linear-gradient(135deg,var(--beige),var(--gold));color:#111;border:0;border-radius:17px;padding:13px 17px;font-weight:900;cursor:pointer}
-button.secondary{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line);border-radius:17px;padding:13px 17px;font-weight:900;cursor:pointer}
-.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
-.row{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:24px;padding:18px}
-.tag{display:inline-block;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid var(--line);color:var(--muted);font-size:12px;margin:4px 4px 4px 0}
-.metric h2{font-size:42px;color:var(--beige)}a{color:var(--gold)}.admin-only{display:none}.status{color:var(--green);margin-top:10px}
-@media(max-width:900px){.app{grid-template-columns:1fr;padding:14px}aside{position:relative;height:auto;top:0}.grid,.grid.two,.grid.four{grid-template-columns:1fr}nav{grid-template-columns:repeat(2,1fr)}}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+background:#050505;
+color:#f5efe4;
+padding:32px;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:24px;
+}
+
+.hero{
+background:#11100d;
+border:1px solid rgba(255,255,255,.08);
+border-radius:32px;
+padding:40px;
+}
+
+.logo{
+width:72px;
+height:72px;
+border-radius:22px;
+background:linear-gradient(135deg,#f4e3c3,#cfa95e);
+display:flex;
+align-items:center;
+justify-content:center;
+color:#111;
+font-weight:800;
+font-size:28px;
+margin-bottom:22px;
+}
+
+.label{
+font-size:12px;
+letter-spacing:.18em;
+text-transform:uppercase;
+color:#cfa95e;
+margin-bottom:12px;
+}
+
+h1{
+font-size:58px;
+line-height:1;
+margin-bottom:16px;
+}
+
+.hero p{
+color:#b8b0a4;
+font-size:18px;
+}
+
+.pipeline{
+display:flex;
+flex-wrap:wrap;
+gap:12px;
+margin-top:28px;
+}
+
+.step{
+padding:14px 18px;
+border-radius:999px;
+background:#1a1915;
+border:1px solid rgba(255,255,255,.08);
+color:#d8d1c5;
+font-size:14px;
+}
+
+.active{
+background:linear-gradient(135deg,#f4e3c3,#cfa95e);
+color:#111;
+font-weight:700;
+}
+
+.progress{
+margin-top:28px;
+height:18px;
+background:#1a1915;
+border-radius:999px;
+overflow:hidden;
+}
+
+.progress-fill{
+height:100%;
+width:72%;
+background:linear-gradient(90deg,#f4e3c3,#cfa95e);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:22px;
+}
+
+.card{
+background:#11100d;
+border:1px solid rgba(255,255,255,.08);
+border-radius:28px;
+padding:28px;
+}
+
+.card h2{
+font-size:28px;
+margin-bottom:10px;
+}
+
+.card p{
+color:#b8b0a4;
+line-height:1.6;
+}
+
+.update{
+padding:16px 0;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.update:last-child{
+border:none;
+}
+
+textarea{
+width:100%;
+height:140px;
+background:#1b1915;
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:18px;
+color:white;
+margin-top:16px;
+resize:none;
+}
+
+button{
+margin-top:16px;
+padding:16px 22px;
+border:none;
+border-radius:18px;
+background:linear-gradient(135deg,#f4e3c3,#cfa95e);
+font-weight:700;
+cursor:pointer;
+}
+
+@media(max-width:768px){
+
+body{
+padding:18px;
+}
+
+h1{
+font-size:38px;
+}
+
+.hero{
+padding:28px;
+}
+
+}
 </style>
 </head>
+
 <body>
-<section class="login" id="loginScreen">
-<div class="login-card">
-<div class="logo">HAIA</div>
-<div class="eyebrow">V11 Operação Premium</div>
-<h1>Entrar no painel</h1>
-<p>Use o mesmo login das versões anteriores.</p>
-<label>E-mail</label><input id="loginEmail">
-<label>Senha</label><input id="loginPassword" type="password">
-<div class="toolbar"><button class="primary" onclick="loginUser()">Entrar</button></div>
-<div id="loginMsg" class="status"></div>
+
+<div class="container">
+
+<div class="hero">
+
+<div class="logo">
+HAIA
 </div>
-</section>
 
-<div class="app" id="app">
-<aside>
-<div class="logo">HAIA</div>
-<h2>Portal V11</h2>
-<p id="profileInfo">Carregando...</p>
-<nav>
-<button class="active" onclick="showModule('home',this)">Dashboard</button>
-<button onclick="showModule('timeline',this)">Timeline</button>
-<button onclick="showModule('tasks',this)">Checklist</button>
-<button onclick="showModule('briefing',this)">Briefing + IA</button>
-<button onclick="showModule('notifications',this)">Notificações</button>
-<button class="admin-only" onclick="showModule('finance',this)">Financeiro</button>
-<button onclick="logoutUser()">Sair</button>
-</nav>
-</aside>
-
-<main>
-<section class="hero">
-<div class="eyebrow">Agência HAIA • V11</div>
-<h1 id="heroTitle">Operação premium centralizada.</h1>
-<p id="heroText">Timeline, checklist, briefing, IA, notificações e financeiro básico em um só painel.</p>
-</section>
-
-<section id="home" class="module active">
-<div class="grid four">
-<div class="card metric"><h2 id="mTimeline">0</h2><p>eventos na timeline</p></div>
-<div class="card metric"><h2 id="mTasks">0</h2><p>tarefas pendentes</p></div>
-<div class="card metric"><h2 id="mNotifs">0</h2><p>notificações</p></div>
-<div class="card metric"><h2 id="mRevenue">R$0</h2><p>receita prevista</p></div>
+<div class="label">
+V12 • STATUS OPERACIONAL PREMIUM
 </div>
-<div class="card"><button class="primary" onclick="loadAll()">Atualizar tudo</button><div id="globalMsg" class="status"></div></div>
-</section>
 
-<section id="timeline" class="module">
-<div class="card admin-only">
-<h2>Novo evento na timeline</h2>
-<label>Cliente</label><input id="tlClient" placeholder="Studio Cristal">
-<label>Título</label><input id="tlTitle">
-<label>Descrição</label><textarea id="tlDesc"></textarea>
-<label>Status</label><select id="tlStatus"><option>em_andamento</option><option>concluido</option><option>aguardando_cliente</option><option>ajuste</option></select>
-<div class="toolbar"><button class="primary" onclick="saveTimeline()">Salvar evento</button></div>
-<div id="tlMsg" class="status"></div>
+<h1>
+Studio Cristal
+</h1>
+
+<p>
+Painel premium de acompanhamento estratégico da Agência HAIA.
+</p>
+
+<div class="pipeline">
+
+<div class="step active">
+Branding
 </div>
-<div id="timelineList" class="grid"></div>
-</section>
 
-<section id="tasks" class="module">
-<div class="card admin-only">
-<h2>Nova tarefa/checklist</h2>
-<label>Cliente</label><input id="taskClient">
-<label>Tarefa</label><input id="taskTitle">
-<label>Tipo</label><select id="taskType"><option>conteudo</option><option>design</option><option>aprovacao</option><option>financeiro</option><option>operacional</option></select>
-<label>Data limite</label><input id="taskDue" type="date">
-<label>Notas</label><textarea id="taskNotes"></textarea>
-<div class="toolbar"><button class="primary" onclick="saveTask()">Salvar tarefa</button></div>
-<div id="taskMsg" class="status"></div>
+<div class="step active">
+Estratégia
 </div>
-<div id="taskList" class="grid"></div>
-</section>
 
-<section id="briefing" class="module">
-<div class="card admin-only">
-<h2>Briefing + IA HAIA</h2>
-<label>Cliente</label><input id="brClient">
-<label>Briefing/contexto</label><textarea id="brText"></textarea>
-<div class="toolbar"><button class="primary" onclick="generateBriefingAI()">Gerar diagnóstico e salvar</button></div>
-<div id="brMsg" class="status"></div>
+<div class="step active">
+Produção
 </div>
-<div id="briefingList" class="grid"></div>
-</section>
 
-<section id="notifications" class="module">
-<div class="card admin-only">
-<h2>Nova notificação</h2>
-<label>Cliente</label><input id="ntClient">
-<label>Título</label><input id="ntTitle">
-<label>Mensagem</label><textarea id="ntMsgText"></textarea>
-<div class="toolbar"><button class="primary" onclick="saveNotification()">Enviar notificação</button></div>
-<div id="ntMsg" class="status"></div>
+<div class="step">
+Aprovação
 </div>
-<div id="notificationList" class="grid"></div>
-</section>
 
-<section id="finance" class="module admin-only">
+<div class="step">
+Agendamento
+</div>
+
+<div class="step">
+Publicado
+</div>
+
+</div>
+
+<div class="progress">
+<div class="progress-fill"></div>
+</div>
+
+<p style="margin-top:14px;">
+72% da operação concluída
+</p>
+
+</div>
+
+<div class="grid">
+
 <div class="card">
-<h2>Financeiro básico</h2>
-<label>Cliente</label><input id="finClient">
-<label>Descrição</label><input id="finDesc">
-<label>Valor</label><input id="finAmount" type="number">
-<label>Tipo</label><select id="finType"><option>receita</option><option>despesa</option></select>
-<label>Status</label><select id="finStatus"><option>pendente</option><option>pago</option><option>atrasado</option></select>
-<label>Vencimento</label><input id="finDue" type="date">
-<div class="toolbar"><button class="primary" onclick="saveFinance()">Salvar financeiro</button></div>
-<div id="finMsg" class="status"></div>
-</div>
-<div id="financeList" class="grid"></div>
-</section>
-</main>
+
+<div class="label">
+Próxima entrega
 </div>
 
-<script>
-const { createClient } = supabase;
-const supabaseClient = createClient("https://dagekkvpyphwjgheoosz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZ2Vra3ZweXBod2pnaGVvb3N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0Mjg0NTEsImV4cCI6MjA5NDAwNDQ1MX0.x9hwb-d8Vum-O10i_8jxMA2lOnxN2jdPDUpUoPWj0n0");
-let sessionUser=null, profile=null;
-let timelines=[], tasks=[], briefings=[], notifications=[], finance=[];
+<h2>
+Planejamento Junho
+</h2>
 
-function showModule(id,btn){document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active')}
-function safe(v){return String(v||"").toLowerCase().trim()}
-function canSeeAll(){return profile && (profile.role==='admin'||profile.role==='equipe')}
-function myClient(){return profile?.client_name||""}
-function filter(items){return canSeeAll()?items:items.filter(x=>safe(x.client_name)===safe(myClient()))}
-function money(v){return "R$"+Number(v||0).toLocaleString("pt-BR")}
+<p>
+Entrega prevista para 15/05.
+</p>
 
-async function loginUser(){
-const {data,error}=await supabaseClient.auth.signInWithPassword({email:loginEmail.value,password:loginPassword.value});
-if(error){loginMsg.innerText="Erro: "+error.message;return}
-sessionUser=data.user; await loadProfile(); loginScreen.style.display="none"; app.style.display="grid"; await loadAll();
-}
-async function logoutUser(){await supabaseClient.auth.signOut();location.reload()}
-async function initSession(){const {data}=await supabaseClient.auth.getSession();if(data.session?.user){sessionUser=data.session.user;await loadProfile();loginScreen.style.display="none";app.style.display="grid";await loadAll()}}
+</div>
 
-async function loadProfile(){
-const email=sessionUser?.email;
-const {data}=await supabaseClient.from("haia_user_profiles").select("*").eq("email",email).maybeSingle();
-profile=data||{email,name:email,role:"cliente",client_name:""};
-profileInfo.innerHTML=`<span class="tag">${profile.role}</span><br>${profile.name||profile.email}<br><small>${profile.client_name||"acesso geral"}</small>`;
-document.querySelectorAll(".admin-only").forEach(el=>el.style.display=canSeeAll()?"block":"none");
-heroTitle.innerText=canSeeAll()?"Central operacional premium HAIA.":`Painel de ${myClient()}`;
-}
+<div class="card">
 
-async function loadAll(){
-await Promise.all([loadTimeline(),loadTasks(),loadBriefings(),loadNotifications(),loadFinance()]);
-const vt=filter(timelines), vtasks=filter(tasks), vn=filter(notifications);
-mTimeline.innerText=vt.length;
-mTasks.innerText=vtasks.filter(t=>t.status!=="concluido").length;
-mNotifs.innerText=vn.length;
-mRevenue.innerText=money(filter(finance).filter(f=>f.type==="receita").reduce((s,f)=>s+Number(f.amount||0),0));
-globalMsg.innerText="Dados atualizados.";
-}
+<div class="label">
+Status atual
+</div>
 
-async function saveTimeline(){
-const {error}=await supabaseClient.from("haia_timeline").insert([{client_name:tlClient.value,title:tlTitle.value,description:tlDesc.value,status:tlStatus.value}]);
-tlMsg.innerText=error?"Erro: "+error.message:"Evento salvo.";
-if(!error){tlClient.value=tlTitle.value=tlDesc.value="";await loadAll()}
-}
-async function loadTimeline(){
-const {data}=await supabaseClient.from("haia_timeline").select("*").order("created_at",{ascending:false});
-timelines=data||[];
-timelineList.innerHTML=filter(timelines).length?filter(timelines).map(x=>`<div class="row"><h3>${x.title}</h3><span class="tag">${x.client_name}</span><span class="tag">${x.status}</span><p>${x.description||""}</p></div>`).join(""):'<div class="card">Nenhum evento.</div>';
-}
+<h2>
+Em produção
+</h2>
 
-async function saveTask(){
-const {error}=await supabaseClient.from("haia_tasks").insert([{client_name:taskClient.value,task_title:taskTitle.value,task_type:taskType.value,due_date:taskDue.value||null,notes:taskNotes.value,status:"pendente"}]);
-taskMsg.innerText=error?"Erro: "+error.message:"Tarefa salva.";
-if(!error){taskClient.value=taskTitle.value=taskDue.value=taskNotes.value="";await loadAll()}
-}
-async function loadTasks(){
-const {data}=await supabaseClient.from("haia_tasks").select("*").order("created_at",{ascending:false});
-tasks=data||[];
-taskList.innerHTML=filter(tasks).length?filter(tasks).map(x=>`<div class="row"><h3>${x.task_title}</h3><span class="tag">${x.client_name}</span><span class="tag">${x.task_type}</span><span class="tag">${x.status}</span><p>${x.notes||""}</p><div class="toolbar">${canSeeAll()?`<button class="secondary" onclick="finishTask('${x.id}')">Concluir</button>`:""}</div></div>`).join(""):'<div class="card">Nenhuma tarefa.</div>';
-}
-async function finishTask(id){await supabaseClient.from("haia_tasks").update({status:"concluido"}).eq("id",id);await loadAll()}
+<p>
+Equipe finalizando conteúdos e estrutura visual da operação.
+</p>
 
-function aiText(client,context){return `DIAGNÓSTICO HAIA V11\n\nCliente: ${client}\n\n1. Posicionamento\nA marca precisa manter clareza de oferta, autoridade e consistência visual.\n\n2. Prioridades\n- organizar calendário editorial\n- reduzir ruído no processo de aprovação\n- transformar provas sociais em conteúdo de conversão\n- usar bastidores com intenção estratégica\n\n3. Próximos passos\n- revisar bio e destaques\n- mapear dores/objeções\n- criar 4 conteúdos de autoridade\n- criar 2 conteúdos de prova social\n- criar 2 conteúdos de conversão\n\nContexto analisado:\n${context}`}
-async function generateBriefingAI(){
-const diagnosis=aiText(brClient.value,brText.value);
-const steps="Revisar posicionamento, organizar calendário, priorizar aprovações pendentes e gerar conteúdos de prova social.";
-const {error}=await supabaseClient.from("haia_internal_briefings").insert([{client_name:brClient.value,briefing_text:brText.value,ai_diagnosis:diagnosis,next_steps:steps}]);
-brMsg.innerText=error?"Erro: "+error.message:"Diagnóstico salvo.";
-if(!error){brClient.value=brText.value="";await loadAll()}
-}
-async function loadBriefings(){
-const {data}=await supabaseClient.from("haia_internal_briefings").select("*").order("created_at",{ascending:false});
-briefings=data||[];
-briefingList.innerHTML=filter(briefings).length?filter(briefings).map(x=>`<div class="row"><h3>${x.client_name}</h3><pre style="white-space:pre-wrap;color:var(--muted)">${x.ai_diagnosis||""}</pre></div>`).join(""):'<div class="card">Nenhum briefing com IA.</div>';
-}
+</div>
 
-async function saveNotification(){
-const {error}=await supabaseClient.from("haia_notifications").insert([{client_name:ntClient.value,title:ntTitle.value,message:ntMsgText.value,status:"nova"}]);
-ntMsg.innerText=error?"Erro: "+error.message:"Notificação salva.";
-if(!error){ntClient.value=ntTitle.value=ntMsgText.value="";await loadAll()}
-}
-async function loadNotifications(){
-const {data}=await supabaseClient.from("haia_notifications").select("*").order("created_at",{ascending:false});
-notifications=data||[];
-notificationList.innerHTML=filter(notifications).length?filter(notifications).map(x=>`<div class="row"><h3>${x.title}</h3><span class="tag">${x.client_name}</span><p>${x.message||""}</p></div>`).join(""):'<div class="card">Nenhuma notificação.</div>';
-}
+<div class="card">
 
-async function saveFinance(){
-const {error}=await supabaseClient.from("haia_financial_basic").insert([{client_name:finClient.value,description:finDesc.value,amount:Number(finAmount.value||0),type:finType.value,status:finStatus.value,due_date:finDue.value||null}]);
-finMsg.innerText=error?"Erro: "+error.message:"Financeiro salvo.";
-if(!error){finClient.value=finDesc.value=finAmount.value=finDue.value="";await loadAll()}
-}
-async function loadFinance(){
-const {data}=await supabaseClient.from("haia_financial_basic").select("*").order("created_at",{ascending:false});
-finance=data||[];
-financeList.innerHTML=filter(finance).length?filter(finance).map(x=>`<div class="row"><h3>${x.description}</h3><span class="tag">${x.client_name}</span><span class="tag">${x.type}</span><span class="tag">${x.status}</span><p>${money(x.amount)}</p></div>`).join(""):'<div class="card">Nenhum registro financeiro.</div>';
-}
+<div class="label">
+Responsável
+</div>
 
-initSession();
-</script>
+<h2>
+Agência HAIA
+</h2>
+
+<p>
+Operação premium ativa.
+</p>
+
+</div>
+
+</div>
+
+<div class="grid">
+
+<div class="card">
+
+<div class="label">
+Atualizações da HAIA
+</div>
+
+<div class="update">
+<strong>Bio atualizada</strong>
+<p>
+Nova estrutura estratégica aplicada.
+</p>
+</div>
+
+<div class="update">
+<strong>Calendário enviado</strong>
+<p>
+Planejamento de conteúdo entregue.
+</p>
+</div>
+
+<div class="update">
+<strong>Novo reels criado</strong>
+<p>
+Conteúdo de autoridade finalizado.
+</p>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="label">
+Feedback do cliente
+</div>
+
+<textarea placeholder="Gostaria de solicitar algum ajuste?"></textarea>
+
+<button>
+Enviar feedback
+</button>
+
+</div>
+
+</div>
+
+</div>
+
 </body>
 </html>

@@ -1,323 +1,606 @@
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V15</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HAIA OS V15 • IA Contextual</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{
---bg:#f5efe8;
---glass:rgba(255,255,255,.55);
---text:#151311;
---champ:#e7c98f;
---purple:#9b7cff;
---pink:#ff8db2;
---green:#7ed89a;
+  --bg:#f4efe8;
+  --glass:rgba(255,255,255,.54);
+  --line:rgba(82,62,42,.10);
+  --text:#151311;
+  --muted:#766f68;
+  --champagne:#e7c98f;
+  --champagne-2:#f4deb4;
+  --champagne-3:#c99f62;
+  --shadow:0 24px 80px rgba(72,50,34,.10);
+  --pink:#ff7ea8;
+  --purple:#a070ff;
+  --green:#74c882;
+  --orange:#f3a142;
+  --blue:#74a7ff;
+  --red:#ef6b6b;
 }
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif}
 body{
-background:
-radial-gradient(circle at top left, rgba(231,201,143,.45), transparent 25%),
-radial-gradient(circle at bottom right, rgba(155,124,255,.12), transparent 30%),
-#f7f2ec;
-padding:20px;color:var(--text)
+  min-height:100vh;color:var(--text);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(231,201,143,.55), transparent 22%),
+    radial-gradient(circle at 82% 10%, rgba(255,126,168,.20), transparent 25%),
+    radial-gradient(circle at 55% 72%, rgba(160,112,255,.13), transparent 30%),
+    linear-gradient(135deg,#fbf7f0,#eee7df 52%,#f8eeee);
+  padding:18px;overflow-x:hidden;
 }
-.layout{display:grid;grid-template-columns:260px 1fr;gap:18px}
-.sidebar,.card{
-background:var(--glass);
-backdrop-filter:blur(25px);
-border:1px solid rgba(255,255,255,.7);
-border-radius:28px;
-box-shadow:0 20px 50px rgba(0,0,0,.05)
+body::before{
+  content:"";position:fixed;inset:0;
+  background:
+    linear-gradient(120deg,rgba(255,255,255,.32),rgba(255,255,255,.04)),
+    url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=70");
+  background-size:cover;background-position:center;opacity:.16;filter:blur(2px);pointer-events:none;z-index:-2;
 }
-.sidebar{padding:24px;height:calc(100vh - 40px);position:sticky;top:20px}
-.logo{font-size:38px;font-weight:900;letter-spacing:-.08em}
-.nav{margin-top:28px;display:grid;gap:8px}
-.nav button{
-border:0;padding:14px 16px;border-radius:16px;
-background:transparent;text-align:left;font-weight:700;cursor:pointer
-}
-.nav button:hover,.nav .active{
-background:linear-gradient(135deg, rgba(231,201,143,.7), rgba(231,201,143,.2))
-}
+body::after{content:"";position:fixed;inset:0;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);pointer-events:none;z-index:-1}
+button,input,textarea,select{font:inherit}
+button{border:0;cursor:pointer}
+.login-screen{min-height:calc(100vh - 36px);display:grid;place-items:center}
+.login-card{width:min(540px,100%);padding:42px;border-radius:36px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.68);box-shadow:var(--shadow);backdrop-filter:blur(28px)}
+.brand{font-size:38px;font-weight:900;letter-spacing:-.08em;color:#202326;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8f6d3d;font-weight:800;margin-bottom:12px}
+h1{font-size:44px;line-height:1;letter-spacing:-.06em;margin-bottom:12px}
+h2{font-size:26px;letter-spacing:-.04em;margin-bottom:8px}
+h3{font-size:18px;letter-spacing:-.03em}
+p{color:var(--muted);line-height:1.55}
+input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.55);border-radius:16px;padding:14px;outline:none;color:var(--text)}
+textarea{min-height:105px;resize:vertical}
+.login-card input{height:58px;margin-top:14px}
+.primary-btn{min-height:48px;padding:0 20px;border-radius:18px;background:linear-gradient(135deg,var(--champagne-2),var(--champagne));color:#201915;font-weight:800;box-shadow:0 10px 30px rgba(201,159,98,.22)}
+.ghost-btn{min-height:44px;padding:0 16px;border-radius:16px;background:rgba(255,255,255,.48);border:1px solid rgba(255,255,255,.62);color:#332b25}
+.danger-btn{min-height:44px;padding:0 16px;border-radius:16px;background:rgba(239,107,107,.12);border:1px solid rgba(239,107,107,.25);color:#a53d3d;font-weight:800}
+.app{display:none;grid-template-columns:250px 1fr;gap:18px;max-width:1720px;margin:0 auto}
+.sidebar{position:sticky;top:18px;height:calc(100vh - 36px);padding:28px 20px;border-radius:28px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.62);box-shadow:var(--shadow);backdrop-filter:blur(30px);display:flex;flex-direction:column}
+.nav{display:grid;gap:6px}
+.nav button{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:16px;background:transparent;color:#2d2925;text-align:left;transition:.2s ease}
+.nav button.active,.nav button:hover{background:linear-gradient(135deg,rgba(244,222,180,.75),rgba(231,201,143,.38));color:#1f1711;box-shadow:0 8px 24px rgba(201,159,98,.13)}
+.nav .count{min-width:24px;height:24px;display:grid;place-items:center;border-radius:999px;background:rgba(231,201,143,.42);font-size:12px}
+.quick{margin-top:auto;display:grid;gap:10px}
+.user-card{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px;border-radius:20px;background:rgba(255,255,255,.5)}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#e8c3ad,#f3dfc3);display:grid;place-items:center;font-weight:800}
 .main{display:grid;gap:18px}
-.top{display:flex;justify-content:space-between;align-items:center}
-.title h1{font-size:38px;letter-spacing:-.06em}
-.btn{
-background:linear-gradient(135deg,#f4deb4,#e7c98f);
-border:0;padding:14px 18px;border-radius:16px;font-weight:800
-}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.card{padding:22px}
-.metric strong{font-size:32px;display:block;margin-top:10px}
-.client-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.client{
-padding:20px;border-radius:24px;background:rgba(255,255,255,.5);
-border:1px solid rgba(255,255,255,.8)
-}
-.badge{
-display:inline-flex;padding:6px 10px;border-radius:999px;
-background:rgba(231,201,143,.3);font-size:12px;font-weight:800;margin-top:8px
-}
-.bar{height:6px;background:rgba(0,0,0,.08);border-radius:999px;margin:16px 0;overflow:hidden}
-.bar span{display:block;height:100%;background:var(--purple);width:78%}
-.row{display:flex;justify-content:space-between;align-items:center}
-.workspace{
-display:grid;grid-template-columns:1.2fr .8fr;gap:16px
-}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
-.pill{
-padding:9px 12px;border-radius:999px;font-size:13px;font-weight:700
-}
-.purple{background:rgba(155,124,255,.15);color:#6f52d9}
-.pink{background:rgba(255,141,178,.15);color:#d14e7b}
-.green{background:rgba(126,216,154,.15);color:#2e9b55}
-.chat{
-height:420px;display:flex;flex-direction:column;justify-content:space-between
-}
-.ai-box{
-background:rgba(255,255,255,.55);
-padding:16px;border-radius:18px;margin-top:16px
-}
-.ai-input{
-display:flex;gap:10px;margin-top:16px
-}
-.ai-input input{
-flex:1;border:1px solid rgba(255,255,255,.8);
-background:rgba(255,255,255,.6);
-border-radius:14px;padding:14px
-}
-.calendar{
-display:grid;grid-template-columns:repeat(7,1fr);gap:10px
-}
-.day{
-background:rgba(255,255,255,.5);
-padding:12px;border-radius:18px;min-height:120px
-}
-.event{
-padding:8px;border-radius:12px;margin-top:8px;font-size:12px
-}
-@media(max-width:1200px){
-.grid,.client-grid,.workspace{grid-template-columns:1fr}
-.layout{grid-template-columns:1fr}
-.sidebar{height:auto;position:relative}
-}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:8px 4px}
+.search{width:min(430px,100%);height:46px;border-radius:18px;border:1px solid rgba(255,255,255,.62);background:rgba(255,255,255,.50);padding:0 18px;outline:none;box-shadow:0 12px 28px rgba(92,64,43,.06)}
+.top-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.hero{padding:14px 10px 4px}
+.hero h1{font-size:34px}
+.signature{font-family:"Brush Script MT","Segoe Script",cursive;color:#8d6a3c;font-size:20px;margin-top:2px}
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));border-radius:28px;overflow:hidden;background:rgba(255,255,255,.43);border:1px solid rgba(255,255,255,.62);box-shadow:var(--shadow)}
+.metric{padding:24px;border-right:1px solid var(--line)}
+.metric:last-child{border-right:0}
+.metric small{color:var(--muted);font-weight:700}
+.metric strong{display:block;margin-top:12px;font-size:30px;letter-spacing:-.06em}
+.metric-icon{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;margin-bottom:18px;font-weight:900}
+.icon-champagne{background:rgba(231,201,143,.35);color:#7d5a2c}
+.icon-pink{background:rgba(255,126,168,.18);color:#d23f75}
+.icon-green{background:rgba(116,200,130,.18);color:#3b9b50}
+.icon-orange{background:rgba(243,161,66,.18);color:#c77416}
+.icon-purple{background:rgba(160,112,255,.16);color:#7b4ef0}
+.progress-line{width:100%;height:6px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:18px}
+.progress-line span{display:block;height:100%;border-radius:999px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px}
+.section-head .left{display:flex;gap:10px;align-items:center}
+.badge{padding:6px 10px;border-radius:999px;background:rgba(231,201,143,.30);color:#7d5a2c;font-size:12px;font-weight:800}
+.client-grid{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:16px}
+.client-card{position:relative;padding:20px;min-height:246px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08);backdrop-filter:blur(22px)}
+.client-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
+.client-logo{width:54px;height:54px;border-radius:14px;background:#101010;color:white;display:grid;place-items:center;font-size:22px;letter-spacing:-.06em}
+.plan{display:inline-flex;margin-top:6px;padding:5px 8px;border-radius:8px;background:rgba(231,201,143,.30);color:#8d6a3c;font-size:12px;font-weight:800}
+.client-progress{display:flex;align-items:center;gap:10px;margin:16px 0}
+.client-progress .bar{flex:1;height:6px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden}
+.client-progress .bar span{display:block;height:100%;border-radius:999px}
+.client-progress small{color:#2c2925;font-weight:700}
+.client-meta{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.client-meta div{flex:1;border-right:1px solid var(--line)}
+.client-meta div:last-child{border-right:0}
+.client-meta strong{display:block;font-size:20px}
+.client-meta small{color:var(--muted)}
+.mini-team{display:flex;align-items:center;gap:0;margin-top:18px}
+.face{width:28px;height:28px;margin-right:-8px;border:2px solid rgba(255,255,255,.8);border-radius:50%;background:linear-gradient(135deg,#dca98e,#f0d8c7)}
+.open-btn{position:absolute;right:18px;bottom:18px;padding:10px 13px;border-radius:14px;background:linear-gradient(135deg,rgba(244,222,180,.9),rgba(231,201,143,.55));color:#6d4c25;font-size:13px;font-weight:800}
+.lower-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:16px}
+.panel{padding:22px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.workspace,.module{display:none}
+.workspace.active,.module.active{display:grid;gap:18px}
+.admin-home.hidden{display:none}
+.client-top{padding:26px;border-radius:30px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.68);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.tabs button{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.42);color:#2a2520}
+.tabs button.active{background:linear-gradient(135deg,rgba(244,222,180,.95),rgba(231,201,143,.58))}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.service-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;margin:4px;border-radius:999px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.65);font-size:13px}
+.service-pill.purple{background:rgba(160,112,255,.16);color:#6b48c9}
+.service-pill.pink{background:rgba(255,126,168,.18);color:#ba4673}
+.service-pill.green{background:rgba(116,200,130,.18);color:#328845}
+.service-pill.orange{background:rgba(243,161,66,.18);color:#aa640e}
+.service-pill.blue{background:rgba(116,167,255,.18);color:#376ec5}
+.service-pill.champagne{background:rgba(231,201,143,.32);color:#7d5a2c}
+.whatsapp-card{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(244,222,180,.22));border:1px solid rgba(255,255,255,.72)}
+.whatsapp-btn{background:#25D366;color:white;box-shadow:0 14px 34px rgba(37,211,102,.22)}
+@media(max-width:1280px){.metrics{grid-template-columns:repeat(2,1fr)}.client-grid{grid-template-columns:repeat(2,1fr)}.lower-grid{grid-template-columns:1fr}}
+@media(max-width:860px){body{padding:12px}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;top:0}.topbar{flex-direction:column;align-items:stretch}.client-grid,.metrics,.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
-
-<div class="layout">
-
-<aside class="sidebar">
-<div class="logo">HAIA OS</div>
-
-<div class="nav">
-<button class="active">Dashboard</button>
-<button>Clientes</button>
-<button>IA HAIA</button>
-<button>Calendário</button>
-<button>Aprovações</button>
-<button>Financeiro</button>
-<button>Analytics</button>
-<button>WhatsApp</button>
-</div>
-
-<div style="margin-top:auto;padding-top:30px">
-<div class="card" style="padding:18px">
-<strong>Mariah</strong>
-<p style="margin-top:6px;color:#6f6b66">Administração geral</p>
-</div>
-</div>
-</aside>
-
-<main class="main">
-
-<div class="top">
-<div class="title">
-<h1>HAIA OS V15</h1>
-<p style="margin-top:6px;color:#6f6b66">Sistema operacional contextual da agência</p>
-</div>
-
-<button class="btn">+ Novo Cliente</button>
-</div>
-
-<section class="grid">
-<div class="card metric">
-<small>Clientes ativos</small>
-<strong>12</strong>
-</div>
-
-<div class="card metric">
-<small>Conteúdos agendados</small>
-<strong>47</strong>
-</div>
-
-<div class="card metric">
-<small>Aprovações</small>
-<strong>8</strong>
-</div>
-
-<div class="card metric">
-<small>Faturamento</small>
-<strong>R$48K</strong>
-</div>
+<section class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="brand">HAIA</div>
+    <div class="eyebrow">HAIA OS • V15</div>
+    <h1>Entrar no sistema</h1>
+    <p>Sistema operacional premium com IA contextual por cliente.</p>
+    <input id="email" type="email" placeholder="E-mail">
+    <input id="password" type="password" placeholder="Senha">
+    <button class="primary-btn" onclick="login()">Entrar</button>
+    <p id="loginMsg" style="margin-top:14px;color:#b05b5b"></p>
+  </div>
 </section>
 
-<section class="card">
-<div class="row">
-<div>
-<h2>Clientes</h2>
-<p style="margin-top:6px;color:#6f6b66">Workspaces inteligentes</p>
-</div>
-<button class="btn">Gerenciar</button>
-</div>
+<section class="app" id="app">
+  <aside class="sidebar">
+    <div class="brand" style="font-size:36px;margin-bottom:18px">HAIA<span style="font-size:12px;letter-spacing:0"> OS</span></div>
+    <nav class="nav">
+      <button class="active" onclick="showAdminHome(this)">Dashboard</button>
+      <button onclick="showModule('clientes',this)">Clientes</button>
+      <button onclick="showModule('planos',this)">Serviços & Planos</button>
+      <button onclick="showModule('comunicacao',this)">Comunicação</button>
+      <button onclick="showModule('calendario',this)">Calendário</button>
+      <button onclick="showModule('conteudos',this)">Conteúdos</button>
+      <button onclick="showModule('aprovacoes',this)">Aprovações <span class="count">8</span></button>
+      <button onclick="showModule('tarefas',this)">Tarefas <span class="count">12</span></button>
+      <button onclick="showModule('ia',this)">IA HAIA</button>
+    </nav>
+    <div class="quick">
+      <div class="user-card"><div class="avatar">M</div><div><strong id="userName">Mariah</strong><p id="userRole" style="font-size:13px">Admin</p></div></div>
+      <button class="ghost-btn" onclick="logout()">Sair</button>
+    </div>
+  </aside>
 
-<div class="client-grid" style="margin-top:20px">
+  <main class="main">
+    <div class="topbar">
+      <input class="search" placeholder="Buscar no sistema...">
+      <div class="top-actions">
+        <button class="ghost-btn">🔔</button>
+        <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
+      </div>
+    </div>
 
-<div class="client">
-<div class="row">
-<h3>Studio Cristal</h3>
-<span>SC</span>
-</div>
+    <section class="admin-home" id="adminHome">
+      <div class="hero">
+        <h1>Boa tarde, Mariah. 👋</h1>
+        <p>Aqui está o resumo geral da operação da HAIA.</p>
+        <div class="signature">Vamos criar marcas inesquecíveis.</div>
+      </div>
 
-<div class="badge">Operação Premium</div>
+      <section class="metrics">
+        <div class="metric"><div class="metric-icon icon-champagne">◎</div><small>Clientes ativos</small><strong id="mClients">0</strong><p class="delta" style="color:var(--green)">operação ativa</p><div class="progress-line"><span style="width:80%;background:var(--champagne-3)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-pink">□</div><small>Aprovações pendentes</small><strong>8</strong><p class="delta" style="color:var(--red)">aguardando cliente</p><div class="progress-line"><span style="width:44%;background:var(--pink)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-green">✓</div><small>Conteúdos agendados</small><strong>47</strong><p class="delta" style="color:var(--green)">semana atual</p><div class="progress-line"><span style="width:72%;background:var(--green)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-orange">◌</div><small>Entregas da semana</small><strong>12</strong><p class="delta" style="color:var(--orange)">em andamento</p><div class="progress-line"><span style="width:78%;background:var(--orange)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-purple">▣</div><small>Planos ativos</small><strong id="mPlans">0</strong><p class="delta" style="color:var(--purple)">operações contratadas</p><div class="progress-line"><span style="width:75%;background:var(--champagne-3)"></span></div></div>
+      </section>
 
-<div class="bar"><span></span></div>
+      <div class="section-head">
+        <div class="left"><h2>Clientes</h2><span class="badge" id="activeBadge">0 ativos</span></div>
+        <div class="top-actions"><input class="search" style="width:260px" placeholder="Buscar cliente..."><button class="ghost-btn">Filtrar</button></div>
+      </div>
 
-<div class="row">
-<div>
-<small>Performance</small>
-<strong>92%</strong>
-</div>
+      <section class="client-grid" id="clientGrid"></section>
 
-<div>
-<small>Entrega</small>
-<strong>15 MAI</strong>
-</div>
-</div>
+      <section class="lower-grid">
+        <div class="panel"><h3>Atividades recentes</h3><div id="activityList"></div></div>
+        <div class="panel"><h3>Serviços em destaque</h3><div id="serviceListMini"></div></div>
+        <div class="panel whatsapp-card"><h3>Comunicação HAIA</h3><p>Canal humano da operação. Use o WhatsApp para dúvidas rápidas e alinhamentos do dia a dia.</p><button class="primary-btn" style="margin-top:14px" onclick="showModule('comunicacao')">Configurar comunicação</button></div>
+      </section>
+    </section>
 
-<div class="pills">
-<div class="pill purple">Estratégia</div>
-<div class="pill pink">Reels</div>
-<div class="pill green">Stories</div>
-</div>
-</div>
+    <section class="workspace" id="workspace">
+      <div class="client-top">
+        <div style="display:flex;gap:18px;align-items:center">
+          <div class="client-logo" id="wsLogo">SC</div>
+          <div><h1 id="wsName">Studio Cristal</h1><p id="wsMeta">Plano Premium • Operação ativa</p></div>
+        </div>
+        <button class="ghost-btn" onclick="showAdminHome()">Voltar</button>
+      </div>
 
-<div class="client">
-<div class="row">
-<h3>Mariah Biquínis</h3>
-<span>MB</span>
-</div>
+      <div class="tabs">
+        <button class="active" onclick="renderWorkspaceTab('resumo',this)">Resumo</button>
+        <button onclick="renderWorkspaceTab('servicos',this)">Serviços</button>
+        <button onclick="renderWorkspaceTab('comunicacao',this)">Comunicação</button>
+        <button onclick="renderWorkspaceTab('calendario',this)">Calendário</button>
+        <button onclick="renderWorkspaceTab('aprovacoes',this)">Aprovações</button>
+        <button onclick="renderWorkspaceTab('arquivos',this)">Arquivos</button>
+      </div>
+      <div id="workspaceContent"></div>
+    </section>
 
-<div class="badge">Lançamento</div>
+    <section class="module" id="genericModule">
+      <div class="panel"><h1 id="moduleTitle">Módulo</h1><p id="moduleText">Área em construção dentro do HAIA OS.</p></div>
+      <div id="moduleContent"></div>
+    </section>
 
-<div class="bar"><span style="background:var(--pink);width:91%"></span></div>
-
-<div class="row">
-<div>
-<small>Performance</small>
-<strong>95%</strong>
-</div>
-
-<div>
-<small>Entrega</small>
-<strong>22 MAI</strong>
-</div>
-</div>
-
-<div class="pills">
-<div class="pill pink">Coleção</div>
-<div class="pill purple">Campanha</div>
-<div class="pill green">Conversão</div>
-</div>
-</div>
-
-<div class="client">
-<div class="row">
-<h3>Kaife Fitness</h3>
-<span>KF</span>
-</div>
-
-<div class="badge">Operação Essencial</div>
-
-<div class="bar"><span style="background:var(--green);width:67%"></span></div>
-
-<div class="row">
-<div>
-<small>Performance</small>
-<strong>74%</strong>
-</div>
-
-<div>
-<small>Entrega</small>
-<strong>19 MAI</strong>
-</div>
-</div>
-
-<div class="pills">
-<div class="pill green">Varejo</div>
-<div class="pill pink">Reels</div>
-<div class="pill purple">Feira</div>
-</div>
-</div>
-
-</div>
+    <section class="module" id="createClientModule">
+      <div class="panel">
+        <h1>Novo cliente</h1><p>Cadastre um novo workspace dentro do HAIA OS.</p>
+        <div class="form-grid" style="margin-top:18px">
+          <input id="newClientName" placeholder="Nome do cliente">
+          <input id="newClientInitials" placeholder="Iniciais. Ex: SC">
+          <input id="newClientPlan" placeholder="Operação contratada. Ex: Operação Premium">
+          <input id="newClientProgress" type="number" placeholder="Progresso. Ex: 72">
+          <input id="newClientDelivery" placeholder="Próxima entrega">
+          <input id="newClientDate" placeholder="Data. Ex: 15 MAI">
+          <input id="newClientResponsible" placeholder="Responsável. Ex: Mariah">
+          <input id="newClientWhatsapp" placeholder="Link do grupo WhatsApp">
+        </div>
+        <textarea id="newClientNotes" placeholder="Observações sobre serviços contratados"></textarea>
+        <button class="primary-btn" onclick="saveClient()" style="margin-top:14px">Salvar cliente</button>
+      </div>
+    </section>
+  </main>
 </section>
 
-<section class="workspace">
+<script>
+const SUPABASE_URL = "https://dagekkvpyphwjgheoosz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Hk3hQWlN713HClx7YrJ0-g_wJHWJcmq";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<div class="card">
-<h2>Calendário Operacional</h2>
-<p style="margin-top:6px;color:#6f6b66">Visão semanal da operação</p>
+let currentUser = null;
+let profile = null;
+let clients = [];
+let plans = [];
+let services = [];
+let selectedClient = null;
 
-<div class="calendar" style="margin-top:20px">
-<div class="day"><strong>SEG</strong><div class="event" style="background:rgba(155,124,255,.15)">Reunião</div></div>
-<div class="day"><strong>TER</strong><div class="event" style="background:rgba(255,141,178,.15)">Reels</div></div>
-<div class="day"><strong>QUA</strong><div class="event" style="background:rgba(126,216,154,.15)">Stories</div></div>
-<div class="day"><strong>QUI</strong></div>
-<div class="day"><strong>SEX</strong><div class="event" style="background:rgba(231,201,143,.25)">Entrega</div></div>
-<div class="day"><strong>SÁB</strong></div>
-<div class="day"><strong>DOM</strong></div>
-</div>
-</div>
+const demoClients = [
+  {name:"Studio Cristal", initials:"SC", plan:"Operação Premium", progress:72, delivery:"Planejamento Junho", date:"15 MAI", approvals:3, content:7, performance:92, color:"var(--purple)", whatsapp_url:"", responsible:"Mariah", service_notes:"Gestão Instagram, Reels, Stories e Estratégia."},
+  {name:"Mariah Biquínis", initials:"MB", plan:"Operação Premium", progress:90, delivery:"Lançamento Coleção", date:"22 MAI", approvals:0, content:8, performance:95, color:"var(--pink)", whatsapp_url:"", responsible:"Mariah", service_notes:"Campanhas, calendário, lançamento e collabs."},
+  {name:"Noir Makeup", initials:"NM", plan:"Projeto Avulso", progress:81, delivery:"Campanha Mês das Mães", date:"17 MAI", approvals:2, content:9, performance:88, color:"var(--purple)", whatsapp_url:"", responsible:"Mariah", service_notes:"Campanha visual e conteúdos de conversão."},
+  {name:"Luna Fitness", initials:"LF", plan:"Operação Essencial", progress:58, delivery:"Calendário de Conteúdo", date:"16 MAI", approvals:1, content:5, performance:78, color:"var(--orange)", whatsapp_url:"", responsible:"Mariah", service_notes:"Planejamento e conteúdos essenciais."}
+];
 
-<div class="card chat">
-<div>
-<h2>IA HAIA</h2>
-<p style="margin-top:6px;color:#6f6b66">
-IA contextual baseada no DNA do cliente
-</p>
+const demoServices = [
+  {name:"Planejamento mensal", category:"Estratégia", color:"purple"},
+  {name:"Reels estratégicos", category:"Conteúdo", color:"pink"},
+  {name:"Stories", category:"Conteúdo", color:"orange"},
+  {name:"Design de posts", category:"Design", color:"blue"},
+  {name:"Relatório mensal", category:"Analytics", color:"green"},
+  {name:"Branding", category:"Marca", color:"champagne"}
+];
 
-<div class="ai-box">
-<strong>Cliente atual:</strong> Studio Cristal
-<p style="margin-top:10px">
-Tom premium dark. Estratégia voltada para autoridade, retenção e agendamento.
-</p>
-</div>
+async function login(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const { data, error } = await supabaseClient.auth.signInWithPassword({email,password});
+  if(error){ document.getElementById("loginMsg").textContent = "Login inválido ou não cadastrado."; return; }
+  currentUser = data.user;
+  await loadProfile();
+  openApp();
+}
 
-<div class="ai-box">
-<strong>Sugestão contextual</strong>
-<p style="margin-top:10px">
-Criar sequência de reels “Vale responde” com hooks rápidos e estética neon clean.
-</p>
-</div>
-</div>
+async function initSession(){
+  const { data } = await supabaseClient.auth.getSession();
+  if(data.session && data.session.user){
+    currentUser = data.session.user;
+    await loadProfile();
+    openApp();
+  }
+}
 
-<div>
-<div class="ai-input">
-<input placeholder="Peça uma estratégia para a IA HAIA...">
-<button class="btn">Enviar</button>
-</div>
-</div>
+async function loadProfile(){
+  const { data } = await supabaseClient.from("haia_user_profiles").select("*").eq("email", currentUser.email).maybeSingle();
+  profile = data || {email:currentUser.email, name:"Mariah", role:"admin", client_name:""};
+}
 
-</div>
+function openApp(){
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("app").style.display = "grid";
+  document.getElementById("userName").textContent = profile.name || "Mariah";
+  document.getElementById("userRole").textContent = profile.role || "Admin";
+  loadAll();
+}
 
-</section>
+async function loadAll(){
+  await Promise.all([loadClients(), loadPlans(), loadServices()]);
+  renderDashboard();
+}
 
-</main>
+async function loadClients(){
+  const { data } = await supabaseClient.from("haia_os_clients").select("*").order("created_at",{ascending:false});
+  clients = data && data.length ? data : demoClients;
+}
 
-</div>
+async function loadPlans(){
+  const { data } = await supabaseClient.from("haia_os_plans").select("*").order("created_at",{ascending:false});
+  plans = data || [];
+}
 
+async function loadServices(){
+  const { data } = await supabaseClient.from("haia_os_services").select("*").order("created_at",{ascending:false});
+  services = data && data.length ? data : demoServices;
+}
+
+function renderDashboard(){
+  document.getElementById("mClients").textContent = clients.length;
+  document.getElementById("mPlans").textContent = plans.length || 4;
+  document.getElementById("activeBadge").textContent = clients.length + " ativos";
+
+  const grid = document.getElementById("clientGrid");
+  grid.innerHTML = clients.map((c,i)=>`
+    <div class="client-card">
+      <div class="client-head">
+        <div style="display:flex;gap:14px">
+          <div class="client-logo">${c.initials || getInitials(c.name)}</div>
+          <div><h3>${c.name}</h3><span class="plan">${c.plan || "Operação Personalizada"}</span></div>
+        </div>
+        <strong>...</strong>
+      </div>
+      <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}% concluído</small></div>
+      <p style="font-size:13px">Próxima entrega</p>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><strong>${c.delivery || "Planejamento"}</strong><small>${c.date || "15 MAI"}</small></div>
+      <div class="client-meta"><div><strong>${c.approvals || 0}</strong><small>Aprovações</small></div><div><strong>${c.content || 0}</strong><small>Conteúdos</small></div><div><strong>${c.performance || 0}%</strong><small>Performance</small></div></div>
+      <div class="mini-team"><span class="face"></span><span class="face"></span><span class="face"></span><small style="margin-left:12px">${c.responsible || "Mariah"}</small></div>
+      <button class="open-btn" onclick="openWorkspace(${i})">Abrir workspace →</button>
+    </div>
+  `).join("");
+
+  document.getElementById("activityList").innerHTML = `
+    <div class="row"><span><span class="status-dot" style="background:var(--green)"></span>Studio Cristal aprovou 2 conteúdos</span><small>há 15 min</small></div>
+    <div class="row"><span><span class="status-dot" style="background:var(--pink)"></span>Noir Makeup enviou feedback</span><small>há 1h</small></div>
+    <div class="row"><span><span class="status-dot" style="background:var(--orange)"></span>Luna Fitness recebeu relatório</span><small>há 2h</small></div>
+  `;
+
+  document.getElementById("serviceListMini").innerHTML = services.slice(0,6).map(s=>`
+    <span class="service-pill ${s.color || "champagne"}">${s.name}</span>
+  `).join("");
+}
+
+function getInitials(name){ return String(name||"HA").split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase(); }
+
+function openWorkspace(index){
+  selectedClient = clients[index];
+  document.getElementById("adminHome").classList.add("hidden");
+  document.getElementById("genericModule").classList.remove("active");
+  document.getElementById("createClientModule").classList.remove("active");
+  document.getElementById("workspace").classList.add("active");
+  document.getElementById("wsLogo").textContent = selectedClient.initials || getInitials(selectedClient.name);
+  document.getElementById("wsName").textContent = selectedClient.name;
+  document.getElementById("wsMeta").textContent = (selectedClient.plan || "Operação Personalizada") + " • Operação ativa";
+  renderWorkspaceTab("resumo");
+}
+
+function renderWorkspaceTab(tab, btn){
+  if(btn){ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
+  const c = selectedClient || demoClients[0];
+  const box = document.getElementById("workspaceContent");
+
+  if(tab === "resumo"){
+    box.innerHTML = `<section class="metrics" style="grid-template-columns:repeat(3,1fr)">
+      <div class="metric"><small>Progresso geral</small><strong>${c.progress}%</strong><div class="progress-line"><span style="width:${c.progress}%;background:${c.color || "var(--champagne-3)"}"></span></div></div>
+      <div class="metric"><small>Próxima entrega</small><strong style="font-size:22px">${c.delivery}</strong><p>${c.date}</p></div>
+      <div class="metric"><small>Responsável</small><strong style="font-size:22px">${c.responsible || "Mariah"}</strong><p>Estratégia e operação</p></div>
+    </section>`;
+  }
+
+  if(tab === "servicos"){
+    box.innerHTML = `<div class="panel"><h2>Serviços & Operação contratada</h2><p>${c.service_notes || "Serviços personalizados para este cliente."}</p><div style="margin-top:18px">${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name}</span>`).join("")}</div></div>`;
+  }
+
+  if(tab === "comunicacao"){
+    const wa = c.whatsapp_url || "";
+    box.innerHTML = `<div class="panel whatsapp-card">
+      <div class="eyebrow">Comunicação</div>
+      <h2>Canal direto com a HAIA</h2>
+      <p>Esse é o espaço humano da operação. Para dúvidas rápidas, alinhamentos e aprovações urgentes, use o grupo operacional no WhatsApp.</p>
+      <div class="row"><span>Grupo operacional</span><strong>${c.whatsapp_label || "WhatsApp HAIA"}</strong></div>
+      <div class="row"><span>Responsável</span><strong>${c.responsible || "Mariah"}</strong></div>
+      <div class="row"><span>Horário de atendimento</span><strong>09h às 18h</strong></div>
+      <div class="row"><span>Última atualização</span><strong>${c.delivery || "Planejamento atualizado"}</strong></div>
+      <button class="primary-btn whatsapp-btn" style="margin-top:16px" onclick="openWhatsApp('${wa}')">Falar com a HAIA no WhatsApp</button>
+    </div>`;
+  }
+
+  if(tab !== "resumo" && tab !== "servicos" && tab !== "comunicacao"){
+    box.innerHTML = `<div class="panel"><h2>${tab.charAt(0).toUpperCase()+tab.slice(1)}</h2><p>Módulo do cliente em desenvolvimento no HAIA OS.</p></div>`;
+  }
+}
+
+function openWhatsApp(url){
+  if(url && url.startsWith("http")) window.open(url, "_blank");
+  else alert("Ainda não existe link de WhatsApp cadastrado para este cliente.");
+}
+
+function showAdminHome(btn){
+  document.getElementById("adminHome").classList.remove("hidden");
+  document.getElementById("workspace").classList.remove("active");
+  document.getElementById("genericModule").classList.remove("active");
+  document.getElementById("createClientModule").classList.remove("active");
+  if(btn) setActiveNav(btn);
+}
+
+function showModule(name, btn){
+  document.getElementById("adminHome").classList.add("hidden");
+  document.getElementById("workspace").classList.remove("active");
+  document.getElementById("createClientModule").classList.remove("active");
+  document.getElementById("genericModule").classList.add("active");
+  document.getElementById("moduleTitle").textContent = name.charAt(0).toUpperCase()+name.slice(1);
+  const content = document.getElementById("moduleContent");
+
+  if(name === "planos"){
+    document.getElementById("moduleText").textContent = "Crie planos, serviços e vincule operações personalizadas aos clientes.";
+    content.innerHTML = renderPlansModule();
+  } else if(name === "comunicacao"){
+    document.getElementById("moduleText").textContent = "Configure grupos de WhatsApp, responsáveis e canais diretos por cliente.";
+    content.innerHTML = renderCommunicationModule();
+  } else if(name === "ia"){
+    document.getElementById("moduleText").textContent = "IA contextual baseada no DNA estratégico de cada cliente.";
+    content.innerHTML = renderIAModule();
+  } else {
+    document.getElementById("moduleText").textContent = "Este módulo será construído na próxima etapa do HAIA OS.";
+    content.innerHTML = "";
+  }
+
+  if(btn) setActiveNav(btn);
+}
+
+
+function renderIAModule(){
+  return `<div class="panel">
+    <div class="eyebrow">IA HAIA CONTEXTUAL</div>
+    <h2>Inteligência estratégica por cliente</h2>
+    <p>A IA HAIA responde considerando o DNA do cliente: nicho, tom de voz, estética, objetivos, serviços contratados e posicionamento.</p>
+
+    <div class="form-grid" style="margin-top:18px">
+      <select id="aiClient">
+        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
+      </select>
+      <select id="aiAction">
+        <option value="calendario">Criar calendário de conteúdo</option>
+        <option value="reels">Gerar ideias de Reels</option>
+        <option value="legenda">Criar legenda estratégica</option>
+        <option value="perfil">Analisar perfil</option>
+        <option value="campanha">Criar campanha</option>
+        <option value="posicionamento">Definir posicionamento</option>
+      </select>
+    </div>
+
+    <textarea id="aiPrompt" style="margin-top:12px" placeholder="Ex: crie uma semana de conteúdos para esse cliente com foco em autoridade e conversão."></textarea>
+
+    <button class="primary-btn" style="margin-top:14px" onclick="runLocalAI()">Gerar com IA HAIA</button>
+
+    <div id="aiResult" class="panel" style="margin-top:18px;background:rgba(255,255,255,.38)">
+      <p>Escolha um cliente e faça um pedido. A resposta será montada usando o contexto estratégico dele.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>DNA contextual do cliente</h2>
+    <p>Na próxima evolução, cada cliente terá campos próprios de nicho, tom, estética, objetivos, diferenciais, restrições, CTAs e referências.</p>
+    <div style="margin-top:16px">
+      <span class="service-pill purple">Tom de voz</span>
+      <span class="service-pill pink">Conteúdo</span>
+      <span class="service-pill champagne">Branding</span>
+      <span class="service-pill green">Objetivos</span>
+      <span class="service-pill blue">Métricas</span>
+    </div>
+  </div>`;
+}
+
+function runLocalAI(){
+  const clientName = document.getElementById("aiClient").value;
+  const action = document.getElementById("aiAction").value;
+  const prompt = document.getElementById("aiPrompt").value;
+  const client = clients.find(c => c.name === clientName) || clients[0];
+
+  const context = `
+    <strong>${client.name}</strong><br>
+    Operação: ${client.plan || "Operação personalizada"}<br>
+    Responsável: ${client.responsible || "Mariah"}<br>
+    Próxima entrega: ${client.delivery || "Planejamento"}<br>
+    Observações: ${client.service_notes || "Sem observações cadastradas."}
+  `;
+
+  const suggestions = {
+    calendario: "Sugestão: montar calendário com 2 Reels de autoridade, 1 carrossel educativo, 1 prova social e 1 conteúdo de conversão.",
+    reels: "Sugestão: criar Reels com gancho forte, bastidor real, prova de transformação e CTA direto para ação.",
+    legenda: "Sugestão: legenda com contexto, desejo, autoridade e CTA limpo, sem parecer propaganda genérica.",
+    perfil: "Sugestão: analisar bio, clareza da oferta, destaques, prova social, posicionamento visual e conversão.",
+    campanha: "Sugestão: campanha com conceito central, promessa, calendário de aquecimento e conteúdos de prova.",
+    posicionamento: "Sugestão: definir como a marca deve ser percebida, quais diferenciais comunicar e quais conteúdos sustentam essa imagem."
+  };
+
+  document.getElementById("aiResult").innerHTML = `
+    <div class="eyebrow">Resposta contextual</div>
+    <h2>${client.name}</h2>
+    <p>${context}</p>
+    <div class="panel" style="margin-top:14px;background:rgba(255,255,255,.42)">
+      <p><strong>Pedido:</strong> ${prompt || "Pedido estratégico padrão."}</p>
+      <p style="margin-top:10px">${suggestions[action]}</p>
+      <p style="margin-top:10px;color:#766f68">Essa é a base local do V15. No próximo passo, conectamos isso à API para respostas reais e completas da IA.</p>
+    </div>
+  `;
+}
+
+function renderPlansModule(){
+  return `<div class="panel"><h2>Novo serviço</h2>
+    <div class="form-grid"><input id="serviceName" placeholder="Nome do serviço"><input id="serviceCategory" placeholder="Categoria"><select id="serviceColor"><option value="champagne">Champagne</option><option value="purple">Estratégia / Lilás</option><option value="pink">Conteúdo / Rosa</option><option value="green">Analytics / Verde</option><option value="blue">Financeiro / Azul</option><option value="orange">Pendência / Laranja</option></select></div>
+    <button class="primary-btn" style="margin-top:14px" onclick="saveService()">Salvar serviço</button>
+  </div>
+  <div class="panel"><h2>Serviços cadastrados</h2><div>${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name} • ${s.category}</span>`).join("")}</div></div>`;
+}
+
+function renderCommunicationModule(){
+  return `<div class="panel"><h2>Configurar WhatsApp do cliente</h2>
+    <div class="form-grid"><input id="commClient" placeholder="Nome do cliente"><input id="commUrl" placeholder="Link do grupo WhatsApp"><input id="commResponsible" placeholder="Responsável"><input id="commUpdate" placeholder="Última atualização"></div>
+    <button class="primary-btn" style="margin-top:14px" onclick="saveCommunication()">Salvar comunicação</button>
+  </div>`;
+}
+
+function setActiveNav(btn){ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
+
+function openCreateClient(){
+  document.getElementById("adminHome").classList.add("hidden");
+  document.getElementById("workspace").classList.remove("active");
+  document.getElementById("genericModule").classList.remove("active");
+  document.getElementById("createClientModule").classList.add("active");
+}
+
+async function saveClient(){
+  const item = {
+    name:newClientName.value,
+    initials:newClientInitials.value,
+    plan:newClientPlan.value || "Operação Personalizada",
+    progress:Number(newClientProgress.value || 0),
+    delivery:newClientDelivery.value,
+    date:newClientDate.value,
+    responsible:newClientResponsible.value || "Mariah",
+    whatsapp_url:newClientWhatsapp.value,
+    service_notes:newClientNotes.value,
+    approvals:0,
+    content:0,
+    performance:0,
+    color:"var(--champagne-3)"
+  };
+  const { error } = await supabaseClient.from("haia_os_clients").insert([item]);
+  if(error){ alert("Não salvou no Supabase, mas adicionou visualmente para teste."); clients.unshift(item); }
+  newClientName.value = newClientInitials.value = newClientPlan.value = newClientProgress.value = newClientDelivery.value = newClientDate.value = newClientResponsible.value = newClientWhatsapp.value = newClientNotes.value = "";
+  await loadAll();
+  showAdminHome();
+}
+
+async function saveService(){
+  const item = {name:serviceName.value, category:serviceCategory.value, color:serviceColor.value};
+  const { error } = await supabaseClient.from("haia_os_services").insert([item]);
+  if(error) services.unshift(item);
+  await loadAll();
+  showModule("planos");
+}
+
+async function saveCommunication(){
+  const clientName = commClient.value;
+  const url = commUrl.value;
+  await supabaseClient.from("haia_os_communication").insert([{client_name:clientName, whatsapp_url:url, responsible:commResponsible.value, last_update:commUpdate.value}]);
+  await supabaseClient.from("haia_os_clients").update({whatsapp_url:url, responsible:commResponsible.value, delivery:commUpdate.value}).eq("name", clientName);
+  alert("Comunicação salva.");
+  await loadAll();
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+  location.reload();
+}
+
+initSession();
+</script>
 </body>
 </html>

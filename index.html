@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V20.1 • Correção Topo</title>
+<title>HAIA OS V21.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -378,6 +378,57 @@ textarea{min-height:105px;resize:vertical}
 }
 @media(max-width:1180px){.approval-grid{grid-template-columns:1fr}}
 
+
+.client-portal-grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:16px;
+}
+.portal-hero{
+  padding:28px;
+  border-radius:30px;
+  background:rgba(255,255,255,.56);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 18px 55px rgba(75,53,39,.08);
+}
+.portal-actions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+.portal-action-card{
+  padding:18px;
+  border-radius:22px;
+  background:rgba(255,255,255,.46);
+  border:1px solid rgba(255,255,255,.66);
+}
+.portal-status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+.portal-status:last-child{border-bottom:0}
+.client-only-note{
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(231,201,143,.22);
+  color:#7d5a2c;
+  font-weight:800;
+  margin-top:14px;
+}
+.file-card{
+  padding:14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.44);
+  border:1px solid rgba(255,255,255,.62);
+  margin-top:10px;
+}
+@media(max-width:1000px){.client-portal-grid,.portal-actions{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -385,9 +436,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V20</div>
+    <div class="eyebrow">HAIA OS • V21</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com calendário, IA contextual e aprovações integradas.</p>
+    <p>Sistema operacional premium com portal do cliente, aprovações e comunicação integrada.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -408,6 +459,7 @@ textarea{min-height:105px;resize:vertical}
       <button onclick="showModule('aprovacoes',this)">Aprovações <span class="count">8</span></button>
       <button onclick="showModule('tarefas',this)">Tarefas <span class="count">12</span></button>
       <button onclick="showModule('dna',this)">DNA dos Clientes</button>
+      <button onclick="showModule('portal',this)">Portal do Cliente</button>
       <button onclick="showModule('ia',this)">IA HAIA</button>
     </nav>
     <div class="quick">
@@ -569,6 +621,11 @@ function openApp(){
   }
   loadAll();
   updateTopAction('dashboard');
+  setTimeout(()=>{
+    if(profile && profile.role === "cliente"){
+      showModule("portal");
+    }
+  },400);
 }
 
 async function loadAll(){
@@ -740,6 +797,9 @@ function showModule(name, btn){
     document.getElementById("moduleText").textContent = "Envie conteúdos para aprovação, acompanhe status e receba feedbacks do cliente.";
     content.innerHTML = renderApprovalsModule();
     renderApprovals();
+  } else if(name === "portal"){
+    document.getElementById("moduleText").textContent = "Visão premium e simplificada para o cliente acompanhar a operação.";
+    content.innerHTML = renderClientPortalModule();
   } else {
     document.getElementById("moduleText").textContent = "Este módulo será construído na próxima etapa do HAIA OS.";
     content.innerHTML = "";
@@ -757,7 +817,7 @@ function updateTopAction(screen){
   btn.classList.remove("is-visible");
   btn.style.display = "none";
 
-  if(screen === "clientes"){
+  if(screen === "clientes" && (!profile || profile.role !== "cliente")){
     btn.classList.add("is-visible");
     btn.style.display = "inline-flex";
     btn.textContent = "+ Novo cliente";
@@ -979,6 +1039,76 @@ async function saveDNA(){
   await loadAll();
 }
 
+
+
+
+function getPortalClient(){
+  if(profile && profile.role === "cliente" && profile.client_name){
+    return clients.find(c=>c.name === profile.client_name) || clients[0];
+  }
+  return selectedClient || clients[0] || {name:"Studio Cristal", initials:"SC", plan:"Operação Premium", progress:72, delivery:"Planejamento Junho", date:"15 MAI", responsible:"Mariah"};
+}
+
+function renderClientPortalModule(){
+  const c = getPortalClient();
+
+  return `<div class="portal-hero fade-in">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:18px;align-items:center">
+        <div class="client-logo">${c.initials || getInitials(c.name)}</div>
+        <div>
+          <div class="eyebrow">Portal do Cliente</div>
+          <h1>${c.name}</h1>
+          <p>${c.plan || "Operação Personalizada"} • atendimento HAIA</p>
+        </div>
+      </div>
+      <span class="client-view-badge">Visão cliente</span>
+    </div>
+
+    <div class="client-progress" style="margin-top:24px">
+      <div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div>
+      <small>${c.progress || 0}% da operação</small>
+    </div>
+
+    <div class="portal-actions">
+      <div class="portal-action-card"><strong>Próxima entrega</strong><p>${c.delivery || "Planejamento"} • ${c.date || "sem data"}</p></div>
+      <div class="portal-action-card"><strong>Responsável</strong><p>${c.responsible || "Mariah"} • Estratégia HAIA</p></div>
+      <div class="portal-action-card"><strong>Aprovações</strong><p>${c.approvals || 0} itens aguardando retorno</p></div>
+      <div class="portal-action-card"><strong>WhatsApp</strong><p>Canal direto da operação</p></div>
+    </div>
+  </div>
+
+  <div class="client-portal-grid fade-in">
+    <div class="panel">
+      <h2>Acompanhamento da operação</h2>
+      <div class="portal-status"><span>Status atual</span><strong>${c.status || "ativo"}</strong></div>
+      <div class="portal-status"><span>Conteúdos do mês</span><strong>${c.content || 0}</strong></div>
+      <div class="portal-status"><span>Performance</span><strong>${c.performance || 0}%</strong></div>
+      <div class="portal-status"><span>Plano</span><strong>${c.plan || "Operação Personalizada"}</strong></div>
+    </div>
+
+    <div class="panel whatsapp-card">
+      <div class="eyebrow">Comunicação</div>
+      <h2>Fale com a HAIA</h2>
+      <p>Use o grupo operacional para dúvidas rápidas, ajustes e alinhamentos importantes.</p>
+      <button class="primary-btn whatsapp-btn" style="margin-top:16px" onclick="openWhatsApp('${c.whatsapp_url || ""}')">Abrir WhatsApp</button>
+      <div class="client-only-note">Atendimento padrão: segunda a sexta, 09h às 18h.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Arquivos recentes</h2>
+      <div class="file-card"><strong>Planejamento mensal</strong><p>Documento estratégico da operação.</p></div>
+      <div class="file-card"><strong>Relatório de performance</strong><p>Resumo de resultados do mês.</p></div>
+      <div class="file-card"><strong>Briefing atualizado</strong><p>Base de comunicação da marca.</p></div>
+    </div>
+
+    <div class="panel">
+      <h2>Feedback rápido</h2>
+      <textarea id="portalFeedback" placeholder="Escreva uma dúvida, ajuste ou observação para a equipe HAIA."></textarea>
+      <button class="primary-btn" style="margin-top:14px" onclick="alert('Feedback registrado visualmente. No próximo ciclo conectamos ao Supabase.')">Enviar feedback</button>
+    </div>
+  </div>`;
+}
 
 
 let approvalItems = [

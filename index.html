@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V30 • App</title>
+<title>HAIA OS V30.1 • App</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -246,7 +246,7 @@ textarea{min-height:110px;resize:vertical}
 @media(max-width:1100px){.v291-section-grid{grid-template-columns:1fr}.v291-row{display:block}}
 
 
-/* HAIA OS V30 - PWA / App polish */
+/* HAIA OS V30.1 - PWA / App polish */
 html{
   overscroll-behavior:none;
 }
@@ -363,6 +363,59 @@ body{
   }
 }
 
+
+/* HAIA OS V30.1 fixes */
+.public-portal{
+  min-height:100svh;
+  padding:28px;
+  padding-bottom:calc(28px + env(safe-area-inset-bottom));
+}
+.public-shell{
+  max-width:1180px;
+  margin:0 auto;
+  display:grid;
+  gap:18px;
+}
+.public-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.button-disabled{
+  opacity:.55;
+  pointer-events:none;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(28px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(20px);
+  padding:12px 16px;
+  border-radius:999px;
+  background:rgba(23,20,18,.88);
+  color:white;
+  z-index:200;
+  opacity:0;
+  transition:.25s ease;
+  font-size:14px;
+  font-weight:800;
+}
+.toast.active{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+.feedback-panel{
+  margin-top:14px;
+  padding:16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.46);
+  border:1px solid rgba(255,255,255,.68);
+}
+@media(max-width:900px){
+  .public-portal{padding:14px}
+}
+
 </style>
 
 <link rel="manifest" href="manifest.json">
@@ -381,14 +434,51 @@ body{
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.1</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
-      <input id="email" type="email" placeholder="E-mail" value="guimaraesmariahjulia@gmail.com">
-      <input id="password" type="password" placeholder="Senha">
+      <input id="email" type="email" placeholder="E-mail" autocomplete="username">
+      <input id="password" type="password" placeholder="Senha" autocomplete="current-password">
       <button class="primary-btn" onclick="login()">Entrar</button>
       <p id="loginMsg" style="color:#a94b4b"></p>
+    </div>
+  </div>
+</section>
+
+
+<section class="public-portal" id="publicPortal" style="display:none">
+  <div class="public-shell">
+    <div class="public-top">
+      <div class="logo">HAIA<span style="font-size:18px;letter-spacing:-.06em"> OS</span></div>
+      <span class="badge">Portal do Cliente</span>
+    </div>
+    <div class="hero">
+      <div class="eyebrow">Workspace do Cliente</div>
+      <h1 id="publicClientName">Cliente</h1>
+      <p id="publicClientPlan">Operação HAIA</p>
+    </div>
+    <div class="panel">
+      <div class="client-progress"><div class="bar"><span id="publicProgressBar" style="width:0%;background:var(--champagne)"></span></div><small id="publicProgressText">0% da operação</small></div>
+      <div class="grid-3" style="margin-top:18px">
+        <div class="client-card"><p>Próxima entrega</p><h2 id="publicDelivery">Planejamento</h2><p>em andamento</p></div>
+        <div class="client-card"><p>Responsável</p><h2 id="publicResponsible">HAIA</h2><p>equipe estratégica</p></div>
+        <div class="client-card"><p>Aprovações</p><h2 id="publicApprovals">0</h2><p>pendentes</p></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="section-head">
+        <div>
+          <h2>Central do cliente</h2>
+          <p>Acompanhe entregas, aprovações, arquivos e comunicação da operação.</p>
+        </div>
+        <button class="primary-btn" id="publicWhatsappBtn">Falar no WhatsApp</button>
+      </div>
+      <div class="grid-3">
+        <div class="client-card"><h3>Calendário</h3><p>Próximas ações da operação.</p></div>
+        <div class="client-card"><h3>Aprovações</h3><p>Conteúdos enviados para retorno.</p></div>
+        <div class="client-card"><h3>Arquivos</h3><p>Briefings, relatórios e materiais.</p></div>
+      </div>
     </div>
   </div>
 </section>
@@ -426,7 +516,7 @@ body{
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.1</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -694,7 +784,7 @@ function renderContent(){return `<div class="panel"><h2>Conteúdos</h2><p>Banco 
 function renderTasks(){return `<div class="panel"><h2>Tarefas</h2><p>Checklist operacional da equipe.</p></div>`}
 function renderPlaceholder(name){return `<div class="panel"><h2>${name}</h2><p>Módulo ativo.</p></div>`}
 
-initSession();
+/* initSession disabled in V30.1: admin must login manually */
 </script>
 
 <div class="modal-backdrop" id="planModal">
@@ -719,11 +809,11 @@ initSession();
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V30 • app instalável</div>
+<div class="v29-mobile-ready">V30.1 • corrigido</div>
 
 
 <script>
-/* HAIA OS V30 - correção definitiva dos módulos operacionais */
+/* HAIA OS V30.1 - correção definitiva dos módulos operacionais */
 
 function renderPlans(){
   return `<div class="panel">
@@ -966,11 +1056,11 @@ function setTopAction(name){
     <button class="ghost-btn" onclick="document.getElementById('installCard').classList.remove('active')">Fechar</button>
   </div>
 </div>
-<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30 • app</div>
+<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.1 • app</div>
 
 
 <script>
-/* HAIA OS V30 - PWA */
+/* HAIA OS V30.1 - PWA */
 let deferredInstallPrompt = null;
 
 window.addEventListener("beforeinstallprompt", function(event){
@@ -996,6 +1086,315 @@ if("serviceWorker" in navigator){
     });
   });
 }
+</script>
+
+
+<script>
+/* HAIA OS V30.1 - login manual, portal público e botões funcionais */
+
+function getClientSlugFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get("cliente") || params.get("workspace") || params.get("client");
+}
+
+function showToast(message){
+  let t = document.getElementById("haiaToast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "haiaToast";
+    t.className = "toast";
+    document.body.appendChild(t);
+  }
+  t.textContent = message;
+  t.classList.add("active");
+  setTimeout(()=>t.classList.remove("active"), 2300);
+}
+
+async function copyToClipboard(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast("Copiado.");
+  }catch(e){
+    showToast("Não foi possível copiar automaticamente.");
+  }
+}
+
+async function loadPublicClientPortal(){
+  const slug = getClientSlugFromURL();
+  if(!slug) return false;
+
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("app").style.display = "none";
+  const portal = document.getElementById("publicPortal");
+  if(portal) portal.style.display = "block";
+
+  let clientData = null;
+  try{
+    const { data } = await supa
+      .from("haia_os_clients")
+      .select("*")
+      .eq("workspace_slug", slug)
+      .maybeSingle();
+    clientData = data;
+  }catch(e){}
+
+  if(!clientData){
+    const cleaned = slug.replace(/-/g," ");
+    clientData = {
+      name: cleaned.replace(/\b\w/g, l => l.toUpperCase()),
+      plan:"Portal HAIA",
+      progress:0,
+      delivery:"Planejamento",
+      responsible:"HAIA",
+      approvals:0,
+      whatsapp_url:""
+    };
+  }
+
+  document.getElementById("publicClientName").textContent = clientData.name || "Cliente";
+  document.getElementById("publicClientPlan").textContent = clientData.plan || "Operação HAIA";
+  document.getElementById("publicProgressBar").style.width = (clientData.progress || 0) + "%";
+  document.getElementById("publicProgressText").textContent = (clientData.progress || 0) + "% da operação";
+  document.getElementById("publicDelivery").textContent = clientData.delivery || "Planejamento";
+  document.getElementById("publicResponsible").textContent = clientData.responsible || "HAIA";
+  document.getElementById("publicApprovals").textContent = clientData.approvals || 0;
+
+  const wbtn = document.getElementById("publicWhatsappBtn");
+  if(wbtn){
+    wbtn.onclick = function(){
+      if(clientData.whatsapp_url){
+        window.open(clientData.whatsapp_url, "_blank");
+      }else{
+        showToast("WhatsApp ainda não cadastrado para este cliente.");
+      }
+    };
+  }
+  return true;
+}
+
+async function login(){
+  const msg = document.getElementById("loginMsg");
+  const emailInput = document.getElementById("email");
+  const passInput = document.getElementById("password");
+  const email = emailInput ? emailInput.value.trim() : "";
+  const password = passInput ? passInput.value.trim() : "";
+
+  if(!email || !password){
+    if(msg) msg.textContent = "Preencha e-mail e senha.";
+    return;
+  }
+
+  const {data,error}=await supa.auth.signInWithPassword({email,password});
+  if(error){
+    if(msg) msg.textContent="Login inválido ou não cadastrado.";
+    return;
+  }
+
+  currentUser=data.user;
+  await loadAll();
+  openApp();
+}
+
+async function initV301(){
+  const slug = getClientSlugFromURL();
+  if(slug){
+    await loadPublicClientPortal();
+    return;
+  }
+
+  try{
+    await supa.auth.signOut();
+  }catch(e){}
+
+  document.getElementById("app").style.display = "none";
+  document.getElementById("loginScreen").style.display = "grid";
+  const email = document.getElementById("email");
+  const pass = document.getElementById("password");
+  if(email) email.value = "";
+  if(pass) pass.value = "";
+}
+
+/* Correções dos botões */
+function openFeedbacks(){
+  const existing = document.getElementById("feedbackPanel");
+  if(existing){
+    existing.remove();
+    return;
+  }
+  const panel = document.createElement("div");
+  panel.id = "feedbackPanel";
+  panel.className = "feedback-panel";
+  panel.innerHTML = `
+    <strong>Feedbacks recentes</strong>
+    <p>Studio Cristal aprovou 2 conteúdos.</p>
+    <p>Mariah Biquínis pediu ajuste em uma legenda.</p>
+    <p>Kaife Fitness aguardando retorno dos Stories.</p>
+  `;
+  const target = document.querySelector(".message-card") || document.getElementById("dynamicContent");
+  if(target) target.insertAdjacentElement("afterend", panel);
+}
+
+function copyOnboardingMessage(){
+  const message = "Oi! Seu portal HAIA já está disponível. Por lá você acompanha entregas, aprovações, calendário e arquivos da operação.";
+  copyToClipboard(message);
+}
+
+function openGroupAction(){
+  const c = selectedClient || clients[0];
+  if(c && c.whatsapp_url){
+    window.open(c.whatsapp_url, "_blank");
+  }else{
+    showToast("Cadastre o link do grupo no cliente.");
+  }
+}
+
+function addContentAction(){
+  showToast("Novo conteúdo: no próximo ciclo conectamos ao banco.");
+}
+
+function addTaskAction(){
+  showToast("Nova tarefa: no próximo ciclo conectamos ao banco.");
+}
+
+function completeTask(btn){
+  const row = btn.closest(".v291-row");
+  if(row){
+    row.style.opacity = ".45";
+    row.style.textDecoration = "line-through";
+    btn.textContent = "Concluída";
+    btn.classList.add("button-disabled");
+    showToast("Tarefa concluída.");
+  }
+}
+
+function saveDNAAction(){
+  showToast("DNA salvo visualmente. A persistência entra no próximo ciclo.");
+}
+
+/* Overrides dos módulos com botões funcionais */
+function renderCommunication(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Comunicação</h2>
+        <p>WhatsApp, mensagens prontas e canais por cliente.</p>
+      </div>
+      <button class="primary-btn" onclick="showToast('Nova mensagem: no próximo ciclo conectamos ao banco.')">+ Nova mensagem</button>
+    </div>
+
+    <div class="v291-section-grid">
+      <div class="v291-card">
+        <h3>Grupo operacional</h3>
+        <p>Link do WhatsApp vinculado ao workspace do cliente.</p>
+        <button class="primary-btn" style="margin-top:14px" onclick="openGroupAction()">Abrir grupo</button>
+      </div>
+      <div class="v291-card">
+        <h3>Mensagem de onboarding</h3>
+        <p>Texto pronto com link do portal do cliente.</p>
+        <button class="ghost-btn" style="margin-top:14px" onclick="copyOnboardingMessage()">Copiar texto</button>
+      </div>
+      <div class="v291-card">
+        <h3>Feedback rápido</h3>
+        <p>Canal para ajustes, dúvidas, aprovações e alinhamentos.</p>
+        <button class="ghost-btn" style="margin-top:14px" onclick="openFeedbacks()">Ver feedbacks</button>
+      </div>
+    </div>
+
+    <div class="message-card">
+      <strong>Mensagem padrão de envio do portal</strong>
+      <p>Oi! Seu portal HAIA já está disponível. Por lá você acompanha entregas, aprovações, calendário e arquivos da operação.</p>
+    </div>
+  </div>`;
+}
+
+function renderContent(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Conteúdos</h2><p>Banco de conteúdos, roteiros e publicações.</p></div>
+      <button class="primary-btn" onclick="addContentAction()">+ Novo conteúdo</button>
+    </div>
+
+    <div class="mini-board">
+      <div class="mini-column">
+        <h3>Ideias</h3>
+        <div class="message-card"><strong>Reels autoridade</strong><p>Studio Cristal • roteiro inicial</p></div>
+        <div class="message-card"><strong>Carrossel educativo</strong><p>Mariah Biquínis • conteúdo de valor</p></div>
+      </div>
+      <div class="mini-column">
+        <h3>Em produção</h3>
+        <div class="message-card"><strong>Stories de venda</strong><p>Kaife Fitness • sequência comercial</p></div>
+      </div>
+      <div class="mini-column">
+        <h3>Pronto</h3>
+        <div class="message-card"><strong>Post prova social</strong><p>Noir Makeup • aguardando aprovação</p></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTasks(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Tarefas</h2><p>Checklist operacional da equipe HAIA.</p></div>
+      <button class="primary-btn" onclick="addTaskAction()">+ Nova tarefa</button>
+    </div>
+
+    <div class="operation-list">
+      ${[
+        ["Revisar calendário Studio Cristal","Hoje","Alta"],
+        ["Finalizar carrossel Mariah Biquínis","Amanhã","Média"],
+        ["Enviar relatório Kaife Fitness","Sexta","Alta"],
+        ["Atualizar DNA do cliente","Semana atual","Média"],
+        ["Checar aprovações pendentes","Hoje","Alta"]
+      ].map(t=>`<div class="v291-row">
+        <div><strong>${t[0]}</strong><p>${t[1]} • prioridade ${t[2]}</p></div>
+        <button class="ghost-btn" onclick="completeTask(this)">Concluir</button>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderDNA(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>DNA dos Clientes</h2><p>Base estratégica usada pela IA contextual.</p></div>
+      <button class="primary-btn" onclick="saveDNAAction()">Salvar DNA</button>
+    </div>
+
+    <div class="form-grid">
+      <select>${clients.map(c=>`<option>${c.name}</option>`).join("") || "<option>Selecione um cliente</option>"}</select>
+      <input placeholder="Nicho">
+      <input placeholder="Tom de voz">
+      <input placeholder="Estética">
+      <input placeholder="Objetivo principal">
+      <input placeholder="CTA principal">
+      <input placeholder="Palavras-chave">
+      <input placeholder="Restrições / evitar">
+    </div>
+    <textarea style="margin-top:12px" placeholder="Referências, diferenciais, campanhas anteriores e observações estratégicas."></textarea>
+  </div>`;
+}
+
+function renderApprovalBoard(){
+  const cols=["pendente","revisao","aprovado","publicado"];
+  document.getElementById("approvalBoard").innerHTML=cols.map(col=>`<div class="approval-column">
+    <div class="section-head"><strong>${col}</strong><span class="badge">${approvals.filter(a=>a.status===col).length}</span></div>
+    ${approvals.filter(a=>a.status===col).map(a=>`<div class="approval-card">
+      <div class="preview">Preview</div>
+      <h3>${a.title}</h3>
+      <p>${a.client_name}</p>
+      <p>${a.description}</p>
+      <span class="badge">v${a.version}</span>
+      <div class="v29-kanban-actions">
+        <button class="ghost-btn" onclick="showToast('Preview aberto visualmente.')">Abrir</button>
+        <button class="primary-btn" onclick="showToast('Conteúdo aprovado.')">Aprovar</button>
+        <button class="ghost-btn" onclick="showToast('Feedback registrado visualmente.')">Feedback</button>
+      </div>
+    </div>`).join("")}
+  </div>`).join("")
+}
+
+document.addEventListener("DOMContentLoaded", initV301);
 </script>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V29 • Operação Integrada</title>
+<title>HAIA OS V29.1.1 • Correções Operacionais</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -234,6 +234,17 @@ textarea{min-height:110px;resize:vertical}
 .v29-mobile-ready{position:fixed;right:22px;bottom:22px;z-index:20;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8);backdrop-filter:blur(20px);padding:10px 14px;border-radius:999px;font-size:12px;font-weight:900;color:#7c5a2d}
 @media(max-width:1100px){.v29-crm-grid,.v29-modal-grid{grid-template-columns:1fr}.v29-mobile-ready{display:none}}
 
+
+.v291-section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.v291-card{background:rgba(255,255,255,.48);border:1px solid rgba(255,255,255,.7);border-radius:24px;padding:18px}
+.v291-card h3{margin-bottom:6px}
+.v291-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:18px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.62);margin-top:10px}
+.v291-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.v291-actions button{min-height:38px;border-radius:14px;font-size:13px}
+.v291-upload-box{border:1.5px dashed rgba(124,90,45,.35);border-radius:24px;padding:26px;text-align:center;background:rgba(255,255,255,.36);margin:16px 0}
+.v291-mini{font-size:13px;color:var(--muted);margin-top:8px}
+@media(max-width:1100px){.v291-section-grid{grid-template-columns:1fr}.v291-row{display:block}}
+
 </style>
 </head>
 <body>
@@ -241,7 +252,7 @@ textarea{min-height:110px;resize:vertical}
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V29</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V29.1</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -286,7 +297,7 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V29</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V29.1</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -361,7 +372,7 @@ function workspaceUrl(c){return `${location.origin}${location.pathname}?cliente=
 function setActive(btn){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active")); if(btn) btn.classList.add("active")}
 function setTopAction(name){
   const btn = document.getElementById("topActionBtn");
-  btn.style.display = name==="clientes" ? "inline-flex" : "none";
+  if(btn) btn.style.display = "none";
 }
 function content(){return document.getElementById("dynamicContent")}
 
@@ -489,7 +500,13 @@ function metric(label,value,sub,color){return `<div class="panel metric"><p>${la
 function renderClients(){
   const first = selectedClient || clients[0];
   return `<div class="panel">
-    <div class="section-head"><div><h2>Clientes cadastrados</h2><p>${clients.length} clientes ativos no banco.</p></div><button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button></div>
+    <div class="section-head">
+      <div>
+        <h2>Clientes cadastrados</h2>
+        <p>${clients.length} clientes ativos no banco.</p>
+      </div>
+      <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
+    </div>
     ${clients.length ? `<div class="grid-3">${clients.map(clientCard).join("")}</div>` : `<div class="client-card"><h3>Nenhum cliente cadastrado</h3><p>Cadastre o primeiro cliente para gerar workspace e link.</p></div>`}
   </div>
   ${first ? clientMiniCRM(first) : ""}`;
@@ -573,7 +590,7 @@ initSession();
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V29 • pronto para PWA</div>
+<div class="v29-mobile-ready">V29.1 • corrigido</div>
 
 </body>
 </html>

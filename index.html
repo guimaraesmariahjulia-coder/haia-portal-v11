@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V29.2.1 • Correções Operacionais</title>
+<title>HAIA OS V30 • App</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -245,14 +245,143 @@ textarea{min-height:110px;resize:vertical}
 .v291-mini{font-size:13px;color:var(--muted);margin-top:8px}
 @media(max-width:1100px){.v291-section-grid{grid-template-columns:1fr}.v291-row{display:block}}
 
+
+/* HAIA OS V30 - PWA / App polish */
+html{
+  overscroll-behavior:none;
+}
+body{
+  min-height:100svh;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.app{
+  padding-bottom:calc(22px + env(safe-area-inset-bottom));
+}
+.primary-btn,.ghost-btn,.danger-btn,.nav button{
+  user-select:none;
+  -webkit-user-select:none;
+}
+.v30-app-badge{
+  position:fixed;
+  right:22px;
+  bottom:calc(22px + env(safe-area-inset-bottom));
+  z-index:30;
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(255,255,255,.82);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  padding:10px 14px;
+  border-radius:999px;
+  color:#7c5a2d;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 18px 42px rgba(80,56,35,.10);
+}
+.install-card{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:calc(26px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  width:min(520px,calc(100% - 32px));
+  padding:18px;
+  border-radius:24px;
+  background:rgba(255,255,255,.76);
+  border:1px solid rgba(255,255,255,.9);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  z-index:60;
+  box-shadow:0 24px 70px rgba(80,56,35,.14);
+}
+.install-card.active{display:block}
+.install-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:900px){
+  .app{
+    display:none;
+    grid-template-columns:1fr;
+    gap:14px;
+    padding:14px;
+  }
+  .sidebar{
+    position:relative;
+    top:0;
+    height:auto;
+    border-radius:26px;
+    padding:18px;
+  }
+  .logo{
+    font-size:36px;
+  }
+  .nav{
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+  }
+  .nav button{
+    min-height:44px;
+    padding:0 12px;
+    text-align:center;
+    font-size:14px;
+  }
+  .user-card{
+    display:none;
+  }
+  .topbar{
+    position:sticky;
+    top:8px;
+    z-index:10;
+    background:rgba(247,241,235,.38);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-radius:22px;
+    padding:8px;
+  }
+  .search{
+    max-width:none;
+  }
+  .hero{
+    border-radius:26px;
+    padding:24px;
+  }
+  .hero h1,#moduleTitle{
+    font-size:38px;
+  }
+  .panel{
+    border-radius:26px;
+    padding:20px;
+  }
+  .grid-3,.grid-4,.v291-section-grid,.mini-board,.approval-board,.calendar-board{
+    grid-template-columns:1fr !important;
+  }
+  .v30-app-badge{
+    display:none;
+  }
+}
+@media(display-mode:standalone){
+  .v30-app-badge::after{
+    content:" instalado";
+  }
+}
+
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f7f1eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HAIA OS">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="HAIA OS">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 </head>
 <body>
 
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V29.2</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -297,7 +426,7 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V29.2</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -590,11 +719,11 @@ initSession();
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V29.2 • módulos corrigidos</div>
+<div class="v29-mobile-ready">V30 • app instalável</div>
 
 
 <script>
-/* HAIA OS V29.2 - correção definitiva dos módulos operacionais */
+/* HAIA OS V30 - correção definitiva dos módulos operacionais */
 
 function renderPlans(){
   return `<div class="panel">
@@ -825,6 +954,47 @@ function renderClients(){
 function setTopAction(name){
   const btn = document.getElementById("topActionBtn");
   if(btn) btn.style.display = "none";
+}
+</script>
+
+
+<div class="install-card" id="installCard">
+  <strong>Instalar HAIA OS</strong>
+  <p>No iPhone/iPad: toque em compartilhar e depois em “Adicionar à Tela de Início”.</p>
+  <div class="install-actions">
+    <button class="primary-btn" id="installBtn" style="display:none">Instalar app</button>
+    <button class="ghost-btn" onclick="document.getElementById('installCard').classList.remove('active')">Fechar</button>
+  </div>
+</div>
+<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30 • app</div>
+
+
+<script>
+/* HAIA OS V30 - PWA */
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", function(event){
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  const installBtn = document.getElementById("installBtn");
+  if(installBtn){
+    installBtn.style.display = "inline-flex";
+    installBtn.onclick = async function(){
+      if(!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      document.getElementById("installCard")?.classList.remove("active");
+    };
+  }
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("./sw.js").catch(function(err){
+      console.log("Service worker não registrado:", err);
+    });
+  });
 }
 </script>
 

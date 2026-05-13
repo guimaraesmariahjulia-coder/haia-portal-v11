@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V24.1 • Correção Topo</title>
+<title>HAIA OS V25.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -586,6 +586,83 @@ textarea{min-height:105px;resize:vertical}
   .calendar-summary-grid{grid-template-columns:1fr 1fr}
 }
 
+
+.v25-approval-board{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-top:18px;
+}
+.v25-column{
+  min-height:320px;
+  padding:14px;
+  border-radius:24px;
+  background:rgba(255,255,255,.40);
+  border:1px solid rgba(255,255,255,.64);
+}
+.v25-column-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.v25-column-head strong{font-size:15px}
+.v25-approval-card{
+  padding:14px;
+  border-radius:18px;
+  margin-top:10px;
+  background:rgba(255,255,255,.54);
+  border:1px solid rgba(255,255,255,.68);
+  box-shadow:0 12px 34px rgba(75,53,39,.06);
+}
+.v25-preview{
+  height:120px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  margin-bottom:12px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(231,201,143,.35), transparent 34%),
+    radial-gradient(circle at 80% 30%, rgba(255,126,168,.20), transparent 34%),
+    rgba(255,255,255,.42);
+  color:#8d6a3c;
+  font-weight:800;
+}
+.v25-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  margin-top:8px;
+}
+.v25-status.pendente{background:rgba(243,161,66,.18);color:#aa640e}
+.v25-status.revisao{background:rgba(255,126,168,.18);color:#ba4673}
+.v25-status.aprovado{background:rgba(116,200,130,.18);color:#2e9b55}
+.v25-status.publicado{background:rgba(116,167,255,.18);color:#376ec5}
+.v25-feedback{
+  padding:11px;
+  border-radius:14px;
+  background:rgba(255,255,255,.42);
+  color:var(--muted);
+  margin-top:10px;
+  font-size:13px;
+}
+.v25-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.v25-actions button{
+  min-height:38px;
+  height:38px;
+  font-size:13px;
+}
+@media(max-width:1180px){.v25-approval-board{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -593,9 +670,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V24</div>
+    <div class="eyebrow">HAIA OS • V25</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com calendário real da operação, arquivos e portal do cliente.</p>
+    <p>Sistema operacional premium com aprovações reais, histórico de feedbacks e fluxo de publicação.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -962,7 +1039,7 @@ function showModule(name, btn){
     content.innerHTML = renderCalendarModule();
     renderCalendarItems();
   } else if(name === "aprovacoes"){
-    document.getElementById("moduleText").textContent = "Envie conteúdos para aprovação, acompanhe status e receba feedbacks do cliente.";
+    document.getElementById("moduleText").textContent = "Fluxo real de aprovação com comentários, versões, preview e status de publicação.";
     content.innerHTML = renderApprovalsModule();
     renderApprovals();
   } else if(name === "portal"){
@@ -1393,79 +1470,106 @@ function renderClientPortalModule(){
 }
 
 
+
 let approvalItems = [
-  {client_name:"Studio Cristal", title:"Reels Vale Responde", description:"Conteúdo de autoridade com CTA para agenda.", status:"pending", feedback:""},
-  {client_name:"Mariah Biquínis", title:"Campanha coleção", description:"Criativo de lançamento para coleção.", status:"approved", feedback:"Aprovado para publicação."},
-  {client_name:"Kaife Fitness", title:"Stories feira", description:"Sequência de stories de presença na feira.", status:"review", feedback:"Ajustar chamada principal."}
+  {client_name:"Studio Cristal", title:"Reels Vale Responde", description:"Conteúdo de autoridade com CTA para agenda.", status:"pendente", feedback:"", link:"#", version:1},
+  {client_name:"Mariah Biquínis", title:"Campanha coleção", description:"Criativo de lançamento para coleção.", status:"aprovado", feedback:"Aprovado para publicação.", link:"#", version:2},
+  {client_name:"Kaife Fitness", title:"Stories feira", description:"Sequência de stories de presença na feira.", status:"revisao", feedback:"Ajustar chamada principal.", link:"#", version:1},
+  {client_name:"Studio Cristal", title:"Carrossel cuidados pós cílios", description:"Carrossel educativo para autoridade.", status:"publicado", feedback:"Publicado no feed.", link:"#", version:3}
 ];
 
 function renderApprovalsModule(){
   return `<div class="panel fade-in">
-    <div class="eyebrow">Aprovações</div>
-    <h2>Enviar conteúdo para aprovação</h2>
-    <p>Centralize conteúdos, comentários e decisões do cliente dentro do HAIA OS.</p>
+    <div class="eyebrow">Aprovação real</div>
+    <h2>Novo conteúdo para aprovação</h2>
+    <p>Envie conteúdos, registre feedbacks, controle versões e acompanhe até a publicação.</p>
 
     <div class="form-grid" style="margin-top:18px">
       <select id="approvalClient">
         ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
       </select>
       <input id="approvalTitle" placeholder="Nome do conteúdo. Ex: Reels de autoridade">
+      <input id="approvalLink" placeholder="Link do preview, Canva, Drive ou Instagram">
+      <select id="approvalType">
+        <option>Reels</option>
+        <option>Carrossel</option>
+        <option>Stories</option>
+        <option>Arte estática</option>
+        <option>Relatório</option>
+      </select>
     </div>
 
-    <textarea id="approvalDescription" style="margin-top:12px" placeholder="Observações para o cliente, link do arquivo, contexto ou instruções."></textarea>
+    <textarea id="approvalDescription" style="margin-top:12px" placeholder="Observações para o cliente, contexto, instruções ou legenda sugerida."></textarea>
 
     <div class="top-actions" style="margin-top:14px">
-      <button class="primary-btn" onclick="saveApprovalItem('pending')">Enviar para aprovação</button>
-      <button class="ghost-btn" onclick="saveApprovalItem('draft')">Salvar rascunho</button>
+      <button class="primary-btn" onclick="saveApprovalItem('pendente')">Enviar para aprovação</button>
+      <button class="ghost-btn" onclick="saveApprovalItem('rascunho')">Salvar rascunho</button>
     </div>
   </div>
 
   <div class="panel fade-in">
     <div class="section-head">
-      <div class="left"><h2>Conteúdos em aprovação</h2><span class="badge">V20 integrado</span></div>
+      <div class="left"><h2>Board de aprovações</h2><span class="badge">V25 fluxo real</span></div>
     </div>
-    <div class="approval-grid" id="approvalGrid"></div>
+    <div class="v25-approval-board" id="approvalGrid"></div>
   </div>`;
 }
 
 function statusLabel(status){
   const map = {
-    pending:"Aguardando aprovação",
-    approved:"Aprovado",
-    review:"Em revisão",
-    published:"Publicado",
-    draft:"Rascunho"
+    pendente:"Pendente",
+    revisao:"Em revisão",
+    aprovado:"Aprovado",
+    publicado:"Publicado",
+    rascunho:"Rascunho"
   };
   return map[status] || status;
 }
 
-function statusClass(status){
-  if(status === "approved") return "approved";
-  if(status === "review") return "review";
-  if(status === "published") return "published";
-  return "pending";
+function statusColumnLabel(status){
+  const map = {
+    pendente:"Aguardando",
+    revisao:"Revisão",
+    aprovado:"Aprovados",
+    publicado:"Publicados"
+  };
+  return map[status] || status;
 }
 
 function renderApprovals(){
   const grid = document.getElementById("approvalGrid");
   if(!grid) return;
 
-  grid.innerHTML = approvalItems.map((item,index)=>`
-    <div class="approval-card">
-      <div class="approval-preview">Preview do conteúdo</div>
-      <span class="approval-status ${statusClass(item.status)}">${statusLabel(item.status)}</span>
-      <h3 style="margin-top:14px">${item.title}</h3>
-      <p>${item.client_name}</p>
-      <p style="margin-top:8px">${item.description || ""}</p>
-      ${item.feedback ? `<div class="feedback-box"><strong>Feedback:</strong><br>${item.feedback}</div>` : ""}
-      <textarea id="feedback_${index}" style="margin-top:12px;min-height:80px" placeholder="Adicionar feedback ou ajuste..."></textarea>
-      <div class="approval-actions">
-        <button class="primary-btn" onclick="updateApprovalStatus(${index},'approved')">Aprovar</button>
-        <button class="ghost-btn" onclick="updateApprovalStatus(${index},'review')">Pedir ajuste</button>
-        <button class="ghost-btn" onclick="updateApprovalStatus(${index},'published')">Publicado</button>
+  const columns = ["pendente","revisao","aprovado","publicado"];
+
+  grid.innerHTML = columns.map(status=>{
+    const items = approvalItems.filter(i=>i.status === status);
+    return `<div class="v25-column">
+      <div class="v25-column-head">
+        <strong>${statusColumnLabel(status)}</strong>
+        <span class="badge">${items.length}</span>
       </div>
-    </div>
-  `).join("");
+      ${items.map(item=>{
+        const index = approvalItems.indexOf(item);
+        return `<div class="v25-approval-card">
+          <div class="v25-preview">Preview</div>
+          <h3>${item.title}</h3>
+          <p>${item.client_name}</p>
+          <span class="v25-status ${item.status}">${statusLabel(item.status)}</span>
+          <p style="margin-top:10px">${item.description || ""}</p>
+          <small>Versão ${item.version || 1}</small>
+          ${item.feedback ? `<div class="v25-feedback"><strong>Feedback:</strong><br>${item.feedback}</div>` : ""}
+          <textarea id="feedback_${index}" style="margin-top:10px;min-height:74px" placeholder="Feedback, ajuste ou observação..."></textarea>
+          <div class="v25-actions">
+            <button class="primary-btn" onclick="updateApprovalStatus(${index},'aprovado')">Aprovar</button>
+            <button class="ghost-btn" onclick="updateApprovalStatus(${index},'revisao')">Pedir ajuste</button>
+            <button class="ghost-btn" onclick="updateApprovalStatus(${index},'publicado')">Publicado</button>
+            <button class="ghost-btn" onclick="openApprovalLink(${index})">Abrir</button>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }).join("");
 }
 
 async function saveApprovalItem(status){
@@ -1474,7 +1578,10 @@ async function saveApprovalItem(status){
     title:approvalTitle.value || "Conteúdo sem título",
     description:approvalDescription.value,
     status:status,
-    feedback:""
+    feedback:"",
+    link:approvalLink.value || "#",
+    type:approvalType.value,
+    version:1
   };
 
   approvalItems.unshift(item);
@@ -1485,12 +1592,16 @@ async function saveApprovalItem(status){
       content_title:item.title,
       description:item.description,
       status:statusLabel(item.status),
-      feedback:item.feedback
+      feedback:item.feedback,
+      file_url:item.link,
+      content_type:item.type,
+      version:item.version
     }]);
   }catch(e){}
 
   approvalTitle.value = "";
   approvalDescription.value = "";
+  approvalLink.value = "";
   renderApprovals();
 }
 
@@ -1499,6 +1610,7 @@ async function updateApprovalStatus(index,status){
   const feedback = field ? field.value : "";
   approvalItems[index].status = status;
   if(feedback) approvalItems[index].feedback = feedback;
+  if(status === "revisao") approvalItems[index].version = (approvalItems[index].version || 1) + 1;
 
   try{
     await supabaseClient.from("haia_approvals").insert([{
@@ -1506,11 +1618,20 @@ async function updateApprovalStatus(index,status){
       content_title:approvalItems[index].title,
       description:approvalItems[index].description,
       status:statusLabel(status),
-      feedback:approvalItems[index].feedback
+      feedback:approvalItems[index].feedback,
+      file_url:approvalItems[index].link,
+      content_type:approvalItems[index].type,
+      version:approvalItems[index].version
     }]);
   }catch(e){}
 
   renderApprovals();
+}
+
+function openApprovalLink(index){
+  const url = approvalItems[index]?.link;
+  if(url && url !== "#") window.open(url,"_blank");
+  else alert("Este conteúdo ainda não tem link de preview cadastrado.");
 }
 
 

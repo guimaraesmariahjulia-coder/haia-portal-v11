@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V26.1 • Correção Topo</title>
+<title>HAIA OS V26.2.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -696,7 +696,7 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V26.2</div>
+    <div class="eyebrow">HAIA OS • V26.2.2</div>
     <h1>Entrar no sistema</h1>
     <p>Sistema operacional premium com clientes reais, workspaces automáticos e links por WhatsApp.</p>
     <input id="email" type="email" placeholder="E-mail">
@@ -2182,7 +2182,7 @@ initSession();
 
 <script>
 window.addEventListener("error", function(e){
-  console.log("HAIA OS V26 guard:", e.message);
+  console.log("HAIA OS V26.2 guard:", e.message);
 });
 
 function haiaClient(){
@@ -2258,6 +2258,183 @@ document.addEventListener("DOMContentLoaded", function(){
     loginButton.setAttribute("onclick","haiaSafeLogin()");
   }
   setTimeout(haiaInitSession, 500);
+});
+</script>
+
+
+<script>
+/* HAIA OS V26.2 - Patch de navegação segura */
+function haiaSetActiveByName(name){
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    const txt = (btn.textContent || "").toLowerCase();
+    btn.classList.remove("active");
+
+    if(
+      (name === "dashboard" && txt.includes("dashboard")) ||
+      (name === "clientes" && txt.includes("clientes") && !txt.includes("dna")) ||
+      (name === "planos" && txt.includes("serviços")) ||
+      (name === "comunicacao" && txt.includes("comunicação")) ||
+      (name === "calendario" && txt.includes("calendário")) ||
+      (name === "conteudos" && txt.includes("conteúdos")) ||
+      (name === "aprovacoes" && txt.includes("aprovações")) ||
+      (name === "tarefas" && txt.includes("tarefas")) ||
+      (name === "dna" && txt.includes("dna")) ||
+      (name === "portal" && txt.includes("portal")) ||
+      (name === "ia" && txt.includes("ia haia"))
+    ){
+      btn.classList.add("active");
+    }
+  });
+}
+
+function haiaSafeContent(){
+  return document.getElementById("dynamicContent") || document.getElementById("content") || document.querySelector(".content") || document.querySelector("main");
+}
+
+function haiaSafeModule(name){
+  try{
+    if(typeof updateTopAction === "function") updateTopAction(name);
+    haiaSetActiveByName(name);
+
+    if(typeof showModule === "function" && !window.__haiaInsideSafeModule){
+      window.__haiaInsideSafeModule = true;
+      try{
+        showModule(name);
+        window.__haiaInsideSafeModule = false;
+        return;
+      }catch(e){
+        console.log("showModule original falhou, usando fallback:", e.message);
+        window.__haiaInsideSafeModule = false;
+      }
+    }
+
+    const title = document.getElementById("moduleTitle");
+    const text = document.getElementById("moduleText");
+    const content = haiaSafeContent();
+
+    if(title){
+      const labels = {
+        dashboard:"Dashboard",
+        clientes:"Clientes",
+        planos:"Serviços & Planos",
+        comunicacao:"Comunicação",
+        calendario:"Calendário",
+        conteudos:"Conteúdos",
+        aprovacoes:"Aprovações",
+        tarefas:"Tarefas",
+        dna:"DNA dos Clientes",
+        portal:"Portal do Cliente",
+        ia:"IA HAIA"
+      };
+      title.textContent = labels[name] || name;
+    }
+
+    if(text){
+      const subtitles = {
+        clientes:"Gerencie clientes reais, workspaces e links por WhatsApp.",
+        planos:"Crie planos e serviços personalizados.",
+        comunicacao:"Configure WhatsApp, responsáveis e canais diretos.",
+        calendario:"Calendário real da operação.",
+        conteudos:"Organização dos conteúdos da agência.",
+        aprovacoes:"Board de aprovação com status e feedback.",
+        tarefas:"Acompanhe tarefas operacionais.",
+        dna:"Base estratégica que alimenta a IA contextual.",
+        portal:"Visão premium do cliente.",
+        ia:"IA contextual da HAIA por cliente."
+      };
+      text.textContent = subtitles[name] || "Resumo geral da operação HAIA.";
+    }
+
+    if(!content) return;
+
+    if(name === "dashboard"){
+      if(typeof showAdminHome === "function"){
+        showAdminHome();
+        return;
+      }
+    }
+
+    if(name === "clientes" && typeof renderClientsAdminModule === "function"){
+      content.innerHTML = renderClientsAdminModule();
+      return;
+    }
+
+    if(name === "calendario" && typeof renderCalendarModule === "function"){
+      content.innerHTML = renderCalendarModule();
+      if(typeof renderCalendarItems === "function") renderCalendarItems();
+      return;
+    }
+
+    if(name === "aprovacoes" && typeof renderApprovalsModule === "function"){
+      content.innerHTML = renderApprovalsModule();
+      if(typeof renderApprovals === "function") renderApprovals();
+      return;
+    }
+
+    if(name === "dna" && typeof renderDNAModule === "function"){
+      content.innerHTML = renderDNAModule();
+      return;
+    }
+
+    if(name === "ia" && typeof renderIAModule === "function"){
+      content.innerHTML = renderIAModule();
+      if(typeof loadAIHistory === "function") loadAIHistory();
+      return;
+    }
+
+    if(name === "portal" && typeof renderClientPortalModule === "function"){
+      content.innerHTML = renderClientPortalModule();
+      return;
+    }
+
+    if(name === "arquivos" && typeof renderFilesModule === "function"){
+      content.innerHTML = renderFilesModule();
+      if(typeof renderFilesList === "function") renderFilesList();
+      return;
+    }
+
+    content.innerHTML = `<div class="panel fade-in">
+      <div class="eyebrow">HAIA OS V26.2</div>
+      <h2>${name}</h2>
+      <p>Este módulo está ativo. A estrutura completa será refinada no próximo ciclo.</p>
+    </div>`;
+  }catch(err){
+    console.error(err);
+    const content = haiaSafeContent();
+    if(content){
+      content.innerHTML = `<div class="panel"><h2>Erro corrigido parcialmente</h2><p>Atualize a página e tente novamente.</p></div>`;
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  setTimeout(function(){
+    const map = [
+      ["dashboard","dashboard"],
+      ["clientes","clientes"],
+      ["serviços","planos"],
+      ["comunicação","comunicacao"],
+      ["calendário","calendario"],
+      ["conteúdos","conteudos"],
+      ["aprovações","aprovacoes"],
+      ["tarefas","tarefas"],
+      ["dna","dna"],
+      ["portal","portal"],
+      ["ia haia","ia"]
+    ];
+
+    document.querySelectorAll(".nav button").forEach(btn=>{
+      const txt = (btn.textContent || "").toLowerCase();
+      const found = map.find(([key])=>txt.includes(key));
+      if(found){
+        btn.onclick = function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          haiaSafeModule(found[1]);
+        };
+      }
+    });
+  },800);
 });
 </script>
 

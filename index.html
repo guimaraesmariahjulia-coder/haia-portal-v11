@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V25.1.1 • Correção Topo</title>
+<title>HAIA OS V25.2.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -670,7 +670,7 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V25.1</div>
+    <div class="eyebrow">HAIA OS • V25.2.2</div>
     <h1>Entrar no sistema</h1>
     <p>Sistema operacional premium com aprovações reais, histórico de feedbacks e fluxo de publicação.</p>
     <input id="email" type="email" placeholder="E-mail">
@@ -791,7 +791,13 @@ textarea{min-height:105px;resize:vertical}
 <script>
 const SUPABASE_URL = "https://dagekkvpyphwjgheoosz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Hk3hQWlN713HClx7YrJ0-g_wJHWJcmq";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+function ensureSupabase(){
+  if(!supabaseClient && window.supabase){
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  return supabaseClient;
+}
 
 let currentUser = null;
 let profile = null;
@@ -2111,51 +2117,87 @@ initSession();
 </div>
 
 
+
+
+
 <script>
 window.addEventListener("error", function(e){
-  console.log("HAIA OS JS guard:", e.message);
+  console.log("HAIA OS V25.2 guard:", e.message);
 });
 
-async function haiaSafeLogin(){
-  try{
-    const emailEl = document.getElementById("email");
-    const passEl = document.getElementById("password");
-    const msgEl = document.getElementById("loginMsg");
+function haiaClient(){
+  if(typeof ensureSupabase === "function") return ensureSupabase();
+  if(typeof supabaseClient !== "undefined" && supabaseClient) return supabaseClient;
+  if(window.supabase){
+    window.supabaseClient = window.supabase.createClient("https://dagekkvpyphwjgheoosz.supabase.co", "sb_publishable_Hk3hQWlN713HClx7YrJ0-g_wJHWJcmq");
+    return window.supabaseClient;
+  }
+  return null;
+}
 
-    const email = emailEl ? emailEl.value.trim() : "";
-    const password = passEl ? passEl.value.trim() : "";
+async function haiaSafeLogin(){
+  const msgEl = document.getElementById("loginMsg");
+  try{
+    const email = document.getElementById("email")?.value.trim() || "";
+    const password = document.getElementById("password")?.value.trim() || "";
 
     if(!email || !password){
       if(msgEl) msgEl.textContent = "Preencha e-mail e senha.";
       return;
     }
 
-    if(window.supabase && typeof supabaseClient !== "undefined"){
-      const { data, error } = await supabaseClient.auth.signInWithPassword({email,password});
-      if(error){
-        if(msgEl) msgEl.textContent = "Login inválido ou não cadastrado.";
-        return;
-      }
-
-      currentUser = data.user;
-      if(typeof loadProfile === "function") await loadProfile();
-      if(typeof openApp === "function") openApp();
+    const client = haiaClient();
+    if(!client){
+      if(msgEl) msgEl.textContent = "Supabase ainda não carregou. Atualize a página.";
       return;
     }
 
-    if(msgEl) msgEl.textContent = "Supabase não carregou. Atualize a página.";
+    const { data, error } = await client.auth.signInWithPassword({email,password});
+    if(error){
+      if(msgEl) msgEl.textContent = "Login inválido ou não cadastrado.";
+      return;
+    }
+
+    window.currentUser = data.user;
+    try{ currentUser = data.user; }catch(e){}
+
+    if(typeof loadProfile === "function") await loadProfile();
+
+    if(typeof openApp === "function"){
+      openApp();
+    } else {
+      const loginScreen = document.getElementById("loginScreen");
+      const app = document.getElementById("app");
+      if(loginScreen) loginScreen.style.display = "none";
+      if(app) app.style.display = "grid";
+    }
   }catch(err){
-    const msgEl = document.getElementById("loginMsg");
-    if(msgEl) msgEl.textContent = "Erro no login. Use o V25.1 corrigido.";
     console.error(err);
+    if(msgEl) msgEl.textContent = "Erro no login. Atualize e tente novamente.";
   }
+}
+
+async function haiaInitSession(){
+  try{
+    const client = haiaClient();
+    if(!client) return;
+    const { data } = await client.auth.getSession();
+    if(data && data.session && data.session.user){
+      window.currentUser = data.session.user;
+      try{ currentUser = data.session.user; }catch(e){}
+      if(typeof loadProfile === "function") await loadProfile();
+      if(typeof openApp === "function") openApp();
+    }
+  }catch(e){ console.log(e); }
 }
 
 document.addEventListener("DOMContentLoaded", function(){
   const loginButton = document.querySelector("#loginScreen .primary-btn");
   if(loginButton){
+    loginButton.onclick = haiaSafeLogin;
     loginButton.setAttribute("onclick","haiaSafeLogin()");
   }
+  setTimeout(haiaInitSession, 500);
 });
 </script>
 

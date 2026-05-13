@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V14 • Central Operacional</title>
+<title>HAIA OS V14.1 • Clientes, Planos e Comunicação</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
   --bg:#f4efe8;
   --glass:rgba(255,255,255,.54);
-  --glass-strong:rgba(255,255,255,.72);
   --line:rgba(82,62,42,.10);
   --text:#151311;
   --muted:#766f68;
@@ -47,15 +46,18 @@ button,input,textarea,select{font:inherit}
 button{border:0;cursor:pointer}
 .login-screen{min-height:calc(100vh - 36px);display:grid;place-items:center}
 .login-card{width:min(540px,100%);padding:42px;border-radius:36px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.68);box-shadow:var(--shadow);backdrop-filter:blur(28px)}
-.brand-fallback{font-size:38px;font-weight:900;letter-spacing:-.08em;color:#202326;margin-bottom:24px}
+.brand{font-size:38px;font-weight:900;letter-spacing:-.08em;color:#202326;margin-bottom:24px}
 .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8f6d3d;font-weight:800;margin-bottom:12px}
 h1{font-size:44px;line-height:1;letter-spacing:-.06em;margin-bottom:12px}
 h2{font-size:26px;letter-spacing:-.04em;margin-bottom:8px}
 h3{font-size:18px;letter-spacing:-.03em}
 p{color:var(--muted);line-height:1.55}
-.login-card input{width:100%;height:58px;margin-top:14px;border:1px solid rgba(255,255,255,.78);background:rgba(255,255,255,.68);border-radius:20px;padding:0 18px;outline:none;color:var(--text)}
+input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.55);border-radius:16px;padding:14px;outline:none;color:var(--text)}
+textarea{min-height:105px;resize:vertical}
+.login-card input{height:58px;margin-top:14px}
 .primary-btn{min-height:48px;padding:0 20px;border-radius:18px;background:linear-gradient(135deg,var(--champagne-2),var(--champagne));color:#201915;font-weight:800;box-shadow:0 10px 30px rgba(201,159,98,.22)}
 .ghost-btn{min-height:44px;padding:0 16px;border-radius:16px;background:rgba(255,255,255,.48);border:1px solid rgba(255,255,255,.62);color:#332b25}
+.danger-btn{min-height:44px;padding:0 16px;border-radius:16px;background:rgba(239,107,107,.12);border:1px solid rgba(239,107,107,.25);color:#a53d3d;font-weight:800}
 .app{display:none;grid-template-columns:250px 1fr;gap:18px;max-width:1720px;margin:0 auto}
 .sidebar{position:sticky;top:18px;height:calc(100vh - 36px);padding:28px 20px;border-radius:28px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.62);box-shadow:var(--shadow);backdrop-filter:blur(30px);display:flex;flex-direction:column}
 .nav{display:grid;gap:6px}
@@ -63,35 +65,33 @@ p{color:var(--muted);line-height:1.55}
 .nav button.active,.nav button:hover{background:linear-gradient(135deg,rgba(244,222,180,.75),rgba(231,201,143,.38));color:#1f1711;box-shadow:0 8px 24px rgba(201,159,98,.13)}
 .nav .count{min-width:24px;height:24px;display:grid;place-items:center;border-radius:999px;background:rgba(231,201,143,.42);font-size:12px}
 .quick{margin-top:auto;display:grid;gap:10px}
-.quick-card{padding:14px;border-radius:20px;background:rgba(255,255,255,.44);border:1px solid rgba(255,255,255,.58)}
 .user-card{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px;border-radius:20px;background:rgba(255,255,255,.5)}
 .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#e8c3ad,#f3dfc3);display:grid;place-items:center;font-weight:800}
 .main{display:grid;gap:18px}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:8px 4px}
 .search{width:min(430px,100%);height:46px;border-radius:18px;border:1px solid rgba(255,255,255,.62);background:rgba(255,255,255,.50);padding:0 18px;outline:none;box-shadow:0 12px 28px rgba(92,64,43,.06)}
-.top-actions{display:flex;gap:12px;align-items:center}
+.top-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .hero{padding:14px 10px 4px}
 .hero h1{font-size:34px}
 .signature{font-family:"Brush Script MT","Segoe Script",cursive;color:#8d6a3c;font-size:20px;margin-top:2px}
 .metrics{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));border-radius:28px;overflow:hidden;background:rgba(255,255,255,.43);border:1px solid rgba(255,255,255,.62);box-shadow:var(--shadow)}
 .metric{padding:24px;border-right:1px solid var(--line)}
 .metric:last-child{border-right:0}
+.metric small{color:var(--muted);font-weight:700}
+.metric strong{display:block;margin-top:12px;font-size:30px;letter-spacing:-.06em}
 .metric-icon{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;margin-bottom:18px;font-weight:900}
 .icon-champagne{background:rgba(231,201,143,.35);color:#7d5a2c}
 .icon-pink{background:rgba(255,126,168,.18);color:#d23f75}
 .icon-green{background:rgba(116,200,130,.18);color:#3b9b50}
 .icon-orange{background:rgba(243,161,66,.18);color:#c77416}
 .icon-purple{background:rgba(160,112,255,.16);color:#7b4ef0}
-.metric small{color:var(--muted);font-weight:700}
-.metric strong{display:block;margin-top:12px;font-size:30px;letter-spacing:-.06em}
-.delta{margin-top:5px;font-size:13px}
 .progress-line{width:100%;height:6px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:18px}
-.progress-line span{display:block;height:100%;border-radius:999px;background:var(--champagne-3);width:60%}
+.progress-line span{display:block;height:100%;border-radius:999px}
 .section-head{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px}
 .section-head .left{display:flex;gap:10px;align-items:center}
 .badge{padding:6px 10px;border-radius:999px;background:rgba(231,201,143,.30);color:#7d5a2c;font-size:12px;font-weight:800}
 .client-grid{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:16px}
-.client-card{position:relative;padding:20px;min-height:226px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08);backdrop-filter:blur(22px)}
+.client-card{position:relative;padding:20px;min-height:246px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08);backdrop-filter:blur(22px)}
 .client-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
 .client-logo{width:54px;height:54px;border-radius:14px;background:#101010;color:white;display:grid;place-items:center;font-size:22px;letter-spacing:-.06em}
 .plan{display:inline-flex;margin-top:6px;padding:5px 8px;border-radius:8px;background:rgba(231,201,143,.30);color:#8d6a3c;font-size:12px;font-weight:800}
@@ -111,35 +111,33 @@ p{color:var(--muted);line-height:1.55}
 .panel{padding:22px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
-.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px}
-.workspace{display:none}
-.workspace.active{display:grid;gap:18px}
+.workspace,.module{display:none}
+.workspace.active,.module.active{display:grid;gap:18px}
 .admin-home.hidden{display:none}
-.client-top{padding:26px;border-radius:30px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.68);display:flex;justify-content:space-between;align-items:center}
+.client-top{padding:26px;border-radius:30px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.68);display:flex;justify-content:space-between;align-items:center;gap:16px}
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .tabs button{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.42);color:#2a2520}
 .tabs button.active{background:linear-gradient(135deg,rgba(244,222,180,.95),rgba(231,201,143,.58))}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.day{min-height:120px;padding:10px;border-radius:18px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.58)}
-.event{padding:8px;border-radius:12px;margin-top:8px;font-size:12px}
-.event.purple{background:rgba(160,112,255,.18)}
-.event.pink{background:rgba(255,126,168,.18)}
-.event.green{background:rgba(116,200,130,.18)}
-.event.orange{background:rgba(243,161,66,.18)}
 .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.form-grid input,.form-grid select,textarea{width:100%;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.55);border-radius:16px;padding:14px;outline:none;color:var(--text)}
-textarea{min-height:120px;resize:vertical}
-.admin-only{display:none}
+.service-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;margin:4px;border-radius:999px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.65);font-size:13px}
+.service-pill.purple{background:rgba(160,112,255,.16);color:#6b48c9}
+.service-pill.pink{background:rgba(255,126,168,.18);color:#ba4673}
+.service-pill.green{background:rgba(116,200,130,.18);color:#328845}
+.service-pill.orange{background:rgba(243,161,66,.18);color:#aa640e}
+.service-pill.blue{background:rgba(116,167,255,.18);color:#376ec5}
+.service-pill.champagne{background:rgba(231,201,143,.32);color:#7d5a2c}
+.whatsapp-card{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(244,222,180,.22));border:1px solid rgba(255,255,255,.72)}
+.whatsapp-btn{background:#25D366;color:white;box-shadow:0 14px 34px rgba(37,211,102,.22)}
 @media(max-width:1280px){.metrics{grid-template-columns:repeat(2,1fr)}.client-grid{grid-template-columns:repeat(2,1fr)}.lower-grid{grid-template-columns:1fr}}
-@media(max-width:860px){body{padding:12px}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;top:0}.topbar{flex-direction:column;align-items:stretch}.client-grid,.metrics,.form-grid{grid-template-columns:1fr}.calendar-grid{grid-template-columns:1fr}}
+@media(max-width:860px){body{padding:12px}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;top:0}.topbar{flex-direction:column;align-items:stretch}.client-grid,.metrics,.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 
 <body>
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
-    <div class="brand-fallback">HAIA</div>
-    <div class="eyebrow">HAIA OS • V14</div>
+    <div class="brand">HAIA</div>
+    <div class="eyebrow">HAIA OS • V14.1</div>
     <h1>Entrar no sistema</h1>
     <p>Central operacional premium para marcas atendidas pela HAIA.</p>
     <input id="email" type="email" placeholder="E-mail">
@@ -151,25 +149,19 @@ textarea{min-height:120px;resize:vertical}
 
 <section class="app" id="app">
   <aside class="sidebar">
-    <div class="brand-fallback" style="font-size:36px;margin-bottom:18px">HAIA<span style="font-size:12px;letter-spacing:0"> OS</span></div>
+    <div class="brand" style="font-size:36px;margin-bottom:18px">HAIA<span style="font-size:12px;letter-spacing:0"> OS</span></div>
     <nav class="nav">
       <button class="active" onclick="showAdminHome(this)">Dashboard</button>
       <button onclick="showModule('clientes',this)">Clientes</button>
+      <button onclick="showModule('planos',this)">Serviços & Planos</button>
+      <button onclick="showModule('comunicacao',this)">Comunicação</button>
       <button onclick="showModule('calendario',this)">Calendário</button>
       <button onclick="showModule('conteudos',this)">Conteúdos</button>
       <button onclick="showModule('aprovacoes',this)">Aprovações <span class="count">8</span></button>
       <button onclick="showModule('tarefas',this)">Tarefas <span class="count">12</span></button>
-      <button onclick="showModule('mensagens',this)">Mensagens</button>
-      <button onclick="showModule('arquivos',this)">Arquivos</button>
-      <button onclick="showModule('financeiro',this)">Financeiro</button>
-      <button onclick="showModule('analytics',this)">Analytics</button>
       <button onclick="showModule('ia',this)">IA HAIA</button>
     </nav>
     <div class="quick">
-      <div class="quick-card admin-only">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><strong>Atalhos rápidos</strong><button class="ghost-btn" style="min-height:32px;padding:0 10px">+</button></div>
-        <p>Nova tarefa</p><p>Novo cliente</p><p>Novo briefing</p><p>Relatório semanal</p>
-      </div>
       <div class="user-card"><div class="avatar">M</div><div><strong id="userName">Mariah</strong><p id="userRole" style="font-size:13px">Admin</p></div></div>
       <button class="ghost-btn" onclick="logout()">Sair</button>
     </div>
@@ -178,39 +170,80 @@ textarea{min-height:120px;resize:vertical}
   <main class="main">
     <div class="topbar">
       <input class="search" placeholder="Buscar no sistema...">
-      <div class="top-actions"><button class="ghost-btn">🔔</button><button class="primary-btn admin-only" onclick="openCreateClient()">+ Novo</button></div>
+      <div class="top-actions">
+        <button class="ghost-btn">🔔</button>
+        <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
+      </div>
     </div>
 
     <section class="admin-home" id="adminHome">
-      <div class="hero"><h1>Boa tarde, Mariah. 👋</h1><p>Aqui está o resumo geral da operação da HAIA.</p><div class="signature">Vamos criar marcas inesquecíveis.</div></div>
+      <div class="hero">
+        <h1>Boa tarde, Mariah. 👋</h1>
+        <p>Aqui está o resumo geral da operação da HAIA.</p>
+        <div class="signature">Vamos criar marcas inesquecíveis.</div>
+      </div>
+
       <section class="metrics">
-        <div class="metric"><div class="metric-icon icon-champagne">◎</div><small>Clientes ativos</small><strong id="mClients">0</strong><p class="delta" style="color:var(--green)">+2 este mês</p><div class="progress-line"><span style="width:80%;background:var(--champagne-3)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-pink">□</div><small>Aprovações pendentes</small><strong id="mApprovals">8</strong><p class="delta" style="color:var(--red)">-3 vs ontem</p><div class="progress-line"><span style="width:44%;background:var(--pink)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-green">✓</div><small>Conteúdos agendados</small><strong id="mContent">47</strong><p class="delta" style="color:var(--green)">+12 essa semana</p><div class="progress-line"><span style="width:72%;background:var(--green)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-orange">◌</div><small>Entregas da semana</small><strong id="mDeliveries">12</strong><p class="delta" style="color:var(--orange)">+4 vs anterior</p><div class="progress-line"><span style="width:78%;background:var(--orange)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-purple">▣</div><small>Faturamento mensal</small><strong>R$ 47.850</strong><p class="delta" style="color:var(--purple)">75% da meta</p><div class="progress-line"><span style="width:75%;background:var(--champagne-3)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-champagne">◎</div><small>Clientes ativos</small><strong id="mClients">0</strong><p class="delta" style="color:var(--green)">operação ativa</p><div class="progress-line"><span style="width:80%;background:var(--champagne-3)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-pink">□</div><small>Aprovações pendentes</small><strong>8</strong><p class="delta" style="color:var(--red)">aguardando cliente</p><div class="progress-line"><span style="width:44%;background:var(--pink)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-green">✓</div><small>Conteúdos agendados</small><strong>47</strong><p class="delta" style="color:var(--green)">semana atual</p><div class="progress-line"><span style="width:72%;background:var(--green)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-orange">◌</div><small>Entregas da semana</small><strong>12</strong><p class="delta" style="color:var(--orange)">em andamento</p><div class="progress-line"><span style="width:78%;background:var(--orange)"></span></div></div>
+        <div class="metric"><div class="metric-icon icon-purple">▣</div><small>Planos ativos</small><strong id="mPlans">0</strong><p class="delta" style="color:var(--purple)">operações contratadas</p><div class="progress-line"><span style="width:75%;background:var(--champagne-3)"></span></div></div>
       </section>
-      <div class="section-head"><div class="left"><h2>Clientes</h2><span class="badge" id="activeBadge">0 ativos</span></div><div class="top-actions"><input class="search" style="width:260px" placeholder="Buscar cliente..."><button class="ghost-btn">Filtrar</button></div></div>
+
+      <div class="section-head">
+        <div class="left"><h2>Clientes</h2><span class="badge" id="activeBadge">0 ativos</span></div>
+        <div class="top-actions"><input class="search" style="width:260px" placeholder="Buscar cliente..."><button class="ghost-btn">Filtrar</button></div>
+      </div>
+
       <section class="client-grid" id="clientGrid"></section>
+
       <section class="lower-grid">
         <div class="panel"><h3>Atividades recentes</h3><div id="activityList"></div></div>
-        <div class="panel"><h3>Analytics rápido</h3><div class="row"><span>Alcance</span><strong>128K</strong></div><div class="row"><span>Impressões</span><strong>256K</strong></div><div class="row"><span>Engajamento</span><strong>12,4K</strong></div></div>
-        <div class="panel"><h3>Aprovações pendentes</h3><div class="row"><span>Reel — Coleção Lume</span><button class="ghost-btn">Aprovar</button></div><div class="row"><span>Carrossel — Dicas</span><button class="ghost-btn">Aprovar</button></div><div class="row"><span>Story — Lançamento</span><button class="ghost-btn">Aprovar</button></div></div>
+        <div class="panel"><h3>Serviços em destaque</h3><div id="serviceListMini"></div></div>
+        <div class="panel whatsapp-card"><h3>Comunicação HAIA</h3><p>Canal humano da operação. Use o WhatsApp para dúvidas rápidas e alinhamentos do dia a dia.</p><button class="primary-btn" style="margin-top:14px" onclick="showModule('comunicacao')">Configurar comunicação</button></div>
       </section>
     </section>
 
     <section class="workspace" id="workspace">
-      <div class="client-top"><div style="display:flex;gap:18px;align-items:center"><div class="client-logo" id="wsLogo">SC</div><div><h1 id="wsName">Studio Cristal</h1><p id="wsMeta">Plano Premium • Operação ativa</p></div></div><button class="ghost-btn" onclick="showAdminHome()">Voltar</button></div>
-      <div class="tabs"><button class="active" onclick="renderWorkspaceTab('resumo',this)">Resumo</button><button onclick="renderWorkspaceTab('calendario',this)">Calendário</button><button onclick="renderWorkspaceTab('conteudos',this)">Conteúdos</button><button onclick="renderWorkspaceTab('aprovacoes',this)">Aprovações</button><button onclick="renderWorkspaceTab('arquivos',this)">Arquivos</button><button onclick="renderWorkspaceTab('feedbacks',this)">Feedbacks</button></div>
+      <div class="client-top">
+        <div style="display:flex;gap:18px;align-items:center">
+          <div class="client-logo" id="wsLogo">SC</div>
+          <div><h1 id="wsName">Studio Cristal</h1><p id="wsMeta">Plano Premium • Operação ativa</p></div>
+        </div>
+        <button class="ghost-btn" onclick="showAdminHome()">Voltar</button>
+      </div>
+
+      <div class="tabs">
+        <button class="active" onclick="renderWorkspaceTab('resumo',this)">Resumo</button>
+        <button onclick="renderWorkspaceTab('servicos',this)">Serviços</button>
+        <button onclick="renderWorkspaceTab('comunicacao',this)">Comunicação</button>
+        <button onclick="renderWorkspaceTab('calendario',this)">Calendário</button>
+        <button onclick="renderWorkspaceTab('aprovacoes',this)">Aprovações</button>
+        <button onclick="renderWorkspaceTab('arquivos',this)">Arquivos</button>
+      </div>
       <div id="workspaceContent"></div>
     </section>
 
-    <section class="workspace" id="genericModule"><div class="panel"><h1 id="moduleTitle">Módulo</h1><p id="moduleText">Área em construção dentro do HAIA OS.</p></div></section>
+    <section class="module" id="genericModule">
+      <div class="panel"><h1 id="moduleTitle">Módulo</h1><p id="moduleText">Área em construção dentro do HAIA OS.</p></div>
+      <div id="moduleContent"></div>
+    </section>
 
-    <section class="workspace" id="createClientModule">
-      <div class="panel admin-only">
+    <section class="module" id="createClientModule">
+      <div class="panel">
         <h1>Novo cliente</h1><p>Cadastre um novo workspace dentro do HAIA OS.</p>
-        <div class="form-grid" style="margin-top:18px"><input id="newClientName" placeholder="Nome do cliente"><input id="newClientInitials" placeholder="Iniciais. Ex: SC"><input id="newClientPlan" placeholder="Plano. Ex: Plano Premium"><input id="newClientProgress" type="number" placeholder="Progresso. Ex: 72"><input id="newClientDelivery" placeholder="Próxima entrega"><input id="newClientDate" placeholder="Data. Ex: 15 MAI"></div>
+        <div class="form-grid" style="margin-top:18px">
+          <input id="newClientName" placeholder="Nome do cliente">
+          <input id="newClientInitials" placeholder="Iniciais. Ex: SC">
+          <input id="newClientPlan" placeholder="Operação contratada. Ex: Operação Premium">
+          <input id="newClientProgress" type="number" placeholder="Progresso. Ex: 72">
+          <input id="newClientDelivery" placeholder="Próxima entrega">
+          <input id="newClientDate" placeholder="Data. Ex: 15 MAI">
+          <input id="newClientResponsible" placeholder="Responsável. Ex: Mariah">
+          <input id="newClientWhatsapp" placeholder="Link do grupo WhatsApp">
+        </div>
+        <textarea id="newClientNotes" placeholder="Observações sobre serviços contratados"></textarea>
         <button class="primary-btn" onclick="saveClient()" style="margin-top:14px">Salvar cliente</button>
       </div>
     </section>
@@ -225,20 +258,25 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let profile = null;
 let clients = [];
+let plans = [];
+let services = [];
 let selectedClient = null;
 
 const demoClients = [
-  {name:"Studio Cristal", initials:"SC", plan:"Plano Premium", progress:72, delivery:"Planejamento Junho", date:"15 MAI", approvals:3, content:7, performance:92, color:"var(--purple)"},
-  {name:"Luna Fitness", initials:"LF", plan:"Plano Essencial", progress:58, delivery:"Calendário de Conteúdo", date:"16 MAI", approvals:1, content:5, performance:78, color:"var(--pink)"},
-  {name:"Noir Makeup", initials:"NM", plan:"Plano Premium", progress:81, delivery:"Campanha Mês das Mães", date:"17 MAI", approvals:2, content:9, performance:88, color:"var(--purple)"},
-  {name:"Avenue Store", initials:"AV", plan:"Plano Essencial", progress:40, delivery:"Relatório Mensal", date:"20 MAI", approvals:2, content:4, performance:65, color:"var(--pink)"},
-  {name:"Mariah Biquínis", initials:"MB", plan:"Plano Premium", progress:90, delivery:"Lançamento Coleção", date:"22 MAI", approvals:0, content:8, performance:95, color:"var(--pink)"},
-  {name:"Essenza Skincare", initials:"ES", plan:"Plano Essencial", progress:65, delivery:"Planejamento Julho", date:"25 MAI", approvals:1, content:6, performance:70, color:"var(--orange)"},
-  {name:"Salus Clinic", initials:"SC", plan:"Plano Premium", progress:48, delivery:"Conteúdos Institucionais", date:"27 MAI", approvals:3, content:3, performance:60, color:"var(--green)"},
-  {name:"The Coffee", initials:"TC", plan:"Plano Essencial", progress:35, delivery:"Campanha Inverno", date:"30 MAI", approvals:4, content:2, performance:45, color:"var(--orange)"}
+  {name:"Studio Cristal", initials:"SC", plan:"Operação Premium", progress:72, delivery:"Planejamento Junho", date:"15 MAI", approvals:3, content:7, performance:92, color:"var(--purple)", whatsapp_url:"", responsible:"Mariah", service_notes:"Gestão Instagram, Reels, Stories e Estratégia."},
+  {name:"Mariah Biquínis", initials:"MB", plan:"Operação Premium", progress:90, delivery:"Lançamento Coleção", date:"22 MAI", approvals:0, content:8, performance:95, color:"var(--pink)", whatsapp_url:"", responsible:"Mariah", service_notes:"Campanhas, calendário, lançamento e collabs."},
+  {name:"Noir Makeup", initials:"NM", plan:"Projeto Avulso", progress:81, delivery:"Campanha Mês das Mães", date:"17 MAI", approvals:2, content:9, performance:88, color:"var(--purple)", whatsapp_url:"", responsible:"Mariah", service_notes:"Campanha visual e conteúdos de conversão."},
+  {name:"Luna Fitness", initials:"LF", plan:"Operação Essencial", progress:58, delivery:"Calendário de Conteúdo", date:"16 MAI", approvals:1, content:5, performance:78, color:"var(--orange)", whatsapp_url:"", responsible:"Mariah", service_notes:"Planejamento e conteúdos essenciais."}
 ];
 
-function canAdmin(){ return !profile || profile.role === "admin" || profile.role === "equipe"; }
+const demoServices = [
+  {name:"Planejamento mensal", category:"Estratégia", color:"purple"},
+  {name:"Reels estratégicos", category:"Conteúdo", color:"pink"},
+  {name:"Stories", category:"Conteúdo", color:"orange"},
+  {name:"Design de posts", category:"Design", color:"blue"},
+  {name:"Relatório mensal", category:"Analytics", color:"green"},
+  {name:"Branding", category:"Marca", color:"champagne"}
+];
 
 async function login(){
   const email = document.getElementById("email").value.trim();
@@ -269,34 +307,49 @@ function openApp(){
   document.getElementById("app").style.display = "grid";
   document.getElementById("userName").textContent = profile.name || "Mariah";
   document.getElementById("userRole").textContent = profile.role || "Admin";
-  document.querySelectorAll(".admin-only").forEach(el=>{ el.style.display = canAdmin() ? "block" : "none"; });
-  loadClients();
+  loadAll();
+}
+
+async function loadAll(){
+  await Promise.all([loadClients(), loadPlans(), loadServices()]);
+  renderDashboard();
 }
 
 async function loadClients(){
   const { data } = await supabaseClient.from("haia_os_clients").select("*").order("created_at",{ascending:false});
   clients = data && data.length ? data : demoClients;
-  renderDashboard();
+}
+
+async function loadPlans(){
+  const { data } = await supabaseClient.from("haia_os_plans").select("*").order("created_at",{ascending:false});
+  plans = data || [];
+}
+
+async function loadServices(){
+  const { data } = await supabaseClient.from("haia_os_services").select("*").order("created_at",{ascending:false});
+  services = data && data.length ? data : demoServices;
 }
 
 function renderDashboard(){
   document.getElementById("mClients").textContent = clients.length;
+  document.getElementById("mPlans").textContent = plans.length || 4;
   document.getElementById("activeBadge").textContent = clients.length + " ativos";
+
   const grid = document.getElementById("clientGrid");
   grid.innerHTML = clients.map((c,i)=>`
     <div class="client-card">
       <div class="client-head">
         <div style="display:flex;gap:14px">
           <div class="client-logo">${c.initials || getInitials(c.name)}</div>
-          <div><h3>${c.name}</h3><span class="plan">${c.plan || "Plano Premium"}</span></div>
+          <div><h3>${c.name}</h3><span class="plan">${c.plan || "Operação Personalizada"}</span></div>
         </div>
         <strong>...</strong>
       </div>
       <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}% concluído</small></div>
       <p style="font-size:13px">Próxima entrega</p>
-      <div style="display:flex;justify-content:space-between;margin-top:4px"><strong>${c.delivery || c.next_delivery || "Planejamento"}</strong><small>${c.date || "15 MAI"}</small></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px"><strong>${c.delivery || "Planejamento"}</strong><small>${c.date || "15 MAI"}</small></div>
       <div class="client-meta"><div><strong>${c.approvals || 0}</strong><small>Aprovações</small></div><div><strong>${c.content || 0}</strong><small>Conteúdos</small></div><div><strong>${c.performance || 0}%</strong><small>Performance</small></div></div>
-      <div class="mini-team"><span class="face"></span><span class="face"></span><span class="face"></span><small style="margin-left:12px">+2</small></div>
+      <div class="mini-team"><span class="face"></span><span class="face"></span><span class="face"></span><small style="margin-left:12px">${c.responsible || "Mariah"}</small></div>
       <button class="open-btn" onclick="openWorkspace(${i})">Abrir workspace →</button>
     </div>
   `).join("");
@@ -305,8 +358,11 @@ function renderDashboard(){
     <div class="row"><span><span class="status-dot" style="background:var(--green)"></span>Studio Cristal aprovou 2 conteúdos</span><small>há 15 min</small></div>
     <div class="row"><span><span class="status-dot" style="background:var(--pink)"></span>Noir Makeup enviou feedback</span><small>há 1h</small></div>
     <div class="row"><span><span class="status-dot" style="background:var(--orange)"></span>Luna Fitness recebeu relatório</span><small>há 2h</small></div>
-    <div class="row"><span><span class="status-dot" style="background:var(--purple)"></span>Avenue Store aprovou conteúdo</span><small>há 3h</small></div>
   `;
+
+  document.getElementById("serviceListMini").innerHTML = services.slice(0,6).map(s=>`
+    <span class="service-pill ${s.color || "champagne"}">${s.name}</span>
+  `).join("");
 }
 
 function getInitials(name){ return String(name||"HA").split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase(); }
@@ -319,7 +375,7 @@ function openWorkspace(index){
   document.getElementById("workspace").classList.add("active");
   document.getElementById("wsLogo").textContent = selectedClient.initials || getInitials(selectedClient.name);
   document.getElementById("wsName").textContent = selectedClient.name;
-  document.getElementById("wsMeta").textContent = (selectedClient.plan || "Plano Premium") + " • Operação ativa";
+  document.getElementById("wsMeta").textContent = (selectedClient.plan || "Operação Personalizada") + " • Operação ativa";
   renderWorkspaceTab("resumo");
 }
 
@@ -327,29 +383,41 @@ function renderWorkspaceTab(tab, btn){
   if(btn){ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
   const c = selectedClient || demoClients[0];
   const box = document.getElementById("workspaceContent");
+
   if(tab === "resumo"){
     box.innerHTML = `<section class="metrics" style="grid-template-columns:repeat(3,1fr)">
-      <div class="metric"><small>Progresso geral</small><strong>${c.progress}%</strong><div class="progress-line"><span style="width:${c.progress}%;background:${c.color}"></span></div></div>
+      <div class="metric"><small>Progresso geral</small><strong>${c.progress}%</strong><div class="progress-line"><span style="width:${c.progress}%;background:${c.color || "var(--champagne-3)"}"></span></div></div>
       <div class="metric"><small>Próxima entrega</small><strong style="font-size:22px">${c.delivery}</strong><p>${c.date}</p></div>
-      <div class="metric"><small>Aprovações pendentes</small><strong>${c.approvals}</strong><p>Itens aguardando retorno</p></div>
+      <div class="metric"><small>Responsável</small><strong style="font-size:22px">${c.responsible || "Mariah"}</strong><p>Estratégia e operação</p></div>
     </section>`;
   }
-  if(tab === "calendario"){
-    box.innerHTML = `<div class="panel"><h2>Maio 2025</h2><div class="calendar-grid" style="margin-top:18px">
-      ${["SEG 12","TER 13","QUA 14","QUI 15","SEX 16","SÁB 17","DOM 18"].map((d,i)=>`
-        <div class="day"><strong>${d}</strong>
-        ${i===0?'<div class="event purple">08:00 Reunião</div>':''}
-        ${i===1?'<div class="event green">10:00 Gravação</div>':''}
-        ${i===2?'<div class="event pink">08:00 Aprovação</div>':''}
-        ${i===3?'<div class="event purple">11:00 Entrega</div>':''}
-        ${i===4?'<div class="event orange">14:00 Reunião</div>':''}
-        ${i===5?'<div class="event pink">09:30 Gravação</div>':''}
-        </div>`).join("")}
-    </div></div>`;
+
+  if(tab === "servicos"){
+    box.innerHTML = `<div class="panel"><h2>Serviços & Operação contratada</h2><p>${c.service_notes || "Serviços personalizados para este cliente."}</p><div style="margin-top:18px">${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name}</span>`).join("")}</div></div>`;
   }
-  if(tab !== "resumo" && tab !== "calendario"){
+
+  if(tab === "comunicacao"){
+    const wa = c.whatsapp_url || "";
+    box.innerHTML = `<div class="panel whatsapp-card">
+      <div class="eyebrow">Comunicação</div>
+      <h2>Canal direto com a HAIA</h2>
+      <p>Esse é o espaço humano da operação. Para dúvidas rápidas, alinhamentos e aprovações urgentes, use o grupo operacional no WhatsApp.</p>
+      <div class="row"><span>Grupo operacional</span><strong>${c.whatsapp_label || "WhatsApp HAIA"}</strong></div>
+      <div class="row"><span>Responsável</span><strong>${c.responsible || "Mariah"}</strong></div>
+      <div class="row"><span>Horário de atendimento</span><strong>09h às 18h</strong></div>
+      <div class="row"><span>Última atualização</span><strong>${c.delivery || "Planejamento atualizado"}</strong></div>
+      <button class="primary-btn whatsapp-btn" style="margin-top:16px" onclick="openWhatsApp('${wa}')">Falar com a HAIA no WhatsApp</button>
+    </div>`;
+  }
+
+  if(tab !== "resumo" && tab !== "servicos" && tab !== "comunicacao"){
     box.innerHTML = `<div class="panel"><h2>${tab.charAt(0).toUpperCase()+tab.slice(1)}</h2><p>Módulo do cliente em desenvolvimento no HAIA OS.</p></div>`;
   }
+}
+
+function openWhatsApp(url){
+  if(url && url.startsWith("http")) window.open(url, "_blank");
+  else alert("Ainda não existe link de WhatsApp cadastrado para este cliente.");
 }
 
 function showAdminHome(btn){
@@ -366,8 +434,35 @@ function showModule(name, btn){
   document.getElementById("createClientModule").classList.remove("active");
   document.getElementById("genericModule").classList.add("active");
   document.getElementById("moduleTitle").textContent = name.charAt(0).toUpperCase()+name.slice(1);
-  document.getElementById("moduleText").textContent = "Este módulo será construído na próxima etapa do HAIA OS.";
-  setActiveNav(btn);
+  const content = document.getElementById("moduleContent");
+
+  if(name === "planos"){
+    document.getElementById("moduleText").textContent = "Crie planos, serviços e vincule operações personalizadas aos clientes.";
+    content.innerHTML = renderPlansModule();
+  } else if(name === "comunicacao"){
+    document.getElementById("moduleText").textContent = "Configure grupos de WhatsApp, responsáveis e canais diretos por cliente.";
+    content.innerHTML = renderCommunicationModule();
+  } else {
+    document.getElementById("moduleText").textContent = "Este módulo será construído na próxima etapa do HAIA OS.";
+    content.innerHTML = "";
+  }
+
+  if(btn) setActiveNav(btn);
+}
+
+function renderPlansModule(){
+  return `<div class="panel"><h2>Novo serviço</h2>
+    <div class="form-grid"><input id="serviceName" placeholder="Nome do serviço"><input id="serviceCategory" placeholder="Categoria"><select id="serviceColor"><option value="champagne">Champagne</option><option value="purple">Estratégia / Lilás</option><option value="pink">Conteúdo / Rosa</option><option value="green">Analytics / Verde</option><option value="blue">Financeiro / Azul</option><option value="orange">Pendência / Laranja</option></select></div>
+    <button class="primary-btn" style="margin-top:14px" onclick="saveService()">Salvar serviço</button>
+  </div>
+  <div class="panel"><h2>Serviços cadastrados</h2><div>${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name} • ${s.category}</span>`).join("")}</div></div>`;
+}
+
+function renderCommunicationModule(){
+  return `<div class="panel"><h2>Configurar WhatsApp do cliente</h2>
+    <div class="form-grid"><input id="commClient" placeholder="Nome do cliente"><input id="commUrl" placeholder="Link do grupo WhatsApp"><input id="commResponsible" placeholder="Responsável"><input id="commUpdate" placeholder="Última atualização"></div>
+    <button class="primary-btn" style="margin-top:14px" onclick="saveCommunication()">Salvar comunicação</button>
+  </div>`;
 }
 
 function setActiveNav(btn){ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
@@ -381,18 +476,49 @@ function openCreateClient(){
 
 async function saveClient(){
   const item = {
-    name:newClientName.value, initials:newClientInitials.value, plan:newClientPlan.value,
-    progress:Number(newClientProgress.value || 0), delivery:newClientDelivery.value, date:newClientDate.value,
-    approvals:0, content:0, performance:0, color:"var(--champagne-3)"
+    name:newClientName.value,
+    initials:newClientInitials.value,
+    plan:newClientPlan.value || "Operação Personalizada",
+    progress:Number(newClientProgress.value || 0),
+    delivery:newClientDelivery.value,
+    date:newClientDate.value,
+    responsible:newClientResponsible.value || "Mariah",
+    whatsapp_url:newClientWhatsapp.value,
+    service_notes:newClientNotes.value,
+    approvals:0,
+    content:0,
+    performance:0,
+    color:"var(--champagne-3)"
   };
   const { error } = await supabaseClient.from("haia_os_clients").insert([item]);
-  if(error){ clients.unshift(item); }
-  newClientName.value = newClientInitials.value = newClientPlan.value = newClientProgress.value = newClientDelivery.value = newClientDate.value = "";
-  await loadClients();
+  if(error){ alert("Não salvou no Supabase, mas adicionou visualmente para teste."); clients.unshift(item); }
+  newClientName.value = newClientInitials.value = newClientPlan.value = newClientProgress.value = newClientDelivery.value = newClientDate.value = newClientResponsible.value = newClientWhatsapp.value = newClientNotes.value = "";
+  await loadAll();
   showAdminHome();
 }
 
-async function logout(){ await supabaseClient.auth.signOut(); location.reload(); }
+async function saveService(){
+  const item = {name:serviceName.value, category:serviceCategory.value, color:serviceColor.value};
+  const { error } = await supabaseClient.from("haia_os_services").insert([item]);
+  if(error) services.unshift(item);
+  await loadAll();
+  showModule("planos");
+}
+
+async function saveCommunication(){
+  const clientName = commClient.value;
+  const url = commUrl.value;
+  await supabaseClient.from("haia_os_communication").insert([{client_name:clientName, whatsapp_url:url, responsible:commResponsible.value, last_update:commUpdate.value}]);
+  await supabaseClient.from("haia_os_clients").update({whatsapp_url:url, responsible:commResponsible.value, delivery:commUpdate.value}).eq("name", clientName);
+  alert("Comunicação salva.");
+  await loadAll();
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+  location.reload();
+}
+
 initSession();
 </script>
 </body>

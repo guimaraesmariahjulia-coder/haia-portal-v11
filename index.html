@@ -1,2442 +1,450 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V26.2.1 • Correção Topo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAIA OS V27 • Estável</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 :root{
-  --bg:#f4efe8;
-  --glass:rgba(255,255,255,.54);
-  --line:rgba(82,62,42,.10);
-  --text:#151311;
-  --muted:#766f68;
-  --champagne:#e7c98f;
-  --champagne-2:#f4deb4;
-  --champagne-3:#c99f62;
-  --shadow:0 24px 80px rgba(72,50,34,.10);
-  --pink:#ff7ea8;
-  --purple:#a070ff;
-  --green:#74c882;
-  --orange:#f3a142;
+  --bg:#f7f1eb;
+  --text:#171412;
+  --muted:#756e67;
+  --line:rgba(255,255,255,.62);
+  --glass:rgba(255,255,255,.48);
+  --champagne:#e9c987;
+  --champagne-soft:#f5dfb5;
+  --pink:#ff7eaa;
+  --purple:#9b72ff;
+  --green:#72c982;
   --blue:#74a7ff;
-  --red:#ef6b6b;
+  --orange:#f3a142;
 }
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-  min-height:100vh;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+  color:var(--text);
+  min-height:100vh;
   background:
-    radial-gradient(circle at 12% 8%, rgba(231,201,143,.55), transparent 22%),
-    radial-gradient(circle at 82% 10%, rgba(255,126,168,.20), transparent 25%),
-    radial-gradient(circle at 55% 72%, rgba(160,112,255,.13), transparent 30%),
-    linear-gradient(135deg,#fbf7f0,#eee7df 52%,#f8eeee);
-  padding:18px;overflow-x:hidden;
+    radial-gradient(circle at 10% 8%, rgba(245,223,181,.75), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(255,126,170,.34), transparent 30%),
+    radial-gradient(circle at 22% 86%, rgba(153,220,213,.34), transparent 32%),
+    #f7f1eb;
 }
-body::before{
-  content:"";position:fixed;inset:0;
-  background:
-    linear-gradient(120deg,rgba(255,255,255,.32),rgba(255,255,255,.04)),
-    url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=70");
-  background-size:cover;background-position:center;opacity:.16;filter:blur(2px);pointer-events:none;z-index:-2;
+button,input,select,textarea{font:inherit}
+.login{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px;
 }
-body::after{content:"";position:fixed;inset:0;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);pointer-events:none;z-index:-1}
-button,input,textarea,select{font:inherit}
-button{border:0;cursor:pointer}
-.login-screen{min-height:calc(100vh - 36px);display:grid;place-items:center}
-.login-card{width:min(540px,100%);padding:42px;border-radius:36px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.68);box-shadow:var(--shadow);backdrop-filter:blur(28px)}
-.brand{font-size:38px;font-weight:900;letter-spacing:-.08em;color:#202326;margin-bottom:24px}
-.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8f6d3d;font-weight:800;margin-bottom:12px}
-h1{font-size:44px;line-height:1;letter-spacing:-.06em;margin-bottom:12px}
-h2{font-size:26px;letter-spacing:-.04em;margin-bottom:8px}
-h3{font-size:18px;letter-spacing:-.03em}
+.login-card,.sidebar,.panel,.hero,.modal{
+  background:var(--glass);
+  border:1px solid var(--line);
+  backdrop-filter:blur(28px);
+  -webkit-backdrop-filter:blur(28px);
+  box-shadow:0 26px 80px rgba(80,56,35,.10);
+}
+.login-card{
+  width:min(620px,100%);
+  border-radius:34px;
+  padding:44px;
+}
+.logo{font-size:42px;font-weight:950;letter-spacing:-.08em}
+.eyebrow{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  color:#8a6634;
+  font-weight:900;
+  margin-bottom:12px;
+}
+h1{font-size:42px;line-height:.95;letter-spacing:-.07em}
+h2{font-size:28px;letter-spacing:-.055em}
+h3{font-size:20px;letter-spacing:-.04em}
 p{color:var(--muted);line-height:1.55}
-input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.55);border-radius:16px;padding:14px;outline:none;color:var(--text)}
-textarea{min-height:105px;resize:vertical}
-.login-card input{height:58px;margin-top:14px}
-.primary-btn{min-height:48px;padding:0 20px;border-radius:18px;background:linear-gradient(135deg,var(--champagne-2),var(--champagne));color:#201915;font-weight:800;box-shadow:0 10px 30px rgba(201,159,98,.22)}
-.ghost-btn{min-height:44px;padding:0 16px;border-radius:16px;background:rgba(255,255,255,.48);border:1px solid rgba(255,255,255,.62);color:#332b25}
-.danger-btn{min-height:44px;padding:0 16px;border-radius:16px;background:rgba(239,107,107,.12);border:1px solid rgba(239,107,107,.25);color:#a53d3d;font-weight:800}
-.app{display:none;grid-template-columns:250px 1fr;gap:18px;max-width:1720px;margin:0 auto}
-.sidebar{position:sticky;top:18px;height:calc(100vh - 36px);padding:28px 20px;border-radius:28px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.62);box-shadow:var(--shadow);backdrop-filter:blur(30px);display:flex;flex-direction:column}
-.nav{display:grid;gap:6px}
-.nav button{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:16px;background:transparent;color:#2d2925;text-align:left;transition:.2s ease}
-.nav button.active,.nav button:hover{background:linear-gradient(135deg,rgba(244,222,180,.75),rgba(231,201,143,.38));color:#1f1711;box-shadow:0 8px 24px rgba(201,159,98,.13)}
-.nav .count{min-width:24px;height:24px;display:grid;place-items:center;border-radius:999px;background:rgba(231,201,143,.42);font-size:12px}
-.quick{margin-top:auto;display:grid;gap:10px}
-.user-card{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px;border-radius:20px;background:rgba(255,255,255,.5)}
-.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#e8c3ad,#f3dfc3);display:grid;place-items:center;font-weight:800}
-.main{display:grid;gap:18px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:8px 4px}
-.search{width:min(430px,100%);height:46px;border-radius:18px;border:1px solid rgba(255,255,255,.62);background:rgba(255,255,255,.50);padding:0 18px;outline:none;box-shadow:0 12px 28px rgba(92,64,43,.06)}
-.top-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.hero{padding:14px 10px 4px}
-.hero h1{font-size:34px}
-.signature{font-family:"Brush Script MT","Segoe Script",cursive;color:#8d6a3c;font-size:20px;margin-top:2px}
-.metrics{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));border-radius:28px;overflow:hidden;background:rgba(255,255,255,.43);border:1px solid rgba(255,255,255,.62);box-shadow:var(--shadow)}
-.metric{padding:24px;border-right:1px solid var(--line)}
-.metric:last-child{border-right:0}
-.metric small{color:var(--muted);font-weight:700}
-.metric strong{display:block;margin-top:12px;font-size:30px;letter-spacing:-.06em}
-.metric-icon{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;margin-bottom:18px;font-weight:900}
-.icon-champagne{background:rgba(231,201,143,.35);color:#7d5a2c}
-.icon-pink{background:rgba(255,126,168,.18);color:#d23f75}
-.icon-green{background:rgba(116,200,130,.18);color:#3b9b50}
-.icon-orange{background:rgba(243,161,66,.18);color:#c77416}
-.icon-purple{background:rgba(160,112,255,.16);color:#7b4ef0}
-.progress-line{width:100%;height:6px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:18px}
-.progress-line span{display:block;height:100%;border-radius:999px}
-.section-head{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px}
-.section-head .left{display:flex;gap:10px;align-items:center}
-.badge{padding:6px 10px;border-radius:999px;background:rgba(231,201,143,.30);color:#7d5a2c;font-size:12px;font-weight:800}
-.client-grid{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:16px}
-.client-card{position:relative;padding:20px;min-height:246px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08);backdrop-filter:blur(22px)}
-.client-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
-.client-logo{width:54px;height:54px;border-radius:14px;background:#101010;color:white;display:grid;place-items:center;font-size:22px;letter-spacing:-.06em}
-.plan{display:inline-flex;margin-top:6px;padding:5px 8px;border-radius:8px;background:rgba(231,201,143,.30);color:#8d6a3c;font-size:12px;font-weight:800}
-.client-progress{display:flex;align-items:center;gap:10px;margin:16px 0}
-.client-progress .bar{flex:1;height:6px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden}
-.client-progress .bar span{display:block;height:100%;border-radius:999px}
-.client-progress small{color:#2c2925;font-weight:700}
-.client-meta{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
-.client-meta div{flex:1;border-right:1px solid var(--line)}
-.client-meta div:last-child{border-right:0}
-.client-meta strong{display:block;font-size:20px}
-.client-meta small{color:var(--muted)}
-.mini-team{display:flex;align-items:center;gap:0;margin-top:18px}
-.face{width:28px;height:28px;margin-right:-8px;border:2px solid rgba(255,255,255,.8);border-radius:50%;background:linear-gradient(135deg,#dca98e,#f0d8c7)}
-.open-btn{position:absolute;right:18px;bottom:18px;padding:10px 13px;border-radius:14px;background:linear-gradient(135deg,rgba(244,222,180,.9),rgba(231,201,143,.55));color:#6d4c25;font-size:13px;font-weight:800}
-.lower-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:16px}
-.panel{padding:22px;border-radius:26px;background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.68);box-shadow:0 18px 55px rgba(75,53,39,.08)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.workspace,.module{display:none}
-.workspace.active,.module.active{display:grid;gap:18px}
-.admin-home.hidden{display:none}
-.client-top{padding:26px;border-radius:30px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.68);display:flex;justify-content:space-between;align-items:center;gap:16px}
-.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.tabs button{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.42);color:#2a2520}
-.tabs button.active{background:linear-gradient(135deg,rgba(244,222,180,.95),rgba(231,201,143,.58))}
-.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.service-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;margin:4px;border-radius:999px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.65);font-size:13px}
-.service-pill.purple{background:rgba(160,112,255,.16);color:#6b48c9}
-.service-pill.pink{background:rgba(255,126,168,.18);color:#ba4673}
-.service-pill.green{background:rgba(116,200,130,.18);color:#328845}
-.service-pill.orange{background:rgba(243,161,66,.18);color:#aa640e}
-.service-pill.blue{background:rgba(116,167,255,.18);color:#376ec5}
-.service-pill.champagne{background:rgba(231,201,143,.32);color:#7d5a2c}
-.whatsapp-card{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(244,222,180,.22));border:1px solid rgba(255,255,255,.72)}
-.whatsapp-btn{background:#25D366;color:white;box-shadow:0 14px 34px rgba(37,211,102,.22)}
-@media(max-width:1280px){.metrics{grid-template-columns:repeat(2,1fr)}.client-grid{grid-template-columns:repeat(2,1fr)}.lower-grid{grid-template-columns:1fr}}
-@media(max-width:860px){body{padding:12px}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;top:0}.topbar{flex-direction:column;align-items:stretch}.client-grid,.metrics,.form-grid{grid-template-columns:1fr}}
-
-.dna-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
-.dna-item{padding:16px;border-radius:18px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.62)}
-.dna-item small{display:block;color:var(--muted);font-weight:800;margin-bottom:6px}
-.fade-in{animation:fadeIn .28s ease both}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.client-mode-note{padding:12px 14px;border-radius:16px;background:rgba(231,201,143,.22);color:#7d5a2c;font-weight:700;margin-top:12px}
-@media(max-width:860px){.dna-grid{grid-template-columns:1fr}}
-
-.primary-btn,
-.ghost-btn,
-.danger-btn,
-.open-btn,
-.nav button,
-.tabs button{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  line-height:1 !important;
-  vertical-align:middle !important;
-  white-space:nowrap;
+input,select,textarea{
+  width:100%;
+  border:1px solid rgba(255,255,255,.78);
+  background:rgba(255,255,255,.52);
+  border-radius:18px;
+  padding:15px 16px;
+  outline:none;
 }
-
-.primary-btn{
-  height:48px;
+textarea{min-height:110px;resize:vertical}
+.primary-btn,.ghost-btn,.danger-btn{
+  border:0;
   min-height:48px;
-  padding:0 22px !important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 20px;
+  border-radius:18px;
+  font-weight:900;
+  cursor:pointer;
+  line-height:1;
 }
-
-.ghost-btn,
-.danger-btn{
-  height:44px;
-  min-height:44px;
-  padding:0 16px !important;
+.primary-btn{background:linear-gradient(135deg,var(--champagne-soft),var(--champagne));color:#1d1712}
+.ghost-btn{background:rgba(255,255,255,.54);color:#332b25;border:1px solid rgba(255,255,255,.68)}
+.danger-btn{background:rgba(255,126,170,.18);color:#b53f67}
+.app{display:none;grid-template-columns:270px 1fr;gap:20px;padding:22px;min-height:100vh}
+.sidebar{
+  border-radius:30px;
+  padding:24px;
+  height:calc(100vh - 44px);
+  position:sticky;
+  top:22px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
 }
-
-.open-btn{
-  min-height:40px;
-  height:40px;
-  padding:0 14px !important;
-}
-
+.nav{display:grid;gap:8px}
 .nav button{
+  border:0;
+  background:transparent;
   min-height:48px;
-}
-
-.tabs button{
-  min-height:44px;
-}
-
-.primary-btn,
-.ghost-btn,
-.danger-btn,
-.open-btn,
-.client-card,
-.panel,
-.metric{
-  transition:transform .22s ease, box-shadow .22s ease, background .22s ease;
-}
-
-.primary-btn:hover,
-.ghost-btn:hover,
-.danger-btn:hover,
-.open-btn:hover{
-  transform:translateY(-1px);
-}
-
-.client-card:hover,
-.panel:hover{
-  box-shadow:0 22px 64px rgba(75,53,39,.10);
-}
-
-#topActionBtn{
-  min-width:168px;
-  text-align:center;
-  display:none !important;
-}
-
-.section-head .primary-btn{
-  min-width:168px;
-}
-
-
-
-.modal-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(30,24,18,.22);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-  padding:20px;
-}
-.modal-backdrop.active{display:flex}
-.modal{
-  width:min(760px,100%);
-  max-height:90vh;
-  overflow:auto;
-  border-radius:30px;
-  padding:26px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 30px 90px rgba(72,50,34,.18);
-}
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:14px;
-  margin-bottom:18px;
-}
-.modal-actions{
-  display:flex;
-  gap:10px;
-  justify-content:flex-end;
-  flex-wrap:wrap;
-  margin-top:16px;
-}
-.notice{
-  padding:13px 14px;
-  border-radius:16px;
-  background:rgba(231,201,143,.22);
-  color:#7d5a2c;
+  border-radius:18px;
+  text-align:left;
+  padding:0 18px;
   font-weight:700;
-  margin-top:12px;
+  cursor:pointer;
+  color:#2c2622;
 }
-
-
-#topActionBtn.is-visible{
-  display:inline-flex !important;
-}
-#topActionBtn:not(.is-visible){
-  display:none !important;
-}
-
-.calendar-board{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:10px;
-  margin-top:18px;
-}
-.calendar-day{
-  min-height:150px;
-  border-radius:20px;
+.nav button.active{background:linear-gradient(135deg,rgba(245,223,181,.92),rgba(245,223,181,.32))}
+.user-card{
+  margin-top:auto;
   background:rgba(255,255,255,.42);
-  border:1px solid rgba(255,255,255,.64);
-  padding:12px;
-}
-.calendar-day strong{
-  display:block;
-  margin-bottom:10px;
-}
-.calendar-item{
-  padding:9px 10px;
-  border-radius:13px;
-  font-size:12px;
-  margin-top:8px;
-  line-height:1.3;
-}
-.calendar-item.reels{background:rgba(255,126,168,.18);color:#ba4673}
-.calendar-item.story{background:rgba(243,161,66,.18);color:#aa640e}
-.calendar-item.carrossel{background:rgba(160,112,255,.16);color:#6b48c9}
-.calendar-item.reuniao{background:rgba(116,167,255,.18);color:#376ec5}
-.calendar-item.entrega{background:rgba(231,201,143,.32);color:#7d5a2c}
-
-.ai-history-card{
-  padding:14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.42);
-  border:1px solid rgba(255,255,255,.62);
-  margin-top:10px;
-}
-.ai-history-card small{
-  display:block;
-  color:var(--muted);
-  margin-top:6px;
-}
-.client-view-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:7px 11px;
-  border-radius:999px;
-  background:rgba(231,201,143,.26);
-  color:#7d5a2c;
-  font-size:12px;
-  font-weight:800;
-}
-
-
-.approval-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-  margin-top:18px;
-}
-.approval-card{
-  padding:18px;
+  border:1px solid rgba(255,255,255,.66);
   border-radius:22px;
-  background:rgba(255,255,255,.48);
-  border:1px solid rgba(255,255,255,.68);
-  box-shadow:0 16px 44px rgba(75,53,39,.07);
+  padding:16px;
 }
-.approval-preview{
-  height:150px;
-  border-radius:18px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(231,201,143,.35), transparent 34%),
-    radial-gradient(circle at 80% 30%, rgba(255,126,168,.20), transparent 34%),
-    rgba(255,255,255,.42);
-  border:1px solid rgba(255,255,255,.58);
-  display:grid;
-  place-items:center;
-  margin-bottom:14px;
-  color:#8d6a3c;
-  font-weight:800;
+.main{display:grid;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.search{max-width:520px}
+.hero{border-radius:30px;padding:28px}
+.content{display:grid;gap:18px}
+.panel{border-radius:28px;padding:24px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.metric strong{font-size:36px;display:block;margin-top:10px}
+.metric .bar,.client-progress .bar{
+  height:7px;background:rgba(0,0,0,.08);border-radius:999px;overflow:hidden;margin-top:14px
 }
-.approval-status{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:7px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
+.metric .bar span,.client-progress .bar span{display:block;height:100%;border-radius:999px}
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:7px 11px;border-radius:999px;
+  background:rgba(233,201,135,.28);
+  color:#7c5a2d;font-size:12px;font-weight:900
 }
-.approval-status.pending{background:rgba(243,161,66,.18);color:#aa640e}
-.approval-status.approved{background:rgba(116,200,130,.18);color:#2e9b55}
-.approval-status.review{background:rgba(255,126,168,.18);color:#ba4673}
-.approval-status.published{background:rgba(116,167,255,.18);color:#376ec5}
-.approval-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:14px;
-}
-.feedback-box{
-  margin-top:12px;
-  padding:12px;
-  border-radius:16px;
-  background:rgba(255,255,255,.42);
-  color:var(--muted);
-}
-@media(max-width:1180px){.approval-grid{grid-template-columns:1fr}}
-
-
-.client-portal-grid{
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:16px;
-}
-.portal-hero{
-  padding:28px;
-  border-radius:30px;
-  background:rgba(255,255,255,.56);
-  border:1px solid rgba(255,255,255,.72);
-  box-shadow:0 18px 55px rgba(75,53,39,.08);
-}
-.portal-actions{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  margin-top:18px;
-}
-.portal-action-card{
-  padding:18px;
-  border-radius:22px;
+.client-card,.approval-card,.file-card,.calendar-day{
   background:rgba(255,255,255,.46);
-  border:1px solid rgba(255,255,255,.66);
-}
-.portal-status{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:14px 0;
-  border-bottom:1px solid var(--line);
-}
-.portal-status:last-child{border-bottom:0}
-.client-only-note{
-  padding:14px 16px;
-  border-radius:18px;
-  background:rgba(231,201,143,.22);
-  color:#7d5a2c;
-  font-weight:800;
-  margin-top:14px;
-}
-.file-card{
-  padding:14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.44);
-  border:1px solid rgba(255,255,255,.62);
-  margin-top:10px;
-}
-@media(max-width:1000px){.client-portal-grid,.portal-actions{grid-template-columns:1fr}}
-
-
-.workspace-link-box{
-  padding:14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.48);
   border:1px solid rgba(255,255,255,.68);
-  word-break:break-all;
-  color:#6f6255;
-  margin-top:12px;
-}
-.success-icon{
-  width:58px;
-  height:58px;
-  border-radius:20px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,var(--champagne-2),var(--champagne));
-  color:#201915;
-  font-size:26px;
-  font-weight:900;
-  margin-bottom:16px;
-}
-.invite-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:16px;
-}
-
-
-.files-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-  margin-top:18px;
-}
-.file-card-premium{
+  border-radius:24px;
   padding:18px;
-  border-radius:22px;
-  background:rgba(255,255,255,.48);
-  border:1px solid rgba(255,255,255,.68);
-  box-shadow:0 16px 44px rgba(75,53,39,.07);
 }
-.file-icon{
-  width:54px;
-  height:54px;
-  border-radius:18px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,rgba(244,222,180,.9),rgba(231,201,143,.45));
-  color:#7d5a2c;
-  font-size:24px;
-  margin-bottom:14px;
+.client-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.client-logo{
+  width:54px;height:54px;border-radius:17px;
+  display:grid;place-items:center;background:#111;color:white;font-size:22px
 }
-.file-category{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:7px 10px;
-  border-radius:999px;
-  background:rgba(231,201,143,.26);
-  color:#7d5a2c;
-  font-size:12px;
-  font-weight:800;
-  margin-top:10px;
+.client-actions,.row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.workspace-link{
+  margin-top:12px;padding:10px;border-radius:14px;
+  background:rgba(255,255,255,.44);font-size:12px;color:var(--muted);word-break:break-all
 }
-.file-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:14px;
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+.calendar-board{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.calendar-day{min-height:190px}
+.event{padding:10px;border-radius:14px;margin-top:8px;font-size:13px}
+.reels{background:rgba(255,126,170,.18);color:#a53761}
+.carrossel{background:rgba(155,114,255,.16);color:#6544bd}
+.stories{background:rgba(243,161,66,.18);color:#96570d}
+.reuniao{background:rgba(116,167,255,.18);color:#2e64bd}
+.entrega{background:rgba(233,201,135,.34);color:#7c5a2d}
+.approval-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.approval-column{background:rgba(255,255,255,.36);border:1px solid rgba(255,255,255,.62);border-radius:24px;padding:14px;min-height:280px}
+.preview{
+  height:110px;border-radius:16px;display:grid;place-items:center;margin-bottom:12px;
+  background:radial-gradient(circle at 25% 15%,rgba(233,201,135,.4),transparent 35%),
+  radial-gradient(circle at 82% 22%,rgba(255,126,170,.18),transparent 35%),
+  rgba(255,255,255,.38);color:#8a6634;font-weight:900
 }
-@media(max-width:1180px){.files-grid{grid-template-columns:1fr}}
-
-
-.v24-calendar-board{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:12px;
-  margin-top:18px;
+.modal-backdrop{position:fixed;inset:0;display:none;place-items:center;background:rgba(40,30,25,.20);backdrop-filter:blur(18px);z-index:50;padding:20px}
+.modal-backdrop.active{display:grid}
+.modal{width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:32px;padding:28px}
+.modal-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:18px}
+@media(max-width:1100px){
+  .app{grid-template-columns:1fr}
+  .sidebar{height:auto;position:relative}
+  .grid-4,.grid-3,.approval-board,.calendar-board,.form-grid{grid-template-columns:1fr}
 }
-.v24-day{
-  min-height:220px;
-  border-radius:24px;
-  padding:14px;
-  background:rgba(255,255,255,.44);
-  border:1px solid rgba(255,255,255,.66);
-}
-.v24-day-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  margin-bottom:12px;
-}
-.v24-day-head strong{
-  font-size:15px;
-}
-.v24-day-head small{
-  color:var(--muted);
-}
-.v24-event{
-  padding:11px;
-  border-radius:16px;
-  margin-top:9px;
-  border:1px solid rgba(255,255,255,.55);
-}
-.v24-event b{
-  display:block;
-  font-size:13px;
-  margin-bottom:4px;
-}
-.v24-event small{
-  display:block;
-  color:rgba(40,35,30,.72);
-  line-height:1.35;
-}
-.v24-event.reels{background:rgba(255,126,168,.18);color:#9d315f}
-.v24-event.carrossel{background:rgba(160,112,255,.16);color:#5f42bc}
-.v24-event.stories{background:rgba(243,161,66,.18);color:#9a5d12}
-.v24-event.reuniao{background:rgba(116,167,255,.18);color:#2f64b9}
-.v24-event.entrega{background:rgba(231,201,143,.34);color:#7d5a2c}
-.v24-event.publicado{background:rgba(116,200,130,.18);color:#2e8746}
-.status-chip{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:5px 8px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:800;
-  margin-top:8px;
-  background:rgba(255,255,255,.48);
-}
-.calendar-summary-grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:12px;
-  margin-top:18px;
-}
-.calendar-summary{
-  padding:15px;
-  border-radius:20px;
-  background:rgba(255,255,255,.44);
-  border:1px solid rgba(255,255,255,.66);
-}
-.calendar-summary strong{
-  display:block;
-  font-size:26px;
-  letter-spacing:-.05em;
-  margin-top:8px;
-}
-@media(max-width:1180px){
-  .v24-calendar-board{grid-template-columns:1fr}
-  .calendar-summary-grid{grid-template-columns:1fr 1fr}
-}
-
-
-.v25-approval-board{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-  margin-top:18px;
-}
-.v25-column{
-  min-height:320px;
-  padding:14px;
-  border-radius:24px;
-  background:rgba(255,255,255,.40);
-  border:1px solid rgba(255,255,255,.64);
-}
-.v25-column-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-.v25-column-head strong{font-size:15px}
-.v25-approval-card{
-  padding:14px;
-  border-radius:18px;
-  margin-top:10px;
-  background:rgba(255,255,255,.54);
-  border:1px solid rgba(255,255,255,.68);
-  box-shadow:0 12px 34px rgba(75,53,39,.06);
-}
-.v25-preview{
-  height:120px;
-  border-radius:16px;
-  display:grid;
-  place-items:center;
-  margin-bottom:12px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(231,201,143,.35), transparent 34%),
-    radial-gradient(circle at 80% 30%, rgba(255,126,168,.20), transparent 34%),
-    rgba(255,255,255,.42);
-  color:#8d6a3c;
-  font-weight:800;
-}
-.v25-status{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 9px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:900;
-  margin-top:8px;
-}
-.v25-status.pendente{background:rgba(243,161,66,.18);color:#aa640e}
-.v25-status.revisao{background:rgba(255,126,168,.18);color:#ba4673}
-.v25-status.aprovado{background:rgba(116,200,130,.18);color:#2e9b55}
-.v25-status.publicado{background:rgba(116,167,255,.18);color:#376ec5}
-.v25-feedback{
-  padding:11px;
-  border-radius:14px;
-  background:rgba(255,255,255,.42);
-  color:var(--muted);
-  margin-top:10px;
-  font-size:13px;
-}
-.v25-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
-.v25-actions button{
-  min-height:38px;
-  height:38px;
-  font-size:13px;
-}
-@media(max-width:1180px){.v25-approval-board{grid-template-columns:1fr}}
-
-
-.v26-client-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:16px;
-}
-.v26-link{
-  margin-top:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:rgba(255,255,255,.42);
-  border:1px solid rgba(255,255,255,.62);
-  color:var(--muted);
-  font-size:12px;
-  word-break:break-all;
-}
-.v26-empty{
-  padding:28px;
-  border-radius:24px;
-  background:rgba(255,255,255,.45);
-  border:1px solid rgba(255,255,255,.66);
-  text-align:center;
-  color:var(--muted);
-}
-
 </style>
 </head>
-
 <body>
-<section class="login-screen" id="loginScreen">
+
+<section class="login" id="loginScreen">
   <div class="login-card">
-    <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V26.2.2</div>
+    <div class="logo">HAIA</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V27</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com clientes reais, workspaces automáticos e links por WhatsApp.</p>
-    <input id="email" type="email" placeholder="E-mail">
-    <input id="password" type="password" placeholder="Senha">
-    <button class="primary-btn" onclick="haiaSafeLogin()">Entrar</button>
-    <p id="loginMsg" style="margin-top:14px;color:#b05b5b"></p>
+    <p style="margin-top:16px">Versão estável com dashboard, clientes reais, calendário, aprovações, arquivos e portal.</p>
+    <div style="display:grid;gap:12px;margin-top:24px">
+      <input id="email" type="email" placeholder="E-mail" value="guimaraesmariahjulia@gmail.com">
+      <input id="password" type="password" placeholder="Senha">
+      <button class="primary-btn" onclick="login()">Entrar</button>
+      <p id="loginMsg" style="color:#a94b4b"></p>
+    </div>
   </div>
 </section>
 
 <section class="app" id="app">
   <aside class="sidebar">
-    <div class="brand" style="font-size:36px;margin-bottom:18px">HAIA<span style="font-size:12px;letter-spacing:0"> OS</span></div>
-    <nav class="nav">
-      <button class="active" onclick="showAdminHome(this)">Dashboard</button>
+    <div class="logo">HAIA<span style="font-size:18px;letter-spacing:-.06em"> OS</span></div>
+    <div class="nav">
+      <button class="active" onclick="showModule('dashboard',this)">Dashboard</button>
       <button onclick="showModule('clientes',this)">Clientes</button>
       <button onclick="showModule('planos',this)">Serviços & Planos</button>
       <button onclick="showModule('comunicacao',this)">Comunicação</button>
       <button onclick="showModule('calendario',this)">Calendário</button>
       <button onclick="showModule('conteudos',this)">Conteúdos</button>
-      <button onclick="showModule('aprovacoes',this)">Aprovações <span class="count">8</span></button>
-      <button onclick="showModule('tarefas',this)">Tarefas <span class="count">12</span></button>
+      <button onclick="showModule('aprovacoes',this)">Aprovações <span class="badge">8</span></button>
+      <button onclick="showModule('tarefas',this)">Tarefas <span class="badge">12</span></button>
       <button onclick="showModule('dna',this)">DNA dos Clientes</button>
       <button onclick="showModule('portal',this)">Portal do Cliente</button>
+      <button onclick="showModule('arquivos',this)">Arquivos</button>
       <button onclick="showModule('ia',this)">IA HAIA</button>
-    </nav>
-    <div class="quick">
-      <div class="user-card"><div class="avatar">M</div><div><strong id="userName">Mariah</strong><p id="userRole" style="font-size:13px">Admin</p></div></div>
-      <button class="ghost-btn" onclick="logout()">Sair</button>
+    </div>
+    <div class="user-card">
+      <strong id="userName">Mariah Julia</strong>
+      <p id="userRole">admin</p>
     </div>
   </aside>
 
   <main class="main">
     <div class="topbar">
       <input class="search" placeholder="Buscar no sistema...">
-      <div class="top-actions">
+      <div style="display:flex;gap:10px">
         <button class="ghost-btn">🔔</button>
-        <button class="primary-btn" id="topActionBtn" style="display:none" onclick="handleTopAction()">+ Novo cliente</button>
+        <button class="primary-btn" id="topActionBtn" style="display:none" onclick="openCreateClient()">+ Novo cliente</button>
       </div>
     </div>
 
-    <section class="admin-home" id="adminHome">
-      <div class="hero">
-        <h1>Boa tarde, Mariah. 👋</h1>
-        <p>Aqui está o resumo geral da operação da HAIA.</p>
-        <span class="client-view-badge">V19 • visão inteligente</span>
-        <div class="signature">Vamos criar marcas inesquecíveis.</div>
-      </div>
-
-      <section class="metrics">
-        <div class="metric"><div class="metric-icon icon-champagne">◎</div><small>Clientes ativos</small><strong id="mClients">0</strong><p class="delta" style="color:var(--green)">operação ativa</p><div class="progress-line"><span style="width:80%;background:var(--champagne-3)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-pink">□</div><small>Aprovações pendentes</small><strong>8</strong><p class="delta" style="color:var(--red)">aguardando cliente</p><div class="progress-line"><span style="width:44%;background:var(--pink)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-green">✓</div><small>Conteúdos agendados</small><strong>47</strong><p class="delta" style="color:var(--green)">semana atual</p><div class="progress-line"><span style="width:72%;background:var(--green)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-orange">◌</div><small>Entregas da semana</small><strong>12</strong><p class="delta" style="color:var(--orange)">em andamento</p><div class="progress-line"><span style="width:78%;background:var(--orange)"></span></div></div>
-        <div class="metric"><div class="metric-icon icon-purple">▣</div><small>Planos ativos</small><strong id="mPlans">0</strong><p class="delta" style="color:var(--purple)">operações contratadas</p><div class="progress-line"><span style="width:75%;background:var(--champagne-3)"></span></div></div>
-      </section>
-
-      <div class="section-head">
-        <div class="left"><h2>Clientes</h2><span class="badge" id="activeBadge">0 ativos</span></div>
-        <div class="top-actions"><input class="search" style="width:260px" placeholder="Buscar cliente..."><button class="ghost-btn">Filtrar</button></div>
-      </div>
-
-      <section class="client-grid" id="clientGrid"></section>
-
-      <section class="lower-grid">
-        <div class="panel"><h3>Atividades recentes</h3><div id="activityList"></div></div>
-        <div class="panel"><h3>Serviços em destaque</h3><div id="serviceListMini"></div></div>
-        <div class="panel whatsapp-card"><h3>Comunicação HAIA</h3><p>Canal humano da operação. Use o WhatsApp para dúvidas rápidas e alinhamentos do dia a dia.</p><button class="primary-btn" style="margin-top:14px" onclick="showModule('comunicacao')">Configurar comunicação</button></div>
-      </section>
+    <section class="hero">
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V27</div>
+      <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
+      <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
 
-    <section class="workspace" id="workspace">
-      <div class="client-top">
-        <div style="display:flex;gap:18px;align-items:center">
-          <div class="client-logo" id="wsLogo">SC</div>
-          <div><h1 id="wsName">Studio Cristal</h1><p id="wsMeta">Plano Premium • Operação ativa</p></div>
-        </div>
-        <button class="ghost-btn" onclick="showAdminHome()">Voltar</button>
-      </div>
-
-      <div class="tabs">
-        <button class="active" onclick="renderWorkspaceTab('resumo',this)">Resumo</button>
-        <button onclick="renderWorkspaceTab('servicos',this)">Serviços</button>
-        <button onclick="renderWorkspaceTab('dna',this)">DNA</button>
-        <button onclick="renderWorkspaceTab('comunicacao',this)">Comunicação</button>
-        <button onclick="renderWorkspaceTab('calendario',this)">Calendário</button>
-        <button onclick="renderWorkspaceTab('aprovacoes',this)">Aprovações</button>
-        <button onclick="renderWorkspaceTab('arquivos',this)">Arquivos</button>
-      </div>
-      <div id="workspaceContent"></div>
-    </section>
-
-    <section class="module" id="genericModule">
-      <div class="panel"><h1 id="moduleTitle">Módulo</h1><p id="moduleText">Área em construção dentro do HAIA OS.</p></div>
-      <div id="moduleContent"></div>
-    </section>
-
-    <section class="module" id="createClientModule">
-      <div class="panel">
-        <h1>Novo cliente</h1><p>Cadastre um novo workspace dentro do HAIA OS.</p>
-        <div class="form-grid" style="margin-top:18px">
-          <input id="newClientName" placeholder="Nome do cliente">
-          <input id="newClientInitials" placeholder="Iniciais. Ex: SC">
-          <input id="newClientPlan" placeholder="Operação contratada. Ex: Operação Premium">
-          <input id="newClientProgress" type="number" placeholder="Progresso. Ex: 72">
-          <input id="newClientDelivery" placeholder="Próxima entrega">
-          <input id="newClientDate" placeholder="Data. Ex: 15 MAI">
-          <input id="newClientResponsible" placeholder="Responsável. Ex: Mariah">
-          <input id="newClientWhatsapp" placeholder="Link do grupo WhatsApp">
-          <input id="newClientPhone" placeholder="WhatsApp do cliente com DDI. Ex: 5521999999999">
-          <input id="newClientPhone" placeholder="WhatsApp do cliente com DDI. Ex: 5521999999999">
-        </div>
-        <textarea id="newClientNotes" placeholder="Observações sobre serviços contratados"></textarea>
-        <button class="primary-btn" onclick="saveClient()" style="margin-top:14px">Salvar cliente</button>
-      </div>
-    </section>
+    <section class="content" id="dynamicContent"></section>
   </main>
 </section>
+
+<div class="modal-backdrop" id="clientModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">Cliente</div>
+        <h2 id="clientModalTitle">Novo cliente</h2>
+        <p>Cadastre ou edite os dados reais do workspace.</p>
+      </div>
+      <button class="ghost-btn" onclick="closeClientModal()">Fechar</button>
+    </div>
+    <input type="hidden" id="clientId">
+    <div class="form-grid">
+      <input id="clientName" placeholder="Nome do cliente">
+      <input id="clientInitials" placeholder="Iniciais">
+      <input id="clientPlan" placeholder="Plano / operação">
+      <input id="clientResponsible" placeholder="Responsável" value="Mariah">
+      <input id="clientProgress" type="number" placeholder="Progresso">
+      <input id="clientDelivery" placeholder="Próxima entrega">
+      <input id="clientDate" placeholder="Data">
+      <input id="clientPhone" placeholder="WhatsApp com DDI">
+      <input id="clientWhatsapp" placeholder="Link do grupo WhatsApp">
+    </div>
+    <textarea id="clientNotes" style="margin-top:12px" placeholder="Observações, serviços contratados e detalhes"></textarea>
+    <div class="row-actions">
+      <button class="primary-btn" onclick="saveClient()">Salvar cliente</button>
+      <button class="danger-btn" id="deleteClientBtn" onclick="deleteClient()" style="display:none">Excluir</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = "https://dagekkvpyphwjgheoosz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Hk3hQWlN713HClx7YrJ0-g_wJHWJcmq";
-let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-function ensureSupabase(){
-  if(!supabaseClient && window.supabase){
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
-  return supabaseClient;
-}
+let supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
-let profile = null;
+let profile = {name:"Mariah Julia", role:"admin"};
 let clients = [];
-let plans = [];
-let services = [];
 let selectedClient = null;
-
-const demoClients = [
-  {name:"Studio Cristal", initials:"SC", plan:"Operação Premium", progress:72, delivery:"Planejamento Junho", date:"15 MAI", approvals:3, content:7, performance:92, color:"var(--purple)", whatsapp_url:"", responsible:"Mariah", service_notes:"Gestão Instagram, Reels, Stories e Estratégia."},
-  {name:"Mariah Biquínis", initials:"MB", plan:"Operação Premium", progress:90, delivery:"Lançamento Coleção", date:"22 MAI", approvals:0, content:8, performance:95, color:"var(--pink)", whatsapp_url:"", responsible:"Mariah", service_notes:"Campanhas, calendário, lançamento e collabs."},
-  {name:"Noir Makeup", initials:"NM", plan:"Projeto Avulso", progress:81, delivery:"Campanha Mês das Mães", date:"17 MAI", approvals:2, content:9, performance:88, color:"var(--purple)", whatsapp_url:"", responsible:"Mariah", service_notes:"Campanha visual e conteúdos de conversão."},
-  {name:"Luna Fitness", initials:"LF", plan:"Operação Essencial", progress:58, delivery:"Calendário de Conteúdo", date:"16 MAI", approvals:1, content:5, performance:78, color:"var(--orange)", whatsapp_url:"", responsible:"Mariah", service_notes:"Planejamento e conteúdos essenciais."}
-];
-
-const demoServices = [
-  {name:"Planejamento mensal", category:"Estratégia", color:"purple"},
-  {name:"Reels estratégicos", category:"Conteúdo", color:"pink"},
-  {name:"Stories", category:"Conteúdo", color:"orange"},
-  {name:"Design de posts", category:"Design", color:"blue"},
-  {name:"Relatório mensal", category:"Analytics", color:"green"},
-  {name:"Branding", category:"Marca", color:"champagne"}
-];
-
-async function login(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const { data, error } = await supabaseClient.auth.signInWithPassword({email,password});
-  if(error){ document.getElementById("loginMsg").textContent = "Login inválido ou não cadastrado."; return; }
-  currentUser = data.user;
-  await loadProfile();
-  openApp();
-}
-
-async function initSession(){
-  const { data } = await supabaseClient.auth.getSession();
-  if(data.session && data.session.user){
-    currentUser = data.session.user;
-    await loadProfile();
-    openApp();
-  }
-}
-
-async function loadProfile(){
-  const { data } = await supabaseClient.from("haia_user_profiles").select("*").eq("email", currentUser.email).maybeSingle();
-  profile = data || {email:currentUser.email, name:"Mariah", role:"admin", client_name:""};
-}
-
-function openApp(){
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("app").style.display = "grid";
-  document.getElementById("userName").textContent = profile.name || "Mariah";
-  document.getElementById("userRole").textContent = profile.role || "Admin";
-
-  if(profile.role === "cliente"){
-    document.querySelectorAll(".nav button").forEach(btn=>{
-      const t = btn.textContent.toLowerCase();
-      if(t.includes("clientes") || t.includes("serviços") || t.includes("financeiro")){
-        btn.style.display = "none";
-      }
-    });
-  }
-  loadAll();
-  updateTopAction('dashboard');
-  setTimeout(()=>{
-    const params = new URLSearchParams(window.location.search);
-    const clientSlug = params.get("cliente");
-    if(clientSlug){
-      const found = findClientBySlug(clientSlug);
-      if(found){
-        selectedClient = found;
-        showModule("portal");
-        return;
-      }
-    }
-    if(profile && profile.role === "cliente"){
-      showModule("portal");
-    }
-  },500);
-}
-
-async function loadAll(){
-  await Promise.all([loadClients(), loadPlans(), loadServices()]);
-  renderDashboard();
-}
-
-async function loadClients(){
-  const client = typeof haiaClient === "function" ? haiaClient() : supabaseClient;
-  const { data, error } = await client.from("haia_os_clients").select("*").order("created_at",{ascending:false});
-
-  if(error){
-    clients = demoClients;
-    return;
-  }
-
-  clients = data || [];
-}
-
-async function loadPlans(){
-  const { data } = await supabaseClient.from("haia_os_plans").select("*").order("created_at",{ascending:false});
-  plans = data || [];
-}
-
-async function loadServices(){
-  const { data } = await supabaseClient.from("haia_os_services").select("*").order("created_at",{ascending:false});
-  services = data && data.length ? data : demoServices;
-}
-
-function renderDashboard(){
-  document.getElementById("mClients").textContent = clients.length;
-  document.getElementById("mPlans").textContent = plans.length || 4;
-  document.getElementById("activeBadge").textContent = clients.length + " ativos";
-
-  const grid = document.getElementById("clientGrid");
-  grid.innerHTML = clients.map((c,i)=>`
-    <div class="client-card">
-      <div class="client-head">
-        <div style="display:flex;gap:14px">
-          <div class="client-logo">${c.initials || getInitials(c.name)}</div>
-          <div><h3>${c.name}</h3><span class="plan">${c.plan || "Operação Personalizada"}</span></div>
-        </div>
-        <strong>...</strong>
-      </div>
-      <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}% concluído</small></div>
-      <p style="font-size:13px">Próxima entrega</p>
-      <div style="display:flex;justify-content:space-between;margin-top:4px"><strong>${c.delivery || "Planejamento"}</strong><small>${c.date || "15 MAI"}</small></div>
-      <div class="client-meta"><div><strong>${c.approvals || 0}</strong><small>Aprovações</small></div><div><strong>${c.content || 0}</strong><small>Conteúdos</small></div><div><strong>${c.performance || 0}%</strong><small>Performance</small></div></div>
-      <div class="mini-team"><span class="face"></span><span class="face"></span><span class="face"></span><small style="margin-left:12px">${c.responsible || "Mariah"}</small></div>
-      <button class="open-btn" onclick="openWorkspace(${i})">Abrir workspace →</button>
-    </div>
-  `).join("");
-
-  document.getElementById("activityList").innerHTML = `
-    <div class="row"><span><span class="status-dot" style="background:var(--green)"></span>Studio Cristal aprovou 2 conteúdos</span><small>há 15 min</small></div>
-    <div class="row"><span><span class="status-dot" style="background:var(--pink)"></span>Noir Makeup enviou feedback</span><small>há 1h</small></div>
-    <div class="row"><span><span class="status-dot" style="background:var(--orange)"></span>Luna Fitness recebeu relatório</span><small>há 2h</small></div>
-  `;
-
-  document.getElementById("serviceListMini").innerHTML = services.slice(0,6).map(s=>`
-    <span class="service-pill ${s.color || "champagne"}">${s.name}</span>
-  `).join("");
-}
-
-function getInitials(name){ return String(name||"HA").split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase(); }
-
-function openWorkspace(index){
-  selectedClient = clients[index];
-  document.getElementById("adminHome").classList.add("hidden");
-  document.getElementById("genericModule").classList.remove("active");
-  document.getElementById("createClientModule").classList.remove("active");
-  document.getElementById("workspace").classList.add("active");
-  document.getElementById("wsLogo").textContent = selectedClient.initials || getInitials(selectedClient.name);
-  document.getElementById("wsName").textContent = selectedClient.name;
-  document.getElementById("wsMeta").textContent = (selectedClient.plan || "Operação Personalizada") + " • Operação ativa";
-  renderWorkspaceTab("resumo");
-}
-
-function renderWorkspaceTab(tab, btn){
-  if(btn){ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
-  const c = selectedClient || demoClients[0];
-  const box = document.getElementById("workspaceContent");
-
-  if(tab === "resumo"){
-    box.innerHTML = `<section class="metrics" style="grid-template-columns:repeat(3,1fr)">
-      <div class="metric"><small>Progresso geral</small><strong>${c.progress}%</strong><div class="progress-line"><span style="width:${c.progress}%;background:${c.color || "var(--champagne-3)"}"></span></div></div>
-      <div class="metric"><small>Próxima entrega</small><strong style="font-size:22px">${c.delivery}</strong><p>${c.date}</p></div>
-      <div class="metric"><small>Responsável</small><strong style="font-size:22px">${c.responsible || "Mariah"}</strong><p>Estratégia e operação</p></div>
-    </section>`;
-  }
-
-  if(tab === "servicos"){
-    box.innerHTML = `<div class="panel"><h2>Serviços & Operação contratada</h2><p>${c.service_notes || "Serviços personalizados para este cliente."}</p><div style="margin-top:18px">${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name}</span>`).join("")}</div></div>`;
-  }
-
-  if(tab === "dna"){
-    box.innerHTML = `<div class="panel fade-in">
-      <div class="eyebrow">DNA DO CLIENTE</div>
-      <h2>${c.name}</h2>
-      <p>Base contextual usada pela IA HAIA para gerar estratégias, conteúdos, diagnósticos e campanhas.</p>
-      <div class="dna-grid">
-        <div class="dna-item"><small>Nicho</small>${c.niche || "Cadastrar no módulo DNA dos Clientes"}</div>
-        <div class="dna-item"><small>Tom de voz</small>${c.tone || "Premium, estratégico e claro"}</div>
-        <div class="dna-item"><small>Estética</small>${c.visual_identity || "Visual alinhado à marca"}</div>
-        <div class="dna-item"><small>Objetivo</small>${c.goals || "Autoridade, relacionamento e conversão"}</div>
-        <div class="dna-item"><small>Serviços</small>${c.service_notes || "Operação personalizada"}</div>
-        <div class="dna-item"><small>CTA</small>${c.cta || "Direcionar para ação principal"}</div>
-      </div>
-    </div>`;
-  }
-
-  if(tab === "comunicacao"){
-    const wa = c.whatsapp_url || "";
-    box.innerHTML = `<div class="panel whatsapp-card">
-      <div class="eyebrow">Comunicação</div>
-      <h2>Canal direto com a HAIA</h2>
-      <p>Esse é o espaço humano da operação. Para dúvidas rápidas, alinhamentos e aprovações urgentes, use o grupo operacional no WhatsApp.</p>
-      <div class="row"><span>Grupo operacional</span><strong>${c.whatsapp_label || "WhatsApp HAIA"}</strong></div>
-      <div class="row"><span>Responsável</span><strong>${c.responsible || "Mariah"}</strong></div>
-      <div class="row"><span>Horário de atendimento</span><strong>09h às 18h</strong></div>
-      <div class="row"><span>Última atualização</span><strong>${c.delivery || "Planejamento atualizado"}</strong></div>
-      <button class="primary-btn whatsapp-btn" style="margin-top:16px" onclick="openWhatsApp('${wa}')">Falar com a HAIA no WhatsApp</button>
-    </div>`;
-  }
-
-  if(tab !== "resumo" && tab !== "servicos" && tab !== "comunicacao"){
-    box.innerHTML = `<div class="panel"><h2>${tab.charAt(0).toUpperCase()+tab.slice(1)}</h2><p>Módulo do cliente em desenvolvimento no HAIA OS.</p></div>`;
-  }
-}
-
-function openWhatsApp(url){
-  if(url && url.startsWith("http")) window.open(url, "_blank");
-  else alert("Ainda não existe link de WhatsApp cadastrado para este cliente.");
-}
-
-function showAdminHome(btn){
-  document.getElementById("adminHome").classList.remove("hidden");
-  document.getElementById("workspace").classList.remove("active");
-  document.getElementById("genericModule").classList.remove("active");
-  document.getElementById("createClientModule").classList.remove("active");
-  updateTopAction("dashboard");
-  if(btn) setActiveNav(btn);
-}
-
-function showModule(name, btn){
-  document.getElementById("adminHome").classList.add("hidden");
-  document.getElementById("workspace").classList.remove("active");
-  document.getElementById("createClientModule").classList.remove("active");
-  document.getElementById("genericModule").classList.add("active");
-  document.getElementById("moduleTitle").textContent = name === "dna" ? "DNA" : name.charAt(0).toUpperCase()+name.slice(1);
-  const content = document.getElementById("moduleContent");
-
-  updateTopAction(name);
-
-  if(name === "clientes"){
-    document.getElementById("moduleText").textContent = "Gerencie clientes, edite operações, atualize WhatsApp e acompanhe workspaces ativos.";
-    content.innerHTML = renderClientsAdminModule();
-  } else if(name === "planos"){
-    document.getElementById("moduleText").textContent = "Crie planos, serviços e vincule operações personalizadas aos clientes.";
-    content.innerHTML = renderPlansModule();
-  } else if(name === "comunicacao"){
-    document.getElementById("moduleText").textContent = "Configure grupos de WhatsApp, responsáveis e canais diretos por cliente.";
-    content.innerHTML = renderCommunicationModule();
-  } else if(name === "dna"){
-    document.getElementById("moduleText").textContent = "Edite o DNA estratégico que alimenta a IA contextual de cada cliente.";
-    content.innerHTML = renderDNAModule();
-  } else if(name === "ia"){
-    document.getElementById("moduleText").textContent = "IA contextual baseada no DNA estratégico de cada cliente, com histórico visual.";
-    content.innerHTML = renderIAModule();
-    loadAIHistory();
-  } else if(name === "calendario"){
-    document.getElementById("moduleText").textContent = "Calendário real da operação com status de gravação, edição, aprovação, postagem e publicação.";
-    content.innerHTML = renderCalendarModule();
-    renderCalendarItems();
-  } else if(name === "aprovacoes"){
-    document.getElementById("moduleText").textContent = "Fluxo real de aprovação com comentários, versões, preview e status de publicação.";
-    content.innerHTML = renderApprovalsModule();
-    renderApprovals();
-  } else if(name === "portal"){
-    document.getElementById("moduleText").textContent = "Visão premium e simplificada para o cliente acompanhar a operação.";
-    content.innerHTML = renderClientPortalModule();
-  } else if(name === "arquivos"){
-    document.getElementById("moduleText").textContent = "Central de arquivos por cliente: briefing, relatórios, referências, contratos e entregas.";
-    content.innerHTML = renderFilesModule();
-    renderFilesList();
-  } else {
-    document.getElementById("moduleText").textContent = "Este módulo será construído na próxima etapa do HAIA OS.";
-    content.innerHTML = "";
-  }
-
-  if(btn) setActiveNav(btn);
-}
-
-
-
-function updateTopAction(screen){
-  const btn = document.getElementById("topActionBtn");
-  if(!btn) return;
-
-  btn.classList.remove("is-visible");
-  btn.style.display = "none";
-
-  if(screen === "clientes" && (!profile || profile.role !== "cliente")){
-    btn.classList.add("is-visible");
-    btn.style.display = "inline-flex";
-    btn.textContent = "+ Novo cliente";
-    btn.onclick = openCreateClient;
-  } else {
-    btn.classList.remove("is-visible");
-    btn.style.display = "none";
-    btn.onclick = null;
-  }
-}
-
-function handleTopAction(){
-  const activeText = document.querySelector(".nav button.active")?.textContent || "";
-  if(activeText.includes("Clientes")){
-    openCreateClient();
-  } else if(activeText.includes("DNA")){
-    alert("Use o formulário de DNA abaixo para salvar as informações do cliente.");
-  }
-}
-
-function renderClientsAdminModule(){
-  if(!clients.length){
-    return `<div class="panel fade-in">
-      <div class="eyebrow">Clientes reais</div>
-      <h2>Nenhum cliente cadastrado ainda</h2>
-      <p>Cadastre o primeiro cliente para gerar workspace, link do portal e convite WhatsApp.</p>
-      <button class="primary-btn" style="margin-top:16px" onclick="openCreateClient()">+ Novo cliente</button>
-    </div>`;
-  }
-
-  return `<div class="section-head">
-    <div class="left"><h2>Clientes cadastrados</h2><span class="badge">${clients.length} ativos</span></div>
-    <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
-  </div>
-  <section class="client-grid fade-in">
-    ${clients.map((c,i)=>{
-      const slug = c.workspace_slug || createClientSlug(c.name);
-      const link = c.workspace_url || createWorkspaceUrl(slug);
-      return `<div class="client-card">
-        <div class="client-head">
-          <div style="display:flex;gap:14px">
-            <div class="client-logo">${c.initials || getInitials(c.name)}</div>
-            <div><h3>${c.name}</h3><span class="plan">${c.plan || "Operação Personalizada"}</span></div>
-          </div>
-          <strong>${c.status || "ativo"}</strong>
-        </div>
-        <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}%</small></div>
-        <p><strong>Responsável:</strong> ${c.responsible || "Mariah"}</p>
-        <p><strong>Próxima entrega:</strong> ${c.delivery || "Planejamento"}</p>
-        <div class="v26-link">${link}</div>
-        <div class="v26-client-actions">
-          <button class="ghost-btn" onclick="openWorkspace(${i})">Abrir</button>
-          <button class="ghost-btn" onclick="openEditClient(${i})">Editar</button>
-          <button class="ghost-btn" onclick="copyText('${link}')">Copiar link</button>
-          <button class="primary-btn whatsapp-btn" onclick='sendClientWorkspaceWhatsapp(${JSON.stringify(c)})'>WhatsApp</button>
-        </div>
-      </div>`;
-    }).join("")}
-  </section>`;
-}
-
-
-function openEditClient(index){
-  const c = clients[index];
-  if(!c) return;
-
-  document.getElementById("editClientId").value = c.id || "";
-  document.getElementById("editModalTitle").textContent = c.name || "Cliente";
-  document.getElementById("editClientName").value = c.name || "";
-  document.getElementById("editClientInitials").value = c.initials || "";
-  document.getElementById("editClientPlan").value = c.plan || "";
-  document.getElementById("editClientResponsible").value = c.responsible || "";
-  document.getElementById("editClientProgress").value = c.progress || 0;
-  document.getElementById("editClientDelivery").value = c.delivery || "";
-  document.getElementById("editClientDate").value = c.date || "";
-  document.getElementById("editClientWhatsapp").value = c.whatsapp_url || "";
-  document.getElementById("editClientNotes").value = c.service_notes || "";
-  document.getElementById("editClientMsg").style.display = "none";
-
-  window.__editingClientIndex = index;
-  document.getElementById("editClientModal").classList.add("active");
-}
-
-function closeEditClient(){
-  document.getElementById("editClientModal").classList.remove("active");
-}
-
-async function updateCurrentClient(){
-  const index = window.__editingClientIndex;
-  const old = clients[index];
-  if(!old) return;
-
-  const item = {
-    name:editClientName.value,
-    initials:editClientInitials.value,
-    plan:editClientPlan.value || "Operação Personalizada",
-    responsible:editClientResponsible.value || "Mariah",
-    progress:Number(editClientProgress.value || 0),
-    delivery:editClientDelivery.value,
-    date:editClientDate.value,
-    whatsapp_url:editClientWhatsapp.value,
-    service_notes:editClientNotes.value
-  };
-
-  let error = null;
-  if(old.id){
-    const result = await supabaseClient.from("haia_os_clients").update(item).eq("id", old.id);
-    error = result.error;
-  }
-
-  clients[index] = {...old, ...item};
-
-  const msg = document.getElementById("editClientMsg");
-  msg.style.display = "block";
-  msg.textContent = error ? "Alteração aplicada visualmente. Verifique o Supabase se não persistir." : "Cliente atualizado com sucesso.";
-
-  await loadAll();
-  setTimeout(()=>{ closeEditClient(); showModule("clientes"); }, 600);
-}
-
-async function deleteCurrentClient(){
-  const index = window.__editingClientIndex;
-  const c = clients[index];
-  if(!c) return;
-
-  const ok = confirm("Tem certeza que deseja excluir este cliente?");
-  if(!ok) return;
-
-  if(c.id){
-    await supabaseClient.from("haia_os_clients").delete().eq("id", c.id);
-  }
-
-  clients.splice(index,1);
-  closeEditClient();
-  await loadAll();
-  showModule("clientes");
-}
-
-async function loadClientDNA(clientName){
-  const { data } = await supabaseClient
-    .from("haia_client_dna")
-    .select("*")
-    .eq("client_name", clientName)
-    .order("created_at", {ascending:false})
-    .limit(1)
-    .maybeSingle();
-
-  return data || null;
-}
-
-async function fillDNAFromClient(){
-  const name = document.getElementById("dnaClient")?.value;
-  if(!name) return;
-
-  const dna = await loadClientDNA(name);
-  document.getElementById("dnaNiche").value = dna?.niche || "";
-  document.getElementById("dnaTone").value = dna?.tone || "";
-  document.getElementById("dnaVisual").value = dna?.visual_identity || "";
-  document.getElementById("dnaGoals").value = dna?.goals || "";
-  document.getElementById("dnaKeywords").value = dna?.keywords || "";
-  document.getElementById("dnaRestrictions").value = dna?.restrictions || "";
-  document.getElementById("dnaCTA").value = dna?.cta || "";
-  document.getElementById("dnaReferences").value = dna?.references_text || "";
-}
-
-
-function renderDNAModule(){
-  return `<div class="panel fade-in">
-    <div class="eyebrow">DNA CONTEXTUAL</div>
-    <h2>Base estratégica da IA HAIA</h2>
-    <p>Cadastre o contexto que a IA deve considerar antes de responder para cada cliente.</p>
-
-    <div class="form-grid" style="margin-top:18px">
-      <select id="dnaClient" onchange="fillDNAFromClient()">
-        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
-      </select>
-      <input id="dnaNiche" placeholder="Nicho. Ex: beleza, moda praia, fitness">
-      <input id="dnaTone" placeholder="Tom de voz. Ex: premium, popular, editorial">
-      <input id="dnaVisual" placeholder="Estética. Ex: claro/glow, dark/neon, fashion">
-      <input id="dnaGoals" placeholder="Objetivo. Ex: autoridade, conversão, agendamento">
-      <input id="dnaKeywords" placeholder="Palavras-chave">
-      <input id="dnaCTA" placeholder="CTA principal">
-      <input id="dnaRestrictions" placeholder="Restrições / evitar">
-    </div>
-
-    <textarea id="dnaReferences" style="margin-top:12px" placeholder="Referências, observações, campanhas anteriores, diferenciais e detalhes importantes."></textarea>
-
-    <button class="primary-btn" style="margin-top:14px" onclick="saveDNA()">Salvar DNA contextual</button>
-    <div id="dnaSavedMsg" class="client-mode-note" style="display:none">DNA salvo. A IA HAIA poderá usar esse contexto nas próximas respostas.</div>
-  </div>
-
-  <div class="panel fade-in">
-    <h2>Como a IA vai usar isso</h2>
-    <div class="dna-grid">
-      <div class="dna-item"><small>Nicho</small>Evita respostas genéricas e entende o mercado do cliente.</div>
-      <div class="dna-item"><small>Tom de voz</small>Ajusta linguagem, energia e posicionamento.</div>
-      <div class="dna-item"><small>Estética</small>Direciona sugestões visuais coerentes com a marca.</div>
-      <div class="dna-item"><small>Objetivos</small>Faz a IA priorizar autoridade, vendas, agenda ou comunidade.</div>
-    </div>
-  </div>`;
-}
-
-async function saveDNA(){
-  const item = {
-    client_name:dnaClient.value,
-    niche:dnaNiche.value,
-    tone:dnaTone.value,
-    visual_identity:dnaVisual.value,
-    goals:dnaGoals.value,
-    keywords:dnaKeywords.value,
-    restrictions:dnaRestrictions.value,
-    cta:dnaCTA.value,
-    references_text:dnaReferences.value
-  };
-
-  try{
-    await supabaseClient.from("haia_client_dna").delete().eq("client_name", item.client_name);
-    await supabaseClient.from("haia_client_dna").insert([item]);
-    await supabaseClient.from("haia_os_clients").update({
-      niche:item.niche,
-      tone:item.tone,
-      visual_identity:item.visual_identity,
-      goals:item.goals,
-      keywords:item.keywords,
-      restrictions:item.restrictions,
-      cta:item.cta
-    }).eq("name", item.client_name);
-  }catch(e){}
-
-  const msg = document.getElementById("dnaSavedMsg");
-  msg.style.display = "block";
-  msg.textContent = "DNA contextual salvo e vinculado ao cliente.";
-  await loadAll();
-}
-
-
-
-
-
-let fileItems = [
-  {client_name:"Studio Cristal", file_name:"Planejamento Junho.pdf", file_category:"Estratégia", file_url:"#", description:"Planejamento mensal da operação."},
-  {client_name:"Mariah Biquínis", file_name:"Moodboard Coleção.png", file_category:"Branding", file_url:"#", description:"Referências visuais da próxima campanha."},
-  {client_name:"Kaife Fitness", file_name:"Roteiro Reels Feira.docx", file_category:"Conteúdo", file_url:"#", description:"Roteiro base para gravação."}
-];
-
-function renderFilesModule(){
-  return `<div class="panel fade-in">
-    <div class="eyebrow">Arquivos</div>
-    <h2>Novo arquivo</h2>
-    <p>Organize materiais, briefings, referências e entregas por cliente.</p>
-
-    <div class="form-grid" style="margin-top:18px">
-      <select id="fileClient">
-        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
-      </select>
-      <select id="fileCategory">
-        <option>Estratégia</option>
-        <option>Conteúdo</option>
-        <option>Branding</option>
-        <option>Financeiro</option>
-        <option>Aprovação</option>
-        <option>Referências</option>
-      </select>
-      <input id="fileName" placeholder="Nome do arquivo">
-      <input id="fileUrl" placeholder="Link do arquivo ou pasta">
-    </div>
-
-    <textarea id="fileDescription" style="margin-top:12px" placeholder="Descrição ou observações"></textarea>
-
-    <div class="top-actions" style="margin-top:14px">
-      <button class="primary-btn" onclick="saveFileItem()">Adicionar arquivo</button>
-      <button class="ghost-btn" onclick="alert('Upload direto por Supabase Storage entra no próximo ciclo.')">Upload real</button>
-    </div>
-  </div>
-
-  <div class="panel fade-in">
-    <div class="section-head">
-      <div class="left"><h2>Arquivos da operação</h2><span class="badge">V23 integrado</span></div>
-    </div>
-    <div class="files-grid" id="filesGrid"></div>
-  </div>`;
-}
-
-function renderFilesList(){
-  const grid = document.getElementById("filesGrid");
-  if(!grid) return;
-
-  grid.innerHTML = fileItems.map((item,index)=>`
-    <div class="file-card-premium">
-      <div class="file-icon">📎</div>
-      <h3>${item.file_name}</h3>
-      <p>${item.client_name}</p>
-      <span class="file-category">${item.file_category}</span>
-      <p style="margin-top:10px">${item.description || ""}</p>
-      <div class="file-actions">
-        <button class="primary-btn" onclick="openFileItem(${index})">Abrir</button>
-        <button class="ghost-btn" onclick="copyFileLink(${index})">Copiar link</button>
-      </div>
-    </div>
-  `).join("");
-}
-
-async function saveFileItem(){
-  const item = {
-    client_name:fileClient.value,
-    file_name:fileName.value || "Arquivo sem nome",
-    file_category:fileCategory.value,
-    file_url:fileUrl.value || "#",
-    description:fileDescription.value
-  };
-
-  fileItems.unshift(item);
-
-  try{
-    await supabaseClient.from("haia_client_files").insert([item]);
-  }catch(e){}
-
-  fileName.value = "";
-  fileUrl.value = "";
-  fileDescription.value = "";
-  renderFilesList();
-}
-
-function openFileItem(index){
-  const url = fileItems[index]?.file_url;
-  if(url && url !== "#") window.open(url,"_blank");
-  else alert("Este arquivo ainda não tem link cadastrado.");
-}
-
-async function copyFileLink(index){
-  const url = fileItems[index]?.file_url || "";
-  try{
-    await navigator.clipboard.writeText(url);
-    alert("Link copiado.");
-  }catch(e){
-    alert(url || "Sem link cadastrado.");
-  }
-}
-
-
-function getPortalClient(){
-  const params = new URLSearchParams(window.location.search);
-  const clientSlug = params.get("cliente");
-  if(clientSlug){
-    const found = findClientBySlug(clientSlug);
-    if(found) return found;
-  }
-  if(profile && profile.role === "cliente" && profile.client_name){
-    return clients.find(c=>c.name === profile.client_name) || clients[0];
-  }
-  return selectedClient || clients[0] || {name:"Studio Cristal", initials:"SC", plan:"Operação Premium", progress:72, delivery:"Planejamento Junho", date:"15 MAI", responsible:"Mariah"};
-}
-
-function renderClientPortalModule(){
-  const c = getPortalClient();
-
-  return `<div class="portal-hero fade-in">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
-      <div style="display:flex;gap:18px;align-items:center">
-        <div class="client-logo">${c.initials || getInitials(c.name)}</div>
-        <div>
-          <div class="eyebrow">Portal do Cliente</div>
-          <h1>${c.name}</h1>
-          <p>${c.plan || "Operação Personalizada"} • atendimento HAIA</p>
-        </div>
-      </div>
-      <span class="client-view-badge">Visão cliente</span>
-    </div>
-
-    <div class="client-progress" style="margin-top:24px">
-      <div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div>
-      <small>${c.progress || 0}% da operação</small>
-    </div>
-
-    <div class="portal-actions">
-      <div class="portal-action-card"><strong>Próxima entrega</strong><p>${c.delivery || "Planejamento"} • ${c.date || "sem data"}</p></div>
-      <div class="portal-action-card"><strong>Responsável</strong><p>${c.responsible || "Mariah"} • Estratégia HAIA</p></div>
-      <div class="portal-action-card"><strong>Aprovações</strong><p>${c.approvals || 0} itens aguardando retorno</p></div>
-      <div class="portal-action-card"><strong>WhatsApp</strong><p>Canal direto da operação</p></div>
-    </div>
-  </div>
-
-  <div class="client-portal-grid fade-in">
-    <div class="panel">
-      <h2>Acompanhamento da operação</h2>
-      <div class="portal-status"><span>Status atual</span><strong>${c.status || "ativo"}</strong></div>
-      <div class="portal-status"><span>Conteúdos do mês</span><strong>${c.content || 0}</strong></div>
-      <div class="portal-status"><span>Performance</span><strong>${c.performance || 0}%</strong></div>
-      <div class="portal-status"><span>Plano</span><strong>${c.plan || "Operação Personalizada"}</strong></div>
-    </div>
-
-    <div class="panel whatsapp-card">
-      <div class="eyebrow">Comunicação</div>
-      <h2>Fale com a HAIA</h2>
-      <p>Use o grupo operacional para dúvidas rápidas, ajustes e alinhamentos importantes.</p>
-      <button class="primary-btn whatsapp-btn" style="margin-top:16px" onclick="openWhatsApp('${c.whatsapp_url || ""}')">Abrir WhatsApp</button>
-      <div class="client-only-note">Atendimento padrão: segunda a sexta, 09h às 18h.</div>
-    </div>
-
-    <div class="panel">
-      <h2>Arquivos recentes</h2>
-      <div class="file-card"><strong>Planejamento mensal</strong><p>Documento estratégico da operação.</p></div>
-      <div class="file-card"><strong>Relatório de performance</strong><p>Resumo de resultados do mês.</p></div>
-      <div class="file-card"><strong>Briefing atualizado</strong><p>Base de comunicação da marca.</p></div>
-      <button class="ghost-btn" style="margin-top:14px" onclick="showModule('arquivos')">Ver central de arquivos</button>
-    </div>
-
-    <div class="panel">
-      <h2>Feedback rápido</h2>
-      <textarea id="portalFeedback" placeholder="Escreva uma dúvida, ajuste ou observação para a equipe HAIA."></textarea>
-      <button class="primary-btn" style="margin-top:14px" onclick="alert('Feedback registrado visualmente. No próximo ciclo conectamos ao Supabase.')">Enviar feedback</button>
-    </div>
-  </div>`;
-}
-
-
-
-let approvalItems = [
-  {client_name:"Studio Cristal", title:"Reels Vale Responde", description:"Conteúdo de autoridade com CTA para agenda.", status:"pendente", feedback:"", link:"#", version:1},
-  {client_name:"Mariah Biquínis", title:"Campanha coleção", description:"Criativo de lançamento para coleção.", status:"aprovado", feedback:"Aprovado para publicação.", link:"#", version:2},
-  {client_name:"Kaife Fitness", title:"Stories feira", description:"Sequência de stories de presença na feira.", status:"revisao", feedback:"Ajustar chamada principal.", link:"#", version:1},
-  {client_name:"Studio Cristal", title:"Carrossel cuidados pós cílios", description:"Carrossel educativo para autoridade.", status:"publicado", feedback:"Publicado no feed.", link:"#", version:3}
-];
-
-function renderApprovalsModule(){
-  return `<div class="panel fade-in">
-    <div class="eyebrow">Aprovação real</div>
-    <h2>Novo conteúdo para aprovação</h2>
-    <p>Envie conteúdos, registre feedbacks, controle versões e acompanhe até a publicação.</p>
-
-    <div class="form-grid" style="margin-top:18px">
-      <select id="approvalClient">
-        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
-      </select>
-      <input id="approvalTitle" placeholder="Nome do conteúdo. Ex: Reels de autoridade">
-      <input id="approvalLink" placeholder="Link do preview, Canva, Drive ou Instagram">
-      <select id="approvalType">
-        <option>Reels</option>
-        <option>Carrossel</option>
-        <option>Stories</option>
-        <option>Arte estática</option>
-        <option>Relatório</option>
-      </select>
-    </div>
-
-    <textarea id="approvalDescription" style="margin-top:12px" placeholder="Observações para o cliente, contexto, instruções ou legenda sugerida."></textarea>
-
-    <div class="top-actions" style="margin-top:14px">
-      <button class="primary-btn" onclick="saveApprovalItem('pendente')">Enviar para aprovação</button>
-      <button class="ghost-btn" onclick="saveApprovalItem('rascunho')">Salvar rascunho</button>
-    </div>
-  </div>
-
-  <div class="panel fade-in">
-    <div class="section-head">
-      <div class="left"><h2>Board de aprovações</h2><span class="badge">V25 fluxo real</span></div>
-    </div>
-    <div class="v25-approval-board" id="approvalGrid"></div>
-  </div>`;
-}
-
-function statusLabel(status){
-  const map = {
-    pendente:"Pendente",
-    revisao:"Em revisão",
-    aprovado:"Aprovado",
-    publicado:"Publicado",
-    rascunho:"Rascunho"
-  };
-  return map[status] || status;
-}
-
-function statusColumnLabel(status){
-  const map = {
-    pendente:"Aguardando",
-    revisao:"Revisão",
-    aprovado:"Aprovados",
-    publicado:"Publicados"
-  };
-  return map[status] || status;
-}
-
-function renderApprovals(){
-  const grid = document.getElementById("approvalGrid");
-  if(!grid) return;
-
-  const columns = ["pendente","revisao","aprovado","publicado"];
-
-  grid.innerHTML = columns.map(status=>{
-    const items = approvalItems.filter(i=>i.status === status);
-    return `<div class="v25-column">
-      <div class="v25-column-head">
-        <strong>${statusColumnLabel(status)}</strong>
-        <span class="badge">${items.length}</span>
-      </div>
-      ${items.map(item=>{
-        const index = approvalItems.indexOf(item);
-        return `<div class="v25-approval-card">
-          <div class="v25-preview">Preview</div>
-          <h3>${item.title}</h3>
-          <p>${item.client_name}</p>
-          <span class="v25-status ${item.status}">${statusLabel(item.status)}</span>
-          <p style="margin-top:10px">${item.description || ""}</p>
-          <small>Versão ${item.version || 1}</small>
-          ${item.feedback ? `<div class="v25-feedback"><strong>Feedback:</strong><br>${item.feedback}</div>` : ""}
-          <textarea id="feedback_${index}" style="margin-top:10px;min-height:74px" placeholder="Feedback, ajuste ou observação..."></textarea>
-          <div class="v25-actions">
-            <button class="primary-btn" onclick="updateApprovalStatus(${index},'aprovado')">Aprovar</button>
-            <button class="ghost-btn" onclick="updateApprovalStatus(${index},'revisao')">Pedir ajuste</button>
-            <button class="ghost-btn" onclick="updateApprovalStatus(${index},'publicado')">Publicado</button>
-            <button class="ghost-btn" onclick="openApprovalLink(${index})">Abrir</button>
-          </div>
-        </div>`;
-      }).join("")}
-    </div>`;
-  }).join("");
-}
-
-async function saveApprovalItem(status){
-  const item = {
-    client_name:approvalClient.value,
-    title:approvalTitle.value || "Conteúdo sem título",
-    description:approvalDescription.value,
-    status:status,
-    feedback:"",
-    link:approvalLink.value || "#",
-    type:approvalType.value,
-    version:1
-  };
-
-  approvalItems.unshift(item);
-
-  try{
-    await supabaseClient.from("haia_approvals").insert([{
-      client_name:item.client_name,
-      content_title:item.title,
-      description:item.description,
-      status:statusLabel(item.status),
-      feedback:item.feedback,
-      file_url:item.link,
-      content_type:item.type,
-      version:item.version
-    }]);
-  }catch(e){}
-
-  approvalTitle.value = "";
-  approvalDescription.value = "";
-  approvalLink.value = "";
-  renderApprovals();
-}
-
-async function updateApprovalStatus(index,status){
-  const field = document.getElementById(`feedback_${index}`);
-  const feedback = field ? field.value : "";
-  approvalItems[index].status = status;
-  if(feedback) approvalItems[index].feedback = feedback;
-  if(status === "revisao") approvalItems[index].version = (approvalItems[index].version || 1) + 1;
-
-  try{
-    await supabaseClient.from("haia_approvals").insert([{
-      client_name:approvalItems[index].client_name,
-      content_title:approvalItems[index].title,
-      description:approvalItems[index].description,
-      status:statusLabel(status),
-      feedback:approvalItems[index].feedback,
-      file_url:approvalItems[index].link,
-      content_type:approvalItems[index].type,
-      version:approvalItems[index].version
-    }]);
-  }catch(e){}
-
-  renderApprovals();
-}
-
-function openApprovalLink(index){
-  const url = approvalItems[index]?.link;
-  if(url && url !== "#") window.open(url,"_blank");
-  else alert("Este conteúdo ainda não tem link de preview cadastrado.");
-}
-
-
-let calendarItems = [
-  {client_name:"Studio Cristal", item_date:"SEG", item_time:"08:00", title:"Reels Vale Responde", type:"reels", status:"Planejado"},
-  {client_name:"Mariah Biquínis", item_date:"TER", item_time:"10:00", title:"Carrossel lançamento", type:"carrossel", status:"Em produção"},
-  {client_name:"Kaife Fitness", item_date:"QUA", item_time:"12:00", title:"Stories feira", type:"story", status:"Planejado"},
-  {client_name:"Studio Cristal", item_date:"SEX", item_time:"15:00", title:"Entrega planejamento", type:"entrega", status:"Pendente"}
-];
-
+let editingClientIndex = null;
 
 let calendarItems = [
   {client_name:"Studio Cristal", item_date:"SEG", item_time:"09:00", title:"Gravar Reels Vale Responde", type:"reels", status:"Gravar"},
   {client_name:"Mariah Biquínis", item_date:"TER", item_time:"11:00", title:"Carrossel lançamento", type:"carrossel", status:"Editar"},
-  {client_name:"Kaife Fitness", item_date:"QUA", item_time:"12:00", title:"Sequência de Stories feira", type:"stories", status:"Aprovar"},
-  {client_name:"Studio Cristal", item_date:"QUI", item_time:"15:00", title:"Reunião de alinhamento", type:"reuniao", status:"Confirmado"},
-  {client_name:"Mariah Biquínis", item_date:"SEX", item_time:"18:00", title:"Postar campanha coleção", type:"publicado", status:"Postar"}
+  {client_name:"Kaife Fitness", item_date:"QUA", item_time:"12:00", title:"Stories feira", type:"stories", status:"Aprovar"}
 ];
 
-function renderCalendarModule(){
-  return `<div class="panel fade-in">
-    <div class="eyebrow">Calendário real da operação</div>
-    <h2>Planejamento semanal HAIA</h2>
-    <p>Organize conteúdos, reuniões, aprovações, entregas e publicações por cliente.</p>
+let approvals = [
+  {client_name:"Studio Cristal", title:"Reels Vale Responde", description:"Conteúdo de autoridade.", status:"pendente", feedback:"", link:"#", version:1},
+  {client_name:"Mariah Biquínis", title:"Campanha coleção", description:"Criativo de lançamento.", status:"aprovado", feedback:"Aprovado.", link:"#", version:2},
+  {client_name:"Kaife Fitness", title:"Stories feira", description:"Sequência de stories.", status:"revisao", feedback:"Ajustar chamada.", link:"#", version:1}
+];
 
-    <div class="calendar-summary-grid">
-      <div class="calendar-summary"><small>Gravar</small><strong id="sumGravar">0</strong></div>
-      <div class="calendar-summary"><small>Editar</small><strong id="sumEditar">0</strong></div>
-      <div class="calendar-summary"><small>Aprovar</small><strong id="sumAprovar">0</strong></div>
-      <div class="calendar-summary"><small>Postar</small><strong id="sumPostar">0</strong></div>
-      <div class="calendar-summary"><small>Total</small><strong id="sumTotal">0</strong></div>
-    </div>
+let files = [
+  {client_name:"Studio Cristal", file_name:"Planejamento Junho.pdf", file_category:"Estratégia", file_url:"#", description:"Planejamento mensal."},
+  {client_name:"Mariah Biquínis", file_name:"Moodboard Coleção.png", file_category:"Branding", file_url:"#", description:"Referências visuais."}
+];
 
-    <div class="form-grid" style="margin-top:18px">
-      <select id="calClient">
-        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
-      </select>
-      <select id="calDay">
-        <option>SEG</option><option>TER</option><option>QUA</option><option>QUI</option><option>SEX</option><option>SÁB</option><option>DOM</option>
-      </select>
-      <input id="calTime" placeholder="Horário. Ex: 08:00">
-      <input id="calTitle" placeholder="Título do conteúdo ou tarefa">
-      <select id="calType">
-        <option value="reels">Reels</option>
-        <option value="carrossel">Carrossel</option>
-        <option value="stories">Stories</option>
-        <option value="reuniao">Reunião</option>
-        <option value="entrega">Entrega</option>
-        <option value="publicado">Publicado</option>
-      </select>
-      <select id="calStatus">
-        <option>Gravar</option>
-        <option>Editar</option>
-        <option>Aprovar</option>
-        <option>Postar</option>
-        <option>Publicado</option>
-        <option>Confirmado</option>
-      </select>
-    </div>
-
-    <button class="primary-btn" style="margin-top:14px" onclick="saveCalendarItem()">Adicionar ao calendário</button>
-  </div>
-
-  <div class="panel fade-in">
-    <div class="section-head">
-      <div class="left"><h2>Semana da operação</h2><span class="badge">V24 calendário real</span></div>
-    </div>
-    <div class="v24-calendar-board" id="calendarBoard"></div>
-  </div>`;
+function slugify(name){
+  return String(name||"cliente").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }
-
-function renderCalendarItems(){
-  const board = document.getElementById("calendarBoard");
-  if(!board) return;
-
-  const days = [
-    {key:"SEG",label:"Segunda"},
-    {key:"TER",label:"Terça"},
-    {key:"QUA",label:"Quarta"},
-    {key:"QUI",label:"Quinta"},
-    {key:"SEX",label:"Sexta"},
-    {key:"SÁB",label:"Sábado"},
-    {key:"DOM",label:"Domingo"}
-  ];
-
-  board.innerHTML = days.map(day=>{
-    const items = calendarItems.filter(i=>i.item_date === day.key);
-    return `<div class="v24-day">
-      <div class="v24-day-head">
-        <strong>${day.label}</strong>
-        <small>${items.length} itens</small>
-      </div>
-      ${items.map((i,index)=>`<div class="v24-event ${i.type}">
-        <b>${i.item_time || ""} • ${i.title}</b>
-        <small>${i.client_name}</small>
-        <span class="status-chip">${i.status}</span>
-      </div>`).join("")}
-    </div>`;
-  }).join("");
-
-  updateCalendarSummary();
+function initials(name){return String(name||"HA").split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase()}
+function workspaceUrl(c){return `${location.origin}${location.pathname}?cliente=${encodeURIComponent(c.workspace_slug || slugify(c.name))}`}
+function setActive(btn){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active")); if(btn) btn.classList.add("active")}
+function setTopAction(name){
+  const btn = document.getElementById("topActionBtn");
+  btn.style.display = name==="clientes" ? "inline-flex" : "none";
 }
+function content(){return document.getElementById("dynamicContent")}
 
-function updateCalendarSummary(){
-  const total = calendarItems.length;
-  const count = (status)=>calendarItems.filter(i=>String(i.status).toLowerCase() === status.toLowerCase()).length;
-  const set = (id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val; };
-  set("sumGravar", count("Gravar"));
-  set("sumEditar", count("Editar"));
-  set("sumAprovar", count("Aprovar"));
-  set("sumPostar", count("Postar"));
-  set("sumTotal", total);
+async function login(){
+  const msg = document.getElementById("loginMsg");
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if(!email || !password){msg.textContent="Preencha e-mail e senha.";return}
+  const {data,error}=await supa.auth.signInWithPassword({email,password});
+  if(error){msg.textContent="Login inválido ou não cadastrado.";return}
+  currentUser=data.user;
+  await loadAll();
+  openApp();
 }
-
-async function saveCalendarItem(){
-  const item = {
-    client_name:calClient.value,
-    item_date:calDay.value,
-    item_time:calTime.value,
-    title:calTitle.value || "Item sem título",
-    type:calType.value,
-    status:calStatus.value
-  };
-
-  calendarItems.push(item);
-
-  try{
-    await supabaseClient.from("haia_os_calendar").insert([item]);
-  }catch(e){}
-
-  calTime.value = "";
-  calTitle.value = "";
-  renderCalendarItems();
-}
-
-
-async function loadAIHistory(){
-  const list = document.getElementById("aiHistoryList");
-  if(!list) return;
-
-  try{
-    const { data } = await supabaseClient
-      .from("haia_ai_history")
-      .select("*")
-      .order("created_at", {ascending:false})
-      .limit(8);
-
-    if(!data || !data.length){
-      list.innerHTML = `<p>Nenhum histórico ainda. Gere uma resposta na IA HAIA para começar.</p>`;
-      return;
-    }
-
-    list.innerHTML = data.map(item=>`
-      <div class="ai-history-card">
-        <strong>${item.client_name || "Cliente"}</strong>
-        <p>${item.prompt || "Pedido estratégico"}</p>
-        <small>${item.action || "ação"} • histórico IA</small>
-      </div>
-    `).join("");
-  }catch(e){
-    list.innerHTML = `<p>Histórico local indisponível no momento.</p>`;
+async function initSession(){
+  const {data}=await supa.auth.getSession();
+  if(data?.session?.user){
+    currentUser=data.session.user;
+    await loadAll();
+    openApp();
   }
 }
+async function loadAll(){await loadClients()}
+async function loadClients(){
+  const {data,error}=await supa.from("haia_os_clients").select("*").order("created_at",{ascending:false});
+  clients = error ? [] : (data || []);
+}
+function openApp(){
+  document.getElementById("loginScreen").style.display="none";
+  document.getElementById("app").style.display="grid";
+  showModule("dashboard");
+}
+function showModule(name,btn){
+  setActive(btn || [...document.querySelectorAll(".nav button")].find(b=>b.textContent.toLowerCase().includes(name)));
+  setTopAction(name);
+  const titles = {
+    dashboard:["Boa tarde, Mariah 👋","Resumo geral da operação HAIA."],
+    clientes:["Clientes","Gerencie clientes reais, workspaces e links por WhatsApp."],
+    planos:["Serviços & Planos","Planos e serviços personalizados por cliente."],
+    comunicacao:["Comunicação","WhatsApp, grupos e canais de atendimento."],
+    calendario:["Calendário","Calendário real da operação."],
+    conteudos:["Conteúdos","Organização dos conteúdos da agência."],
+    aprovacoes:["Aprovações","Fluxo de aprovação com status, versão e feedback."],
+    tarefas:["Tarefas","Acompanhamento operacional da equipe."],
+    dna:["DNA dos Clientes","Base estratégica da IA contextual."],
+    portal:["Portal do Cliente","Visão premium para o cliente acompanhar a operação."],
+    arquivos:["Arquivos","Central de documentos e materiais por cliente."],
+    ia:["IA HAIA","Inteligência contextual da operação."]
+  };
+  document.getElementById("moduleTitle").textContent = titles[name]?.[0] || name;
+  document.getElementById("moduleText").textContent = titles[name]?.[1] || "";
+  const map = {
+    dashboard:renderDashboard, clientes:renderClients, planos:renderPlans, comunicacao:renderCommunication,
+    calendario:renderCalendar, conteudos:renderContent, aprovacoes:renderApprovals, tarefas:renderTasks,
+    dna:renderDNA, portal:renderPortal, arquivos:renderFiles, ia:renderAI
+  };
+  content().innerHTML = (map[name] || renderPlaceholder)(name);
+  if(name==="calendario") renderCalendarBoard();
+  if(name==="aprovacoes") renderApprovalBoard();
+  if(name==="arquivos") renderFilesGrid();
+}
 
+function renderDashboard(){
+  return `<div class="grid-4">
+    ${metric("Clientes ativos",clients.length,"operação ativa", "var(--champagne)")}
+    ${metric("Aprovações pendentes",8,"aguardando cliente", "var(--pink)")}
+    ${metric("Conteúdos agendados",47,"semana atual", "var(--green)")}
+    ${metric("Entregas da semana",12,"em andamento", "var(--orange)")}
+  </div>
+  <div class="panel">
+    <div class="section-head"><div><h2>Clientes em operação</h2><p>Workspaces ativos do HAIA OS.</p></div></div>
+    ${clients.length ? `<div class="grid-3">${clients.slice(0,6).map(clientCard).join("")}</div>` : `<div class="client-card"><h3>Nenhum cliente cadastrado ainda</h3><p>Vá em Clientes para criar o primeiro workspace real.</p></div>`}
+  </div>`;
+}
+function metric(label,value,sub,color){return `<div class="panel metric"><p>${label}</p><strong>${value}</strong><p style="color:${color}">${sub}</p><div class="bar"><span style="width:75%;background:${color}"></span></div></div>`}
 
-function renderIAModule(){
+function renderClients(){
   return `<div class="panel">
-    <div class="eyebrow">IA HAIA CONTEXTUAL</div>
-    <h2>Inteligência estratégica por cliente</h2>
-    <p>A IA HAIA responde considerando o DNA do cliente: nicho, tom de voz, estética, objetivos, serviços contratados e posicionamento.</p>
-
-    <div class="form-grid" style="margin-top:18px">
-      <select id="aiClient">
-        ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
-      </select>
-      <select id="aiAction">
-        <option value="calendario">Criar calendário de conteúdo</option>
-        <option value="reels">Gerar ideias de Reels</option>
-        <option value="legenda">Criar legenda estratégica</option>
-        <option value="perfil">Analisar perfil</option>
-        <option value="campanha">Criar campanha</option>
-        <option value="posicionamento">Definir posicionamento</option>
-      </select>
-    </div>
-
-    <textarea id="aiPrompt" style="margin-top:12px" placeholder="Ex: crie uma semana de conteúdos para esse cliente com foco em autoridade e conversão."></textarea>
-
-    <button class="primary-btn" style="margin-top:14px" onclick="runLocalAI()">Gerar com IA HAIA</button>
-
-    <div id="aiResult" class="panel" style="margin-top:18px;background:rgba(255,255,255,.38)">
-      <p>Escolha um cliente e faça um pedido. A resposta será montada usando o contexto estratégico dele.</p>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h2>Histórico da IA</h2>
-    <p>Últimos pedidos estratégicos gerados dentro do HAIA OS.</p>
-    <div id="aiHistoryList" style="margin-top:14px"></div>
-  </div>
-
-  <div class="panel">
-    <h2>DNA contextual do cliente</h2>
-    <p>Na próxima evolução, cada cliente terá campos próprios de nicho, tom, estética, objetivos, diferenciais, restrições, CTAs e referências.</p>
-    <div style="margin-top:16px">
-      <span class="service-pill purple">Tom de voz</span>
-      <span class="service-pill pink">Conteúdo</span>
-      <span class="service-pill champagne">Branding</span>
-      <span class="service-pill green">Objetivos</span>
-      <span class="service-pill blue">Métricas</span>
-    </div>
+    <div class="section-head"><div><h2>Clientes cadastrados</h2><p>${clients.length} clientes ativos no banco.</p></div><button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button></div>
+    ${clients.length ? `<div class="grid-3">${clients.map(clientCard).join("")}</div>` : `<div class="client-card"><h3>Nenhum cliente cadastrado</h3><p>Cadastre o primeiro cliente para gerar workspace e link.</p></div>`}
   </div>`;
 }
-
-async function runLocalAI(){
-  const clientName = document.getElementById("aiClient").value;
-  const action = document.getElementById("aiAction").value;
-  const prompt = document.getElementById("aiPrompt").value;
-  const client = clients.find(c => c.name === clientName) || clients[0];
-  const dna = await loadClientDNA(clientName);
-
-  const context = `
-    <strong>${client.name}</strong><br>
-    Operação: ${client.plan || "Operação personalizada"}<br>
-    Responsável: ${client.responsible || "Mariah"}<br>
-    Próxima entrega: ${client.delivery || "Planejamento"}<br>
-    Nicho: ${dna?.niche || client.niche || "não cadastrado"}<br>
-    Tom: ${dna?.tone || client.tone || "não cadastrado"}<br>
-    Estética: ${dna?.visual_identity || client.visual_identity || "não cadastrada"}<br>
-    Objetivo: ${dna?.goals || client.goals || "não cadastrado"}<br>
-    CTA: ${dna?.cta || client.cta || "não cadastrado"}<br>
-    Observações: ${dna?.references_text || client.service_notes || "Sem observações cadastradas."}
-  `;
-
-  const suggestions = {
-    calendario: "Sugestão: montar calendário com 2 Reels de autoridade, 1 carrossel educativo, 1 prova social e 1 conteúdo de conversão.",
-    reels: "Sugestão: criar Reels com gancho forte, bastidor real, prova de transformação e CTA direto para ação.",
-    legenda: "Sugestão: legenda com contexto, desejo, autoridade e CTA limpo, sem parecer propaganda genérica.",
-    perfil: "Sugestão: analisar bio, clareza da oferta, destaques, prova social, posicionamento visual e conversão.",
-    campanha: "Sugestão: campanha com conceito central, promessa, calendário de aquecimento e conteúdos de prova.",
-    posicionamento: "Sugestão: definir como a marca deve ser percebida, quais diferenciais comunicar e quais conteúdos sustentam essa imagem."
-  };
-
-  document.getElementById("aiResult").innerHTML = `
-    <div class="eyebrow">Resposta contextual V18</div>
-    <h2>${client.name}</h2>
-    <p>${context}</p>
-    <div class="panel" style="margin-top:14px;background:rgba(255,255,255,.42)">
-      <p><strong>Pedido:</strong> ${prompt || "Pedido estratégico padrão."}</p>
-      <p style="margin-top:10px">${suggestions[action]}</p>
-      <p style="margin-top:10px;color:#766f68">Essa é a base local do V15. No próximo passo, conectamos isso à API para respostas reais e completas da IA.</p>
+function clientCard(c,i=clients.indexOf(c)){
+  const link=workspaceUrl(c);
+  return `<div class="client-card">
+    <div class="client-head"><div style="display:flex;gap:14px"><div class="client-logo">${c.initials||initials(c.name)}</div><div><h3>${c.name}</h3><span class="badge">${c.plan||"Operação Personalizada"}</span></div></div><strong>${c.status||"ativo"}</strong></div>
+    <div class="client-progress"><div class="bar"><span style="width:${c.progress||0}%;background:var(--purple)"></span></div><small>${c.progress||0}%</small></div>
+    <p><strong>Responsável:</strong> ${c.responsible||"Mariah"}</p>
+    <p><strong>Entrega:</strong> ${c.delivery||"Planejamento inicial"}</p>
+    <div class="workspace-link">${link}</div>
+    <div class="client-actions">
+      <button class="ghost-btn" onclick="openWorkspace(${i})">Abrir</button>
+      <button class="ghost-btn" onclick="openEditClient(${i})">Editar</button>
+      <button class="ghost-btn" onclick="copyText('${link}')">Copiar link</button>
+      <button class="primary-btn" onclick="sendWhatsapp(${i})">WhatsApp</button>
     </div>
-  `;
-
-  try{
-    await supabaseClient.from("haia_ai_history").insert([{
-      client_name:client.name,
-      prompt:prompt || "Pedido estratégico padrão.",
-      action:action,
-      response:suggestions[action]
-    }]);
-  }catch(e){}
+  </div>`
 }
-
-function renderPlansModule(){
-  return `<div class="panel"><h2>Novo serviço</h2>
-    <div class="form-grid"><input id="serviceName" placeholder="Nome do serviço"><input id="serviceCategory" placeholder="Categoria"><select id="serviceColor"><option value="champagne">Champagne</option><option value="purple">Estratégia / Lilás</option><option value="pink">Conteúdo / Rosa</option><option value="green">Analytics / Verde</option><option value="blue">Financeiro / Azul</option><option value="orange">Pendência / Laranja</option></select></div>
-    <button class="primary-btn" style="margin-top:14px" onclick="saveService()">Salvar serviço</button>
-  </div>
-  <div class="panel"><h2>Serviços cadastrados</h2><div>${services.map(s=>`<span class="service-pill ${s.color || "champagne"}">${s.name} • ${s.category}</span>`).join("")}</div></div>`;
-}
-
-function renderCommunicationModule(){
-  return `<div class="panel"><h2>Configurar WhatsApp do cliente</h2>
-    <div class="form-grid"><input id="commClient" placeholder="Nome do cliente"><input id="commUrl" placeholder="Link do grupo WhatsApp"><input id="commResponsible" placeholder="Responsável"><input id="commUpdate" placeholder="Última atualização"></div>
-    <button class="primary-btn" style="margin-top:14px" onclick="saveCommunication()">Salvar comunicação</button>
-  </div>`;
-}
-
-function setActiveNav(btn){ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); }
-
-function openCreateClient(){
-  document.getElementById("adminHome").classList.add("hidden");
-  document.getElementById("workspace").classList.remove("active");
-  document.getElementById("genericModule").classList.remove("active");
-  document.getElementById("createClientModule").classList.add("active");
-}
-
-
-function createClientSlug(name){
-  return String(name || "cliente")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g,"-")
-    .replace(/^-+|-+$/g,"");
-}
-
-function createWorkspaceUrl(slug){
-  const baseUrl = window.location.origin + window.location.pathname;
-  return `${baseUrl}?cliente=${encodeURIComponent(slug)}`;
-}
-
-function findClientBySlug(slug){
-  return clients.find(c => (c.workspace_slug || createClientSlug(c.name)) === slug);
-}
-
-function showClientCreatedModal(client){
-  const slug = client.workspace_slug || createClientSlug(client.name);
-  const url = client.workspace_url || createWorkspaceUrl(slug);
-  window.__lastWorkspaceUrl = url;
-  window.__lastCreatedClient = client;
-
-  document.getElementById("createdClientName").textContent = `Workspace de ${client.name}`;
-  document.getElementById("createdWorkspaceLink").textContent = url;
-  document.getElementById("clientCreatedModal").classList.add("active");
-}
-
-function closeClientCreatedModal(){
-  document.getElementById("clientCreatedModal").classList.remove("active");
-}
-
-function openCreatedWorkspace(){
-  if(window.__lastWorkspaceUrl){
-    window.open(window.__lastWorkspaceUrl, "_blank");
-  }
-}
-
-async function copyCreatedLink(){
-  const url = window.__lastWorkspaceUrl || document.getElementById("createdWorkspaceLink").textContent;
-  try{
-    await navigator.clipboard.writeText(url);
-    alert("Link copiado.");
-  }catch(e){
-    alert(url);
-  }
-}
-
-function sendWorkspaceWhatsapp(){
-  const client = window.__lastCreatedClient || {};
-  const url = window.__lastWorkspaceUrl || createWorkspaceUrl(createClientSlug(client.name));
-  const phone = client.client_phone || "";
-  const message = `Oi, ${client.name || "tudo bem"}! Tudo bem?\n\nSeu portal da HAIA já está disponível. Por aqui você vai conseguir acompanhar entregas, aprovações, calendário, arquivos e comunicação da operação.\n\nAcesse aqui:\n${url}\n\nQualquer dúvida, seguimos também pelo nosso grupo no WhatsApp.`;
-  const encoded = encodeURIComponent(message);
-  const whatsappUrl = phone ? `https://wa.me/${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
-  window.open(whatsappUrl, "_blank");
-}
-
-
+function openCreateClient(){editingClientIndex=null;document.getElementById("deleteClientBtn").style.display="none";document.getElementById("clientModalTitle").textContent="Novo cliente";clearClientForm();document.getElementById("clientModal").classList.add("active")}
+function openEditClient(i){editingClientIndex=i;const c=clients[i];document.getElementById("deleteClientBtn").style.display="inline-flex";document.getElementById("clientModalTitle").textContent=`Editar ${c.name}`;clientId.value=c.id||"";clientName.value=c.name||"";clientInitials.value=c.initials||"";clientPlan.value=c.plan||"";clientResponsible.value=c.responsible||"Mariah";clientProgress.value=c.progress||0;clientDelivery.value=c.delivery||"";clientDate.value=c.date||"";clientPhone.value=c.client_phone||"";clientWhatsapp.value=c.whatsapp_url||"";clientNotes.value=c.service_notes||"";document.getElementById("clientModal").classList.add("active")}
+function closeClientModal(){document.getElementById("clientModal").classList.remove("active")}
+function clearClientForm(){["clientId","clientName","clientInitials","clientPlan","clientProgress","clientDelivery","clientDate","clientPhone","clientWhatsapp","clientNotes"].forEach(id=>document.getElementById(id).value="");clientResponsible.value="Mariah"}
 async function saveClient(){
-  const name = newClientName.value.trim();
-  if(!name){
-    alert("Digite o nome do cliente.");
-    return;
+  const name=clientName.value.trim(); if(!name){alert("Digite o nome do cliente.");return}
+  const slug=slugify(name);
+  const item={name,initials:clientInitials.value||initials(name),plan:clientPlan.value||"Operação Personalizada",responsible:clientResponsible.value||"Mariah",progress:Number(clientProgress.value||0),delivery:clientDelivery.value||"Planejamento inicial",date:clientDate.value||"",client_phone:clientPhone.value||"",whatsapp_url:clientWhatsapp.value||"",service_notes:clientNotes.value||"",workspace_slug:slug,workspace_url:`${location.origin}${location.pathname}?cliente=${slug}`,status:"ativo",color:"var(--champagne)"};
+  if(editingClientIndex===null){
+    const {error}=await supa.from("haia_os_clients").insert([item]); if(error) alert("Erro ao salvar. Rode o SQL V27.");
+  }else{
+    const old=clients[editingClientIndex]; if(old.id) await supa.from("haia_os_clients").update(item).eq("id",old.id);
   }
-
-  const slug = createClientSlug(name);
-  const item = {
-    name:name,
-    initials:newClientInitials.value || getInitials(name),
-    plan:newClientPlan.value || "Operação Personalizada",
-    progress:Number(newClientProgress.value || 0),
-    delivery:newClientDelivery.value || "Planejamento inicial",
-    date:newClientDate.value || "",
-    responsible:newClientResponsible.value || "Mariah",
-    whatsapp_url:newClientWhatsapp.value || "",
-    client_phone:(typeof newClientPhone !== "undefined" && newClientPhone) ? newClientPhone.value : "",
-    service_notes:newClientNotes.value || "",
-    approvals:0,
-    content:0,
-    performance:0,
-    status:"ativo",
-    color:"var(--champagne-3)",
-    workspace_slug:slug,
-    workspace_url:createWorkspaceUrl(slug)
-  };
-
-  const client = typeof haiaClient === "function" ? haiaClient() : supabaseClient;
-  const { data, error } = await client.from("haia_os_clients").insert([item]).select().maybeSingle();
-
-  if(error){
-    alert("Cliente criado visualmente, mas não salvou no banco. Verifique o SQL V26.");
-    clients.unshift(item);
-  } else {
-    clients.unshift(data || item);
-  }
-
-  newClientName.value = "";
-  newClientInitials.value = "";
-  newClientPlan.value = "";
-  newClientProgress.value = "";
-  newClientDelivery.value = "";
-  newClientDate.value = "";
-  newClientResponsible.value = "";
-  newClientWhatsapp.value = "";
-  if(typeof newClientPhone !== "undefined" && newClientPhone) newClientPhone.value = "";
-  newClientNotes.value = "";
-
-  await loadAll();
-  showModule("clientes");
-
-  const saved = data || item;
-  const msg = `Cliente ${saved.name} criado.
-
-Link do workspace:
-${saved.workspace_url || createWorkspaceUrl(saved.workspace_slug)}`;
-  alert(msg);
+  await loadClients(); closeClientModal(); showModule("clientes");
 }
+async function deleteClient(){const c=clients[editingClientIndex]; if(!c||!confirm("Excluir este cliente?"))return; if(c.id) await supa.from("haia_os_clients").delete().eq("id",c.id); await loadClients(); closeClientModal(); showModule("clientes")}
+function copyText(t){navigator.clipboard?.writeText(t); alert("Link copiado.")}
+function sendWhatsapp(i){const c=clients[i]; const msg=encodeURIComponent(`Oi, ${c.name}! Tudo bem?\n\nSeu portal da HAIA já está disponível:\n${workspaceUrl(c)}\n\nPor aqui você acompanha entregas, aprovações, calendário e arquivos.`); window.open(c.client_phone?`https://wa.me/${c.client_phone}?text=${msg}`:`https://wa.me/?text=${msg}`,"_blank")}
+function openWorkspace(i){selectedClient=clients[i];showModule("portal")}
 
-async function saveService(){
-  const item = {name:serviceName.value, category:serviceCategory.value, color:serviceColor.value};
-  const { error } = await supabaseClient.from("haia_os_services").insert([item]);
-  if(error) services.unshift(item);
-  await loadAll();
-  showModule("planos");
-}
+function renderCalendar(){return `<div class="panel"><div class="section-head"><div><h2>Calendário semanal</h2><p>Planejamento real da operação.</p></div></div><div class="calendar-board" id="calendarBoard"></div></div>`}
+function renderCalendarBoard(){const days=["SEG","TER","QUA","QUI","SEX","SÁB","DOM"];document.getElementById("calendarBoard").innerHTML=days.map(d=>`<div class="calendar-day"><strong>${d}</strong>${calendarItems.filter(i=>i.item_date===d).map(i=>`<div class="event ${i.type}"><b>${i.item_time} • ${i.title}</b><br><small>${i.client_name} • ${i.status}</small></div>`).join("")}</div>`).join("")}
 
-async function saveCommunication(){
-  const clientName = commClient.value;
-  const url = commUrl.value;
-  await supabaseClient.from("haia_os_communication").insert([{client_name:clientName, whatsapp_url:url, responsible:commResponsible.value, last_update:commUpdate.value}]);
-  await supabaseClient.from("haia_os_clients").update({whatsapp_url:url, responsible:commResponsible.value, delivery:commUpdate.value}).eq("name", clientName);
-  alert("Comunicação salva.");
-  await loadAll();
-}
+function renderApprovals(){return `<div class="panel"><h2>Board de aprovações</h2><p>Status, feedbacks e versões.</p><div class="approval-board" id="approvalBoard"></div></div>`}
+function renderApprovalBoard(){const cols=["pendente","revisao","aprovado","publicado"];document.getElementById("approvalBoard").innerHTML=cols.map(col=>`<div class="approval-column"><div class="section-head"><strong>${col}</strong><span class="badge">${approvals.filter(a=>a.status===col).length}</span></div>${approvals.filter(a=>a.status===col).map(a=>`<div class="approval-card"><div class="preview">Preview</div><h3>${a.title}</h3><p>${a.client_name}</p><p>${a.description}</p><span class="badge">v${a.version}</span></div>`).join("")}</div>`).join("")}
 
-async function logout(){
-  await supabaseClient.auth.signOut();
-  location.reload();
-}
+function renderFiles(){return `<div class="panel"><h2>Arquivos</h2><p>Central de materiais por cliente.</p><div class="grid-3" id="filesGrid"></div></div>`}
+function renderFilesGrid(){document.getElementById("filesGrid").innerHTML=files.map(f=>`<div class="file-card"><h3>📎 ${f.file_name}</h3><span class="badge">${f.file_category}</span><p>${f.client_name}</p><p>${f.description}</p></div>`).join("")}
 
-updateTopAction('dashboard');
+function renderPortal(){const c=selectedClient||clients[0]||{name:"Cliente",initials:"CL",plan:"Operação",progress:0,delivery:"Planejamento",responsible:"Mariah"};return `<div class="panel"><div style="display:flex;gap:18px;align-items:center"><div class="client-logo">${c.initials||initials(c.name)}</div><div><div class="eyebrow">Portal do Cliente</div><h2>${c.name}</h2><p>${c.plan||"Operação Personalizada"}</p></div></div><div class="client-progress"><div class="bar"><span style="width:${c.progress||0}%;background:var(--champagne)"></span></div><small>${c.progress||0}% da operação</small></div><div class="grid-3" style="margin-top:18px">${metric("Próxima entrega",c.delivery||"Planejamento","em andamento","var(--champagne)")}${metric("Responsável",c.responsible||"Mariah","HAIA","var(--purple)")}${metric("Aprovações",c.approvals||0,"pendentes","var(--pink)")}</div></div>`}
+function renderDNA(){return `<div class="panel"><h2>DNA dos Clientes</h2><p>Nicho, tom, estética, objetivos, CTA e referências estratégicas.</p><textarea placeholder="Cadastre o DNA estratégico do cliente..."></textarea><button class="primary-btn" style="margin-top:12px">Salvar DNA</button></div>`}
+function renderAI(){return `<div class="panel"><h2>IA HAIA</h2><p>IA contextual baseada no DNA do cliente.</p><textarea placeholder="Peça uma estratégia, calendário, legenda ou diagnóstico..."></textarea><button class="primary-btn" style="margin-top:12px">Gerar com IA HAIA</button></div>`}
+function renderPlans(){return `<div class="panel"><h2>Serviços & Planos</h2><p>Planos personalizados, serviços contratados e escopo por cliente.</p></div>`}
+function renderCommunication(){return `<div class="panel"><h2>Comunicação</h2><p>WhatsApp, grupos operacionais e mensagens prontas.</p></div>`}
+function renderContent(){return `<div class="panel"><h2>Conteúdos</h2><p>Banco de conteúdos, roteiros e publicações.</p></div>`}
+function renderTasks(){return `<div class="panel"><h2>Tarefas</h2><p>Checklist operacional da equipe.</p></div>`}
+function renderPlaceholder(name){return `<div class="panel"><h2>${name}</h2><p>Módulo ativo.</p></div>`}
+
 initSession();
 </script>
-
-<div class="modal-backdrop" id="editClientModal">
-  <div class="modal">
-    <div class="modal-head">
-      <div>
-        <div class="eyebrow">Editar cliente</div>
-        <h2 id="editModalTitle">Cliente</h2>
-        <p>Atualize os dados operacionais deste workspace.</p>
-      </div>
-      <button class="ghost-btn" onclick="closeEditClient()">Fechar</button>
-    </div>
-
-    <input id="editClientId" type="hidden">
-    <div class="form-grid">
-      <input id="editClientName" placeholder="Nome do cliente">
-      <input id="editClientInitials" placeholder="Iniciais">
-      <input id="editClientPlan" placeholder="Plano / operação">
-      <input id="editClientResponsible" placeholder="Responsável">
-      <input id="editClientProgress" type="number" placeholder="Progresso">
-      <input id="editClientDelivery" placeholder="Próxima entrega">
-      <input id="editClientDate" placeholder="Data">
-      <input id="editClientWhatsapp" placeholder="Link do WhatsApp">
-    </div>
-
-    <textarea id="editClientNotes" style="margin-top:12px" placeholder="Observações / serviços contratados"></textarea>
-
-    <div class="modal-actions">
-      <button class="danger-btn" onclick="deleteCurrentClient()">Excluir cliente</button>
-      <button class="primary-btn" onclick="updateCurrentClient()">Salvar alterações</button>
-    </div>
-
-    <div id="editClientMsg" class="notice" style="display:none"></div>
-  </div>
-</div>
-
-
-<div class="modal-backdrop" id="clientCreatedModal">
-  <div class="modal">
-    <div class="success-icon">✓</div>
-    <div class="eyebrow">Cliente criado</div>
-    <h2 id="createdClientName">Workspace criado</h2>
-    <p>Agora você pode abrir o portal, copiar o link ou enviar a mensagem pronta pelo WhatsApp.</p>
-
-    <div class="workspace-link-box" id="createdWorkspaceLink"></div>
-
-    <div class="invite-actions">
-      <button class="primary-btn" onclick="openCreatedWorkspace()">Abrir workspace</button>
-      <button class="ghost-btn" onclick="copyCreatedLink()">Copiar link</button>
-      <button class="primary-btn whatsapp-btn" onclick="sendWorkspaceWhatsapp()">Enviar por WhatsApp</button>
-      <button class="ghost-btn" onclick="closeClientCreatedModal()">Fechar</button>
-    </div>
-
-    <div class="notice" style="margin-top:14px">
-      A mensagem já vai pronta com o link do portal do cliente.
-    </div>
-  </div>
-</div>
-
-
-
-
-
-<script>
-window.addEventListener("error", function(e){
-  console.log("HAIA OS V26.2 guard:", e.message);
-});
-
-function haiaClient(){
-  if(typeof ensureSupabase === "function") return ensureSupabase();
-  if(typeof supabaseClient !== "undefined" && supabaseClient) return supabaseClient;
-  if(window.supabase){
-    window.supabaseClient = window.supabase.createClient("https://dagekkvpyphwjgheoosz.supabase.co", "sb_publishable_Hk3hQWlN713HClx7YrJ0-g_wJHWJcmq");
-    return window.supabaseClient;
-  }
-  return null;
-}
-
-async function haiaSafeLogin(){
-  const msgEl = document.getElementById("loginMsg");
-  try{
-    const email = document.getElementById("email")?.value.trim() || "";
-    const password = document.getElementById("password")?.value.trim() || "";
-
-    if(!email || !password){
-      if(msgEl) msgEl.textContent = "Preencha e-mail e senha.";
-      return;
-    }
-
-    const client = haiaClient();
-    if(!client){
-      if(msgEl) msgEl.textContent = "Supabase ainda não carregou. Atualize a página.";
-      return;
-    }
-
-    const { data, error } = await client.auth.signInWithPassword({email,password});
-    if(error){
-      if(msgEl) msgEl.textContent = "Login inválido ou não cadastrado.";
-      return;
-    }
-
-    window.currentUser = data.user;
-    try{ currentUser = data.user; }catch(e){}
-
-    if(typeof loadProfile === "function") await loadProfile();
-
-    if(typeof openApp === "function"){
-      openApp();
-    } else {
-      const loginScreen = document.getElementById("loginScreen");
-      const app = document.getElementById("app");
-      if(loginScreen) loginScreen.style.display = "none";
-      if(app) app.style.display = "grid";
-    }
-  }catch(err){
-    console.error(err);
-    if(msgEl) msgEl.textContent = "Erro no login. Atualize e tente novamente.";
-  }
-}
-
-async function haiaInitSession(){
-  try{
-    const client = haiaClient();
-    if(!client) return;
-    const { data } = await client.auth.getSession();
-    if(data && data.session && data.session.user){
-      window.currentUser = data.session.user;
-      try{ currentUser = data.session.user; }catch(e){}
-      if(typeof loadProfile === "function") await loadProfile();
-      if(typeof openApp === "function") openApp();
-    }
-  }catch(e){ console.log(e); }
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  const loginButton = document.querySelector("#loginScreen .primary-btn");
-  if(loginButton){
-    loginButton.onclick = haiaSafeLogin;
-    loginButton.setAttribute("onclick","haiaSafeLogin()");
-  }
-  setTimeout(haiaInitSession, 500);
-});
-</script>
-
-
-<script>
-/* HAIA OS V26.2 - Patch de navegação segura */
-function haiaSetActiveByName(name){
-  document.querySelectorAll(".nav button").forEach(btn=>{
-    const txt = (btn.textContent || "").toLowerCase();
-    btn.classList.remove("active");
-
-    if(
-      (name === "dashboard" && txt.includes("dashboard")) ||
-      (name === "clientes" && txt.includes("clientes") && !txt.includes("dna")) ||
-      (name === "planos" && txt.includes("serviços")) ||
-      (name === "comunicacao" && txt.includes("comunicação")) ||
-      (name === "calendario" && txt.includes("calendário")) ||
-      (name === "conteudos" && txt.includes("conteúdos")) ||
-      (name === "aprovacoes" && txt.includes("aprovações")) ||
-      (name === "tarefas" && txt.includes("tarefas")) ||
-      (name === "dna" && txt.includes("dna")) ||
-      (name === "portal" && txt.includes("portal")) ||
-      (name === "ia" && txt.includes("ia haia"))
-    ){
-      btn.classList.add("active");
-    }
-  });
-}
-
-function haiaSafeContent(){
-  return document.getElementById("dynamicContent") || document.getElementById("content") || document.querySelector(".content") || document.querySelector("main");
-}
-
-function haiaSafeModule(name){
-  try{
-    if(typeof updateTopAction === "function") updateTopAction(name);
-    haiaSetActiveByName(name);
-
-    if(typeof showModule === "function" && !window.__haiaInsideSafeModule){
-      window.__haiaInsideSafeModule = true;
-      try{
-        showModule(name);
-        window.__haiaInsideSafeModule = false;
-        return;
-      }catch(e){
-        console.log("showModule original falhou, usando fallback:", e.message);
-        window.__haiaInsideSafeModule = false;
-      }
-    }
-
-    const title = document.getElementById("moduleTitle");
-    const text = document.getElementById("moduleText");
-    const content = haiaSafeContent();
-
-    if(title){
-      const labels = {
-        dashboard:"Dashboard",
-        clientes:"Clientes",
-        planos:"Serviços & Planos",
-        comunicacao:"Comunicação",
-        calendario:"Calendário",
-        conteudos:"Conteúdos",
-        aprovacoes:"Aprovações",
-        tarefas:"Tarefas",
-        dna:"DNA dos Clientes",
-        portal:"Portal do Cliente",
-        ia:"IA HAIA"
-      };
-      title.textContent = labels[name] || name;
-    }
-
-    if(text){
-      const subtitles = {
-        clientes:"Gerencie clientes reais, workspaces e links por WhatsApp.",
-        planos:"Crie planos e serviços personalizados.",
-        comunicacao:"Configure WhatsApp, responsáveis e canais diretos.",
-        calendario:"Calendário real da operação.",
-        conteudos:"Organização dos conteúdos da agência.",
-        aprovacoes:"Board de aprovação com status e feedback.",
-        tarefas:"Acompanhe tarefas operacionais.",
-        dna:"Base estratégica que alimenta a IA contextual.",
-        portal:"Visão premium do cliente.",
-        ia:"IA contextual da HAIA por cliente."
-      };
-      text.textContent = subtitles[name] || "Resumo geral da operação HAIA.";
-    }
-
-    if(!content) return;
-
-    if(name === "dashboard"){
-      if(typeof showAdminHome === "function"){
-        showAdminHome();
-        return;
-      }
-    }
-
-    if(name === "clientes" && typeof renderClientsAdminModule === "function"){
-      content.innerHTML = renderClientsAdminModule();
-      return;
-    }
-
-    if(name === "calendario" && typeof renderCalendarModule === "function"){
-      content.innerHTML = renderCalendarModule();
-      if(typeof renderCalendarItems === "function") renderCalendarItems();
-      return;
-    }
-
-    if(name === "aprovacoes" && typeof renderApprovalsModule === "function"){
-      content.innerHTML = renderApprovalsModule();
-      if(typeof renderApprovals === "function") renderApprovals();
-      return;
-    }
-
-    if(name === "dna" && typeof renderDNAModule === "function"){
-      content.innerHTML = renderDNAModule();
-      return;
-    }
-
-    if(name === "ia" && typeof renderIAModule === "function"){
-      content.innerHTML = renderIAModule();
-      if(typeof loadAIHistory === "function") loadAIHistory();
-      return;
-    }
-
-    if(name === "portal" && typeof renderClientPortalModule === "function"){
-      content.innerHTML = renderClientPortalModule();
-      return;
-    }
-
-    if(name === "arquivos" && typeof renderFilesModule === "function"){
-      content.innerHTML = renderFilesModule();
-      if(typeof renderFilesList === "function") renderFilesList();
-      return;
-    }
-
-    content.innerHTML = `<div class="panel fade-in">
-      <div class="eyebrow">HAIA OS V26.2</div>
-      <h2>${name}</h2>
-      <p>Este módulo está ativo. A estrutura completa será refinada no próximo ciclo.</p>
-    </div>`;
-  }catch(err){
-    console.error(err);
-    const content = haiaSafeContent();
-    if(content){
-      content.innerHTML = `<div class="panel"><h2>Erro corrigido parcialmente</h2><p>Atualize a página e tente novamente.</p></div>`;
-    }
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  setTimeout(function(){
-    const map = [
-      ["dashboard","dashboard"],
-      ["clientes","clientes"],
-      ["serviços","planos"],
-      ["comunicação","comunicacao"],
-      ["calendário","calendario"],
-      ["conteúdos","conteudos"],
-      ["aprovações","aprovacoes"],
-      ["tarefas","tarefas"],
-      ["dna","dna"],
-      ["portal","portal"],
-      ["ia haia","ia"]
-    ];
-
-    document.querySelectorAll(".nav button").forEach(btn=>{
-      const txt = (btn.textContent || "").toLowerCase();
-      const found = map.find(([key])=>txt.includes(key));
-      if(found){
-        btn.onclick = function(ev){
-          ev.preventDefault();
-          ev.stopPropagation();
-          haiaSafeModule(found[1]);
-        };
-      }
-    });
-  },800);
-});
-</script>
-
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V25.2.1 • Correção Topo</title>
+<title>HAIA OS V26.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -663,6 +663,32 @@ textarea{min-height:105px;resize:vertical}
 }
 @media(max-width:1180px){.v25-approval-board{grid-template-columns:1fr}}
 
+
+.v26-client-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.v26-link{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.42);
+  border:1px solid rgba(255,255,255,.62);
+  color:var(--muted);
+  font-size:12px;
+  word-break:break-all;
+}
+.v26-empty{
+  padding:28px;
+  border-radius:24px;
+  background:rgba(255,255,255,.45);
+  border:1px solid rgba(255,255,255,.66);
+  text-align:center;
+  color:var(--muted);
+}
+
 </style>
 </head>
 
@@ -670,9 +696,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V25.2.2</div>
+    <div class="eyebrow">HAIA OS • V26.2</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com aprovações reais, histórico de feedbacks e fluxo de publicação.</p>
+    <p>Sistema operacional premium com clientes reais, workspaces automáticos e links por WhatsApp.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="haiaSafeLogin()">Entrar</button>
@@ -780,6 +806,7 @@ textarea{min-height:105px;resize:vertical}
           <input id="newClientResponsible" placeholder="Responsável. Ex: Mariah">
           <input id="newClientWhatsapp" placeholder="Link do grupo WhatsApp">
           <input id="newClientPhone" placeholder="WhatsApp do cliente com DDI. Ex: 5521999999999">
+          <input id="newClientPhone" placeholder="WhatsApp do cliente com DDI. Ex: 5521999999999">
         </div>
         <textarea id="newClientNotes" placeholder="Observações sobre serviços contratados"></textarea>
         <button class="primary-btn" onclick="saveClient()" style="margin-top:14px">Salvar cliente</button>
@@ -885,8 +912,15 @@ async function loadAll(){
 }
 
 async function loadClients(){
-  const { data } = await supabaseClient.from("haia_os_clients").select("*").order("created_at",{ascending:false});
-  clients = data && data.length ? data : demoClients;
+  const client = typeof haiaClient === "function" ? haiaClient() : supabaseClient;
+  const { data, error } = await client.from("haia_os_clients").select("*").order("created_at",{ascending:false});
+
+  if(error){
+    clients = demoClients;
+    return;
+  }
+
+  clients = data || [];
 }
 
 async function loadPlans(){
@@ -1094,13 +1128,24 @@ function handleTopAction(){
 }
 
 function renderClientsAdminModule(){
+  if(!clients.length){
+    return `<div class="panel fade-in">
+      <div class="eyebrow">Clientes reais</div>
+      <h2>Nenhum cliente cadastrado ainda</h2>
+      <p>Cadastre o primeiro cliente para gerar workspace, link do portal e convite WhatsApp.</p>
+      <button class="primary-btn" style="margin-top:16px" onclick="openCreateClient()">+ Novo cliente</button>
+    </div>`;
+  }
+
   return `<div class="section-head">
     <div class="left"><h2>Clientes cadastrados</h2><span class="badge">${clients.length} ativos</span></div>
     <button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button>
   </div>
   <section class="client-grid fade-in">
-    ${clients.map((c,i)=>`
-      <div class="client-card">
+    ${clients.map((c,i)=>{
+      const slug = c.workspace_slug || createClientSlug(c.name);
+      const link = c.workspace_url || createWorkspaceUrl(slug);
+      return `<div class="client-card">
         <div class="client-head">
           <div style="display:flex;gap:14px">
             <div class="client-logo">${c.initials || getInitials(c.name)}</div>
@@ -1111,13 +1156,15 @@ function renderClientsAdminModule(){
         <div class="client-progress"><div class="bar"><span style="width:${c.progress || 0}%;background:${c.color || "var(--champagne-3)"}"></span></div><small>${c.progress || 0}%</small></div>
         <p><strong>Responsável:</strong> ${c.responsible || "Mariah"}</p>
         <p><strong>Próxima entrega:</strong> ${c.delivery || "Planejamento"}</p>
-        <p><strong>Link:</strong> ${createWorkspaceUrl(c.workspace_slug || getInitials(c.name).toLowerCase())}</p>
-        <div class="top-actions" style="margin-top:18px">
+        <div class="v26-link">${link}</div>
+        <div class="v26-client-actions">
           <button class="ghost-btn" onclick="openWorkspace(${i})">Abrir</button>
           <button class="ghost-btn" onclick="openEditClient(${i})">Editar</button>
+          <button class="ghost-btn" onclick="copyText('${link}')">Copiar link</button>
+          <button class="primary-btn whatsapp-btn" onclick='sendClientWorkspaceWhatsapp(${JSON.stringify(c)})'>WhatsApp</button>
         </div>
-      </div>
-    `).join("")}
+      </div>`;
+    }).join("")}
   </section>`;
 }
 
@@ -1987,35 +2034,42 @@ function sendWorkspaceWhatsapp(){
 
 
 async function saveClient(){
+  const name = newClientName.value.trim();
+  if(!name){
+    alert("Digite o nome do cliente.");
+    return;
+  }
+
+  const slug = createClientSlug(name);
   const item = {
-    name:newClientName.value,
-    initials:newClientInitials.value,
+    name:name,
+    initials:newClientInitials.value || getInitials(name),
     plan:newClientPlan.value || "Operação Personalizada",
     progress:Number(newClientProgress.value || 0),
-    delivery:newClientDelivery.value,
-    date:newClientDate.value,
+    delivery:newClientDelivery.value || "Planejamento inicial",
+    date:newClientDate.value || "",
     responsible:newClientResponsible.value || "Mariah",
-    whatsapp_url:newClientWhatsapp.value,
-    client_phone:newClientPhone ? newClientPhone.value : "",
-    service_notes:newClientNotes.value,
+    whatsapp_url:newClientWhatsapp.value || "",
+    client_phone:(typeof newClientPhone !== "undefined" && newClientPhone) ? newClientPhone.value : "",
+    service_notes:newClientNotes.value || "",
     approvals:0,
     content:0,
     performance:0,
-    color:"var(--champagne-3)"
+    status:"ativo",
+    color:"var(--champagne-3)",
+    workspace_slug:slug,
+    workspace_url:createWorkspaceUrl(slug)
   };
 
-  const slug = createClientSlug(item.name);
-  item.workspace_slug = slug;
-  item.workspace_url = createWorkspaceUrl(slug);
-
-  const { error, data } = await supabaseClient.from("haia_os_clients").insert([item]).select().maybeSingle();
+  const client = typeof haiaClient === "function" ? haiaClient() : supabaseClient;
+  const { data, error } = await client.from("haia_os_clients").insert([item]).select().maybeSingle();
 
   if(error){
+    alert("Cliente criado visualmente, mas não salvou no banco. Verifique o SQL V26.");
     clients.unshift(item);
+  } else {
+    clients.unshift(data || item);
   }
-
-  const saved = data || item;
-  window.__lastCreatedClient = saved;
 
   newClientName.value = "";
   newClientInitials.value = "";
@@ -2025,12 +2079,18 @@ async function saveClient(){
   newClientDate.value = "";
   newClientResponsible.value = "";
   newClientWhatsapp.value = "";
-  if(newClientPhone) newClientPhone.value = "";
+  if(typeof newClientPhone !== "undefined" && newClientPhone) newClientPhone.value = "";
   newClientNotes.value = "";
 
   await loadAll();
-  showAdminHome();
-  showClientCreatedModal(saved);
+  showModule("clientes");
+
+  const saved = data || item;
+  const msg = `Cliente ${saved.name} criado.
+
+Link do workspace:
+${saved.workspace_url || createWorkspaceUrl(saved.workspace_slug)}`;
+  alert(msg);
 }
 
 async function saveService(){
@@ -2122,7 +2182,7 @@ initSession();
 
 <script>
 window.addEventListener("error", function(e){
-  console.log("HAIA OS V25.2 guard:", e.message);
+  console.log("HAIA OS V26 guard:", e.message);
 });
 
 function haiaClient(){

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V17 • Refinamento Premium</title>
+<title>HAIA OS V18 • Operação Editável</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -212,6 +212,53 @@ textarea{min-height:105px;resize:vertical}
 }
 
 
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(30,24,18,.22);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:20px;
+}
+.modal-backdrop.active{display:flex}
+.modal{
+  width:min(760px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:30px;
+  padding:26px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 30px 90px rgba(72,50,34,.18);
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:18px;
+}
+.modal-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.notice{
+  padding:13px 14px;
+  border-radius:16px;
+  background:rgba(231,201,143,.22);
+  color:#7d5a2c;
+  font-weight:700;
+  margin-top:12px;
+}
+
 </style>
 </head>
 
@@ -219,9 +266,9 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V17</div>
+    <div class="eyebrow">HAIA OS • V18</div>
     <h1>Entrar no sistema</h1>
-    <p>Sistema operacional premium com DNA contextual, IA HAIA e refinamento visual.</p>
+    <p>Sistema operacional premium com clientes editáveis, DNA contextual e IA HAIA.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
     <button class="primary-btn" onclick="login()">Entrar</button>
@@ -541,7 +588,7 @@ function showModule(name, btn){
   updateTopAction(name);
 
   if(name === "clientes"){
-    document.getElementById("moduleText").textContent = "Gerencie clientes, workspaces e operações ativas.";
+    document.getElementById("moduleText").textContent = "Gerencie clientes, edite operações, atualize WhatsApp e acompanhe workspaces ativos.";
     content.innerHTML = renderClientsAdminModule();
   } else if(name === "planos"){
     document.getElementById("moduleText").textContent = "Crie planos, serviços e vincule operações personalizadas aos clientes.";
@@ -609,12 +656,117 @@ function renderClientsAdminModule(){
         <p><strong>Próxima entrega:</strong> ${c.delivery || "Planejamento"}</p>
         <div class="top-actions" style="margin-top:18px">
           <button class="ghost-btn" onclick="openWorkspace(${i})">Abrir</button>
-          <button class="ghost-btn" onclick="alert('Edição completa entra no próximo ciclo visual.')">Editar</button>
+          <button class="ghost-btn" onclick="openEditClient(${i})">Editar</button>
         </div>
       </div>
     `).join("")}
   </section>`;
 }
+
+
+function openEditClient(index){
+  const c = clients[index];
+  if(!c) return;
+
+  document.getElementById("editClientId").value = c.id || "";
+  document.getElementById("editModalTitle").textContent = c.name || "Cliente";
+  document.getElementById("editClientName").value = c.name || "";
+  document.getElementById("editClientInitials").value = c.initials || "";
+  document.getElementById("editClientPlan").value = c.plan || "";
+  document.getElementById("editClientResponsible").value = c.responsible || "";
+  document.getElementById("editClientProgress").value = c.progress || 0;
+  document.getElementById("editClientDelivery").value = c.delivery || "";
+  document.getElementById("editClientDate").value = c.date || "";
+  document.getElementById("editClientWhatsapp").value = c.whatsapp_url || "";
+  document.getElementById("editClientNotes").value = c.service_notes || "";
+  document.getElementById("editClientMsg").style.display = "none";
+
+  window.__editingClientIndex = index;
+  document.getElementById("editClientModal").classList.add("active");
+}
+
+function closeEditClient(){
+  document.getElementById("editClientModal").classList.remove("active");
+}
+
+async function updateCurrentClient(){
+  const index = window.__editingClientIndex;
+  const old = clients[index];
+  if(!old) return;
+
+  const item = {
+    name:editClientName.value,
+    initials:editClientInitials.value,
+    plan:editClientPlan.value || "Operação Personalizada",
+    responsible:editClientResponsible.value || "Mariah",
+    progress:Number(editClientProgress.value || 0),
+    delivery:editClientDelivery.value,
+    date:editClientDate.value,
+    whatsapp_url:editClientWhatsapp.value,
+    service_notes:editClientNotes.value
+  };
+
+  let error = null;
+  if(old.id){
+    const result = await supabaseClient.from("haia_os_clients").update(item).eq("id", old.id);
+    error = result.error;
+  }
+
+  clients[index] = {...old, ...item};
+
+  const msg = document.getElementById("editClientMsg");
+  msg.style.display = "block";
+  msg.textContent = error ? "Alteração aplicada visualmente. Verifique o Supabase se não persistir." : "Cliente atualizado com sucesso.";
+
+  await loadAll();
+  setTimeout(()=>{ closeEditClient(); showModule("clientes"); }, 600);
+}
+
+async function deleteCurrentClient(){
+  const index = window.__editingClientIndex;
+  const c = clients[index];
+  if(!c) return;
+
+  const ok = confirm("Tem certeza que deseja excluir este cliente?");
+  if(!ok) return;
+
+  if(c.id){
+    await supabaseClient.from("haia_os_clients").delete().eq("id", c.id);
+  }
+
+  clients.splice(index,1);
+  closeEditClient();
+  await loadAll();
+  showModule("clientes");
+}
+
+async function loadClientDNA(clientName){
+  const { data } = await supabaseClient
+    .from("haia_client_dna")
+    .select("*")
+    .eq("client_name", clientName)
+    .order("created_at", {ascending:false})
+    .limit(1)
+    .maybeSingle();
+
+  return data || null;
+}
+
+async function fillDNAFromClient(){
+  const name = document.getElementById("dnaClient")?.value;
+  if(!name) return;
+
+  const dna = await loadClientDNA(name);
+  document.getElementById("dnaNiche").value = dna?.niche || "";
+  document.getElementById("dnaTone").value = dna?.tone || "";
+  document.getElementById("dnaVisual").value = dna?.visual_identity || "";
+  document.getElementById("dnaGoals").value = dna?.goals || "";
+  document.getElementById("dnaKeywords").value = dna?.keywords || "";
+  document.getElementById("dnaRestrictions").value = dna?.restrictions || "";
+  document.getElementById("dnaCTA").value = dna?.cta || "";
+  document.getElementById("dnaReferences").value = dna?.references_text || "";
+}
+
 
 function renderDNAModule(){
   return `<div class="panel fade-in">
@@ -623,7 +775,7 @@ function renderDNAModule(){
     <p>Cadastre o contexto que a IA deve considerar antes de responder para cada cliente.</p>
 
     <div class="form-grid" style="margin-top:18px">
-      <select id="dnaClient">
+      <select id="dnaClient" onchange="fillDNAFromClient()">
         ${clients.map(c=>`<option value="${c.name}">${c.name}</option>`).join("")}
       </select>
       <input id="dnaNiche" placeholder="Nicho. Ex: beleza, moda praia, fitness">
@@ -666,11 +818,23 @@ async function saveDNA(){
   };
 
   try{
+    await supabaseClient.from("haia_client_dna").delete().eq("client_name", item.client_name);
     await supabaseClient.from("haia_client_dna").insert([item]);
-    document.getElementById("dnaSavedMsg").style.display = "block";
-  }catch(e){
-    document.getElementById("dnaSavedMsg").style.display = "block";
-  }
+    await supabaseClient.from("haia_os_clients").update({
+      niche:item.niche,
+      tone:item.tone,
+      visual_identity:item.visual_identity,
+      goals:item.goals,
+      keywords:item.keywords,
+      restrictions:item.restrictions,
+      cta:item.cta
+    }).eq("name", item.client_name);
+  }catch(e){}
+
+  const msg = document.getElementById("dnaSavedMsg");
+  msg.style.display = "block";
+  msg.textContent = "DNA contextual salvo e vinculado ao cliente.";
+  await loadAll();
 }
 
 function renderIAModule(){
@@ -715,18 +879,24 @@ function renderIAModule(){
   </div>`;
 }
 
-function runLocalAI(){
+async function runLocalAI(){
   const clientName = document.getElementById("aiClient").value;
   const action = document.getElementById("aiAction").value;
   const prompt = document.getElementById("aiPrompt").value;
   const client = clients.find(c => c.name === clientName) || clients[0];
+  const dna = await loadClientDNA(clientName);
 
   const context = `
     <strong>${client.name}</strong><br>
     Operação: ${client.plan || "Operação personalizada"}<br>
     Responsável: ${client.responsible || "Mariah"}<br>
     Próxima entrega: ${client.delivery || "Planejamento"}<br>
-    Observações: ${client.service_notes || "Sem observações cadastradas."}
+    Nicho: ${dna?.niche || client.niche || "não cadastrado"}<br>
+    Tom: ${dna?.tone || client.tone || "não cadastrado"}<br>
+    Estética: ${dna?.visual_identity || client.visual_identity || "não cadastrada"}<br>
+    Objetivo: ${dna?.goals || client.goals || "não cadastrado"}<br>
+    CTA: ${dna?.cta || client.cta || "não cadastrado"}<br>
+    Observações: ${dna?.references_text || client.service_notes || "Sem observações cadastradas."}
   `;
 
   const suggestions = {
@@ -739,7 +909,7 @@ function runLocalAI(){
   };
 
   document.getElementById("aiResult").innerHTML = `
-    <div class="eyebrow">Resposta contextual</div>
+    <div class="eyebrow">Resposta contextual V18</div>
     <h2>${client.name}</h2>
     <p>${context}</p>
     <div class="panel" style="margin-top:14px;background:rgba(255,255,255,.42)">
@@ -748,6 +918,15 @@ function runLocalAI(){
       <p style="margin-top:10px;color:#766f68">Essa é a base local do V15. No próximo passo, conectamos isso à API para respostas reais e completas da IA.</p>
     </div>
   `;
+
+  try{
+    await supabaseClient.from("haia_ai_history").insert([{
+      client_name:client.name,
+      prompt:prompt || "Pedido estratégico padrão.",
+      action:action,
+      response:suggestions[action]
+    }]);
+  }catch(e){}
 }
 
 function renderPlansModule(){
@@ -821,5 +1000,40 @@ async function logout(){
 
 initSession();
 </script>
+
+<div class="modal-backdrop" id="editClientModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">Editar cliente</div>
+        <h2 id="editModalTitle">Cliente</h2>
+        <p>Atualize os dados operacionais deste workspace.</p>
+      </div>
+      <button class="ghost-btn" onclick="closeEditClient()">Fechar</button>
+    </div>
+
+    <input id="editClientId" type="hidden">
+    <div class="form-grid">
+      <input id="editClientName" placeholder="Nome do cliente">
+      <input id="editClientInitials" placeholder="Iniciais">
+      <input id="editClientPlan" placeholder="Plano / operação">
+      <input id="editClientResponsible" placeholder="Responsável">
+      <input id="editClientProgress" type="number" placeholder="Progresso">
+      <input id="editClientDelivery" placeholder="Próxima entrega">
+      <input id="editClientDate" placeholder="Data">
+      <input id="editClientWhatsapp" placeholder="Link do WhatsApp">
+    </div>
+
+    <textarea id="editClientNotes" style="margin-top:12px" placeholder="Observações / serviços contratados"></textarea>
+
+    <div class="modal-actions">
+      <button class="danger-btn" onclick="deleteCurrentClient()">Excluir cliente</button>
+      <button class="primary-btn" onclick="updateCurrentClient()">Salvar alterações</button>
+    </div>
+
+    <div id="editClientMsg" class="notice" style="display:none"></div>
+  </div>
+</div>
+
 </body>
 </html>

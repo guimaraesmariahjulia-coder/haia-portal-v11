@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V28 • Módulos Operacionais</title>
+<title>HAIA OS V29 • Operação Integrada</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -219,6 +219,21 @@ textarea{min-height:110px;resize:vertical}
 }
 @media(max-width:1100px){.mini-board{grid-template-columns:1fr}.operation-item{display:block}}
 
+
+.v29-modal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.v29-pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.v29-pill{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(233,201,135,.28);color:#7c5a2d;font-size:12px;font-weight:900}
+.v29-crm-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+.v29-timeline{display:grid;gap:12px;margin-top:14px}
+.v29-timeline-item{padding:14px;border-radius:18px;background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.66)}
+.v29-upload{border:1.5px dashed rgba(124,90,45,.35);border-radius:22px;padding:24px;text-align:center;background:rgba(255,255,255,.34);margin-top:14px}
+.v29-filter-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.v29-filter-row button{min-height:38px}
+.v29-kanban-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.v29-kanban-actions button{min-height:36px;font-size:12px;padding:0 12px;border-radius:13px}
+.v29-mobile-ready{position:fixed;right:22px;bottom:22px;z-index:20;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8);backdrop-filter:blur(20px);padding:10px 14px;border-radius:999px;font-size:12px;font-weight:900;color:#7c5a2d}
+@media(max-width:1100px){.v29-crm-grid,.v29-modal-grid{grid-template-columns:1fr}.v29-mobile-ready{display:none}}
+
 </style>
 </head>
 <body>
@@ -226,9 +241,9 @@ textarea{min-height:110px;resize:vertical}
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V28</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V29</div>
     <h1>Entrar no sistema</h1>
-    <p style="margin-top:16px">Versão estável com dashboard, clientes reais, calendário, aprovações, arquivos e portal.</p>
+    <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
       <input id="email" type="email" placeholder="E-mail" value="guimaraesmariahjulia@gmail.com">
       <input id="password" type="password" placeholder="Senha">
@@ -271,7 +286,7 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V28</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V29</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -409,6 +424,54 @@ function showModule(name,btn){
   if(name==="arquivos") renderFilesGrid();
 }
 
+
+let plans = [
+  {name:"Plano Essencial", value:"R$ 900", reels:"4", posts:"4", stories:"2x/semana", status:"Ativo", scope:"Calendário, design, aprovação e relatório básico."},
+  {name:"Plano Premium", value:"R$ 1.800", reels:"8", posts:"8", stories:"4x/semana", status:"Ativo", scope:"Estratégia completa, Reels, Stories, relatório e reunião mensal."},
+  {name:"Operação Personalizada", value:"Sob proposta", reels:"Sob demanda", posts:"Sob demanda", stories:"Sob demanda", status:"Ativo", scope:"Escopo sob medida com campanhas, IA e consultoria."}
+];
+
+function openPlanModal(){document.getElementById("planModal").classList.add("active")}
+function closePlanModal(){document.getElementById("planModal").classList.remove("active")}
+function savePlanVisual(){
+  plans.unshift({
+    name:planName.value || "Novo plano",
+    value:planValue.value || "A definir",
+    reels:planReels.value || "0",
+    posts:planPosts.value || "0",
+    stories:planStories.value || "A definir",
+    status:planStatus.value,
+    scope:planScope.value || "Escopo personalizado."
+  });
+  closePlanModal();
+  showModule("planos");
+}
+
+function clientMiniCRM(c){
+  return `<div class="v29-crm-grid">
+    <div class="panel">
+      <div style="display:flex;gap:16px;align-items:center">
+        <div class="client-logo">${c.initials||initials(c.name)}</div>
+        <div><div class="eyebrow">Mini CRM</div><h2>${c.name}</h2><p>${c.plan||"Operação Personalizada"}</p></div>
+      </div>
+      <div class="v29-timeline">
+        <div class="v29-timeline-item"><strong>Próxima entrega</strong><p>${c.delivery||"Planejamento inicial"}</p></div>
+        <div class="v29-timeline-item"><strong>Status</strong><p>${c.status||"ativo"} • ${c.progress||0}% concluído</p></div>
+        <div class="v29-timeline-item"><strong>Responsável</strong><p>${c.responsible||"Mariah"} • HAIA</p></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Ações rápidas</h2>
+      <div class="operation-list">
+        <button class="primary-btn" onclick="sendWhatsapp(${clients.indexOf(c)})">Enviar portal</button>
+        <button class="ghost-btn" onclick="showModule('calendario')">Ver calendário</button>
+        <button class="ghost-btn" onclick="showModule('aprovacoes')">Ver aprovações</button>
+        <button class="ghost-btn" onclick="showModule('arquivos')">Ver arquivos</button>
+      </div>
+    </div>
+  </div>`
+}
+
 function renderDashboard(){
   return `<div class="grid-4">
     ${metric("Clientes ativos",clients.length,"operação ativa", "var(--champagne)")}
@@ -424,10 +487,12 @@ function renderDashboard(){
 function metric(label,value,sub,color){return `<div class="panel metric"><p>${label}</p><strong>${value}</strong><p style="color:${color}">${sub}</p><div class="bar"><span style="width:75%;background:${color}"></span></div></div>`}
 
 function renderClients(){
+  const first = selectedClient || clients[0];
   return `<div class="panel">
     <div class="section-head"><div><h2>Clientes cadastrados</h2><p>${clients.length} clientes ativos no banco.</p></div><button class="primary-btn" onclick="openCreateClient()">+ Novo cliente</button></div>
     ${clients.length ? `<div class="grid-3">${clients.map(clientCard).join("")}</div>` : `<div class="client-card"><h3>Nenhum cliente cadastrado</h3><p>Cadastre o primeiro cliente para gerar workspace e link.</p></div>`}
-  </div>`;
+  </div>
+  ${first ? clientMiniCRM(first) : ""}`;
 }
 function clientCard(c,i=clients.indexOf(c)){
   const link=workspaceUrl(c);
@@ -485,5 +550,30 @@ function renderPlaceholder(name){return `<div class="panel"><h2>${name}</h2><p>M
 
 initSession();
 </script>
+
+<div class="modal-backdrop" id="planModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">Serviços & Planos</div>
+        <h2>Novo plano</h2>
+        <p>Monte um escopo comercial e operacional para vincular aos clientes.</p>
+      </div>
+      <button class="ghost-btn" onclick="closePlanModal()">Fechar</button>
+    </div>
+    <div class="v29-modal-grid">
+      <input id="planName" placeholder="Nome do plano">
+      <input id="planValue" placeholder="Valor. Ex: R$ 1.500">
+      <input id="planReels" placeholder="Qtd. Reels">
+      <input id="planPosts" placeholder="Qtd. posts/carrosséis">
+      <input id="planStories" placeholder="Stories / semana">
+      <select id="planStatus"><option>Ativo</option><option>Pausado</option><option>Encerrado</option></select>
+    </div>
+    <textarea id="planScope" style="margin-top:12px" placeholder="Escopo, entregas, reuniões, relatórios e observações."></textarea>
+    <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
+  </div>
+</div>
+<div class="v29-mobile-ready">V29 • pronto para PWA</div>
+
 </body>
 </html>

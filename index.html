@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HAIA OS V25.1 • Correção Topo</title>
+<title>HAIA OS V25.1.1 • Correção Topo</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -670,12 +670,12 @@ textarea{min-height:105px;resize:vertical}
 <section class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="brand">HAIA</div>
-    <div class="eyebrow">HAIA OS • V25</div>
+    <div class="eyebrow">HAIA OS • V25.1</div>
     <h1>Entrar no sistema</h1>
     <p>Sistema operacional premium com aprovações reais, histórico de feedbacks e fluxo de publicação.</p>
     <input id="email" type="email" placeholder="E-mail">
     <input id="password" type="password" placeholder="Senha">
-    <button class="primary-btn" onclick="login()">Entrar</button>
+    <button class="primary-btn" onclick="haiaSafeLogin()">Entrar</button>
     <p id="loginMsg" style="margin-top:14px;color:#b05b5b"></p>
   </div>
 </section>
@@ -2109,6 +2109,55 @@ initSession();
     </div>
   </div>
 </div>
+
+
+<script>
+window.addEventListener("error", function(e){
+  console.log("HAIA OS JS guard:", e.message);
+});
+
+async function haiaSafeLogin(){
+  try{
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    const msgEl = document.getElementById("loginMsg");
+
+    const email = emailEl ? emailEl.value.trim() : "";
+    const password = passEl ? passEl.value.trim() : "";
+
+    if(!email || !password){
+      if(msgEl) msgEl.textContent = "Preencha e-mail e senha.";
+      return;
+    }
+
+    if(window.supabase && typeof supabaseClient !== "undefined"){
+      const { data, error } = await supabaseClient.auth.signInWithPassword({email,password});
+      if(error){
+        if(msgEl) msgEl.textContent = "Login inválido ou não cadastrado.";
+        return;
+      }
+
+      currentUser = data.user;
+      if(typeof loadProfile === "function") await loadProfile();
+      if(typeof openApp === "function") openApp();
+      return;
+    }
+
+    if(msgEl) msgEl.textContent = "Supabase não carregou. Atualize a página.";
+  }catch(err){
+    const msgEl = document.getElementById("loginMsg");
+    if(msgEl) msgEl.textContent = "Erro no login. Use o V25.1 corrigido.";
+    console.error(err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  const loginButton = document.querySelector("#loginScreen .primary-btn");
+  if(loginButton){
+    loginButton.setAttribute("onclick","haiaSafeLogin()");
+  }
+});
+</script>
 
 </body>
 </html>

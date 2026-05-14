@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V30.2.1.1 • App</title>
+<title>HAIA OS V30.3.1 • App</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -246,7 +246,7 @@ textarea{min-height:110px;resize:vertical}
 @media(max-width:1100px){.v291-section-grid{grid-template-columns:1fr}.v291-row{display:block}}
 
 
-/* HAIA OS V30.2.1 - PWA / App polish */
+/* HAIA OS V30.3 - PWA / App polish */
 html{
   overscroll-behavior:none;
 }
@@ -364,7 +364,7 @@ body{
 }
 
 
-/* HAIA OS V30.2.1 fixes */
+/* HAIA OS V30.3 fixes */
 .public-portal{
   min-height:100svh;
   padding:28px;
@@ -417,7 +417,7 @@ body{
 }
 
 
-/* HAIA OS V30.2.1 - infraestrutura */
+/* HAIA OS V30.3 - infraestrutura */
 .infra-status{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -443,6 +443,27 @@ body{
 }
 @media(max-width:900px){.infra-status{grid-template-columns:1fr}}
 
+
+/* HAIA OS V30.3 - CRUD inicial */
+.crud-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(114,201,130,.16);
+  color:#2d8a44;
+  font-size:12px;
+  font-weight:900;
+}
+.crud-empty{
+  padding:18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.42);
+  border:1px solid rgba(255,255,255,.68);
+  color:var(--muted);
+}
+
 </style>
 
 <link rel="manifest" href="manifest.json">
@@ -461,7 +482,7 @@ body{
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.2.1</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.3</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -543,7 +564,7 @@ body{
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.2.1</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.3</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -836,11 +857,11 @@ function renderPlaceholder(name){return `<div class="panel"><h2>${name}</h2><p>M
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V30.2.1 • botões corrigidos</div>
+<div class="v29-mobile-ready">V30.3 • CRUD inicial</div>
 
 
 <script>
-/* HAIA OS V30.2.1 - correção definitiva dos módulos operacionais */
+/* HAIA OS V30.3 - correção definitiva dos módulos operacionais */
 
 function renderPlans(){
   return `<div class="panel">
@@ -1083,11 +1104,11 @@ function setTopAction(name){
     <button class="ghost-btn" onclick="document.getElementById('installCard').classList.remove('active')">Fechar</button>
   </div>
 </div>
-<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.2.1 • app</div>
+<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.3 • app</div>
 
 
 <script>
-/* HAIA OS V30.2.1 - PWA */
+/* HAIA OS V30.3 - PWA */
 let deferredInstallPrompt = null;
 
 window.addEventListener("beforeinstallprompt", function(event){
@@ -1117,7 +1138,7 @@ if("serviceWorker" in navigator){
 
 
 <script>
-/* HAIA OS V30.2.1 - login manual, portal público e botões funcionais */
+/* HAIA OS V30.3 - login manual, portal público e botões funcionais */
 
 function getClientSlugFromURL(){
   const params = new URLSearchParams(window.location.search);
@@ -1441,7 +1462,7 @@ document.addEventListener("DOMContentLoaded", initV301);
 
 
 <script>
-/* HAIA OS V30.2.1 - Infraestrutura real */
+/* HAIA OS V30.3 - Infraestrutura real */
 
 const HAIA_VERSION = "V30.2";
 let routeMode = "admin";
@@ -1742,7 +1763,7 @@ document.addEventListener("DOMContentLoaded", initV302);
 
 
 <script>
-/* HAIA OS V30.2.1 - correção dos botões de Serviços & Planos */
+/* HAIA OS V30.3 - correção dos botões de Serviços & Planos */
 
 function planOptions(){
   return plans.map((p,i)=>`<option value="${i}">${p.name}</option>`).join("");
@@ -1942,6 +1963,337 @@ function renderPlans(){
       </div>`).join("")}
     </div>
   </div>`;
+}
+</script>
+
+
+<script>
+/* HAIA OS V30.3 - CRUD inicial real com Supabase */
+
+let dbContents = [];
+let dbTasks = [];
+let dbDNA = [];
+let dbPlans = [];
+
+function getSelectedClientIdFromSelect(selectId){
+  const el = document.getElementById(selectId);
+  if(!el || !clients.length) return null;
+  const index = Number(el.value || 0);
+  return clients[index]?.id || null;
+}
+
+function clientSelectOptions(){
+  return clients.map((c,i)=>`<option value="${i}">${c.name}</option>`).join("") || "<option value="">Nenhum cliente cadastrado</option>";
+}
+
+async function loadOperationalData(){
+  try{
+    const contentsRes = await supa.from("haia_os_contents").select("*, haia_os_clients(name)").order("created_at",{ascending:false});
+    dbContents = contentsRes.data || [];
+  }catch(e){ dbContents = []; }
+
+  try{
+    const tasksRes = await supa.from("haia_os_tasks").select("*, haia_os_clients(name)").order("created_at",{ascending:false});
+    dbTasks = tasksRes.data || [];
+  }catch(e){ dbTasks = []; }
+
+  try{
+    const dnaRes = await supa.from("haia_os_dna").select("*").order("created_at",{ascending:false});
+    dbDNA = dnaRes.data || [];
+  }catch(e){ dbDNA = []; }
+
+  try{
+    const planRes = await supa.from("haia_os_plans").select("*").order("created_at",{ascending:false});
+    dbPlans = planRes.data || [];
+    if(dbPlans.length){
+      plans = dbPlans.map(p=>({
+        id:p.id,
+        name:p.name,
+        value:p.value || "A definir",
+        reels:p.reels || "0",
+        posts:p.posts || "0",
+        stories:p.stories || "A definir",
+        scope:p.scope || "Escopo personalizado.",
+        status:p.status || "Ativo"
+      }));
+    }
+  }catch(e){}
+}
+
+async function loadAll(){
+  await loadClients();
+  await loadOperationalData();
+}
+
+function openQuickModal(type){
+  const modal = document.getElementById("quickModal");
+  const title = document.getElementById("quickModalTitle");
+  const text = document.getElementById("quickModalText");
+  const body = document.getElementById("quickModalBody");
+
+  const configs = {
+    message:{
+      title:"Nova mensagem",
+      text:"Crie uma mensagem padrão ou comunicação vinculada ao cliente.",
+      body:`<div class="form-grid">
+        <select id="messageClient">${clientSelectOptions()}</select>
+        <input id="messageTitle" placeholder="Título da mensagem">
+      </div>
+      <textarea id="messageText" style="margin-top:12px" placeholder="Texto da mensagem"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveMockAction('Mensagem')">Salvar mensagem</button>`
+    },
+    content:{
+      title:"Novo conteúdo",
+      text:"Cadastre uma ideia, roteiro ou peça em produção.",
+      body:`<div class="form-grid">
+        <select id="contentClient">${clientSelectOptions()}</select>
+        <select id="contentStatus"><option value="ideia">Ideia</option><option value="producao">Em produção</option><option value="pronto">Pronto</option><option value="aprovacao">Em aprovação</option></select>
+        <input id="contentTitle" placeholder="Título do conteúdo">
+        <input id="contentFormat" placeholder="Formato. Ex: Reels, Carrossel, Stories">
+      </div>
+      <textarea id="contentDescription" style="margin-top:12px" placeholder="Roteiro, descrição ou observações"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveContentReal()">Salvar conteúdo</button>`
+    },
+    task:{
+      title:"Nova tarefa",
+      text:"Crie uma tarefa operacional para acompanhar a entrega.",
+      body:`<div class="form-grid">
+        <select id="taskClient">${clientSelectOptions()}</select>
+        <input id="taskTitle" placeholder="Título da tarefa">
+        <input id="taskDate" type="date">
+        <select id="taskPriority"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+      </div>
+      <textarea id="taskDescription" style="margin-top:12px" placeholder="Descrição da tarefa"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveTaskReal()">Salvar tarefa</button>`
+    },
+    dna:{
+      title:"Salvar DNA",
+      text:"Salve a base estratégica do cliente no Supabase.",
+      body:`<div class="quick-modal-note">Preencha os campos da tela de DNA antes de confirmar.</div>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveDNAReal()">Confirmar salvamento</button>`
+    },
+    file:{
+      title:"Novo arquivo",
+      text:"Prepare o envio de material para o workspace do cliente.",
+      body:`<div class="form-grid">
+        <select id="fileClient">${clientSelectOptions()}</select>
+        <select id="fileCategory"><option>Estratégia</option><option>Branding</option><option>Conteúdo</option><option>Financeiro</option></select>
+        <input id="fileName" placeholder="Nome do arquivo">
+        <input id="fileUrl" placeholder="Link do arquivo">
+      </div>
+      <textarea id="fileDescription" style="margin-top:12px" placeholder="Descrição ou observações"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveFileReal()">Salvar arquivo</button>`
+    }
+  };
+
+  const c = configs[type] || configs.task;
+  title.textContent = c.title;
+  text.textContent = c.text;
+  body.innerHTML = c.body;
+  modal.classList.add("active");
+}
+
+async function saveContentReal(){
+  const title = document.getElementById("contentTitle").value.trim();
+  if(!title){ showToast("Digite o título do conteúdo."); return; }
+
+  const payload = {
+    client_id: getSelectedClientIdFromSelect("contentClient"),
+    title,
+    format: document.getElementById("contentFormat").value.trim(),
+    status: document.getElementById("contentStatus").value,
+    description: document.getElementById("contentDescription").value.trim()
+  };
+
+  const {error} = await supa.from("haia_os_contents").insert([payload]);
+  if(error){ showToast("Erro ao salvar conteúdo. Verifique o SQL V30.3."); return; }
+
+  closeQuickModal();
+  await loadOperationalData();
+  showToast("Conteúdo salvo.");
+  showModule("conteudos");
+}
+
+async function saveTaskReal(){
+  const title = document.getElementById("taskTitle").value.trim();
+  if(!title){ showToast("Digite o título da tarefa."); return; }
+
+  const payload = {
+    client_id: getSelectedClientIdFromSelect("taskClient"),
+    title,
+    description: document.getElementById("taskDescription").value.trim(),
+    due_date: document.getElementById("taskDate").value || null,
+    priority: document.getElementById("taskPriority").value,
+    status: "aberta"
+  };
+
+  const {error} = await supa.from("haia_os_tasks").insert([payload]);
+  if(error){ showToast("Erro ao salvar tarefa. Verifique o SQL V30.3."); return; }
+
+  closeQuickModal();
+  await loadOperationalData();
+  showToast("Tarefa salva.");
+  showModule("tarefas");
+}
+
+async function completeTaskReal(id){
+  const {error} = await supa.from("haia_os_tasks").update({status:"concluida"}).eq("id",id);
+  if(error){ showToast("Erro ao concluir tarefa."); return; }
+  await loadOperationalData();
+  showToast("Tarefa concluída.");
+  showModule("tarefas");
+}
+
+async function saveDNAReal(){
+  const selected = document.getElementById("dnaClientSelect");
+  const client_id = selected && clients[Number(selected.value)] ? clients[Number(selected.value)].id : null;
+  if(!client_id){ showToast("Selecione um cliente."); return; }
+
+  const payload = {
+    client_id,
+    niche: document.getElementById("dnaNiche")?.value || "",
+    tone: document.getElementById("dnaTone")?.value || "",
+    aesthetic: document.getElementById("dnaAesthetic")?.value || "",
+    main_goal: document.getElementById("dnaGoal")?.value || "",
+    cta: document.getElementById("dnaCTA")?.value || "",
+    keywords: document.getElementById("dnaKeywords")?.value || "",
+    restrictions: document.getElementById("dnaRestrictions")?.value || "",
+    references_notes: document.getElementById("dnaReferences")?.value || ""
+  };
+
+  const {error} = await supa.from("haia_os_dna").upsert(payload,{onConflict:"client_id"});
+  if(error){ showToast("Erro ao salvar DNA. Verifique o SQL V30.3."); return; }
+
+  closeQuickModal();
+  await loadOperationalData();
+  showToast("DNA salvo.");
+}
+
+async function saveFileReal(){
+  const name = document.getElementById("fileName").value.trim();
+  if(!name){ showToast("Digite o nome do arquivo."); return; }
+
+  const payload = {
+    client_id: getSelectedClientIdFromSelect("fileClient"),
+    file_name: name,
+    file_category: document.getElementById("fileCategory").value,
+    file_url: document.getElementById("fileUrl").value.trim(),
+    description: document.getElementById("fileDescription").value.trim()
+  };
+
+  const {error} = await supa.from("haia_os_files").insert([payload]);
+  if(error){ showToast("Erro ao salvar arquivo. Verifique o SQL V30.3."); return; }
+
+  closeQuickModal();
+  showToast("Arquivo salvo.");
+  showModule("arquivos");
+}
+
+function renderContent(){
+  const all = dbContents.length ? dbContents : [
+    {title:"Reels autoridade", status:"ideia", format:"Reels", haia_os_clients:{name:"Studio Cristal"}, description:"roteiro inicial"},
+    {title:"Carrossel educativo", status:"ideia", format:"Carrossel", haia_os_clients:{name:"Mariah Biquínis"}, description:"conteúdo de valor"},
+    {title:"Stories de venda", status:"producao", format:"Stories", haia_os_clients:{name:"Kaife Fitness"}, description:"sequência comercial"},
+    {title:"Post prova social", status:"pronto", format:"Post", haia_os_clients:{name:"Noir Makeup"}, description:"aguardando aprovação"}
+  ];
+
+  const col = (status,label) => `<div class="mini-column">
+    <h3>${label}</h3>
+    ${all.filter(i=>i.status===status).map(i=>`<div class="message-card">
+      <strong>${i.title}</strong>
+      <p>${i.haia_os_clients?.name || "Cliente"} • ${i.format || "Conteúdo"}</p>
+      <p>${i.description || ""}</p>
+      ${i.id ? '<span class="crud-badge">salvo</span>' : ''}
+    </div>`).join("") || '<div class="crud-empty">Nenhum conteúdo aqui.</div>'}
+  </div>`;
+
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Conteúdos</h2><p>Banco de conteúdos, roteiros e publicações.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('content')">+ Novo conteúdo</button>
+    </div>
+    <div class="mini-board">
+      ${col("ideia","Ideias")}
+      ${col("producao","Em produção")}
+      ${col("pronto","Pronto")}
+    </div>
+  </div>`;
+}
+
+function renderTasks(){
+  const fallback = [
+    {title:"Revisar calendário Studio Cristal", due_date:"Hoje", priority:"Alta", status:"aberta"},
+    {title:"Finalizar carrossel Mariah Biquínis", due_date:"Amanhã", priority:"Média", status:"aberta"},
+    {title:"Enviar relatório Kaife Fitness", due_date:"Sexta", priority:"Alta", status:"aberta"}
+  ];
+  const data = dbTasks.length ? dbTasks : fallback;
+
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Tarefas</h2><p>Checklist operacional da equipe HAIA.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('task')">+ Nova tarefa</button>
+    </div>
+
+    <div class="operation-list">
+      ${data.map(t=>`<div class="v291-row" style="${t.status==='concluida'?'opacity:.45;text-decoration:line-through':''}">
+        <div>
+          <strong>${t.title}</strong>
+          <p>${t.due_date || "Sem prazo"} • prioridade ${t.priority || "Média"} ${t.haia_os_clients?.name ? "• "+t.haia_os_clients.name : ""}</p>
+          ${t.id ? '<span class="crud-badge">salva</span>' : ''}
+        </div>
+        ${t.id ? `<button class="ghost-btn" onclick="completeTaskReal('${t.id}')">${t.status==='concluida'?'Concluída':'Concluir'}</button>` : `<button class="ghost-btn" onclick="completeTask(this)">Concluir</button>`}
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderDNA(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>DNA dos Clientes</h2><p>Base estratégica usada pela IA contextual.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('dna')">Salvar DNA</button>
+    </div>
+
+    <div class="form-grid">
+      <select id="dnaClientSelect">${clientSelectOptions()}</select>
+      <input id="dnaNiche" placeholder="Nicho">
+      <input id="dnaTone" placeholder="Tom de voz">
+      <input id="dnaAesthetic" placeholder="Estética">
+      <input id="dnaGoal" placeholder="Objetivo principal">
+      <input id="dnaCTA" placeholder="CTA principal">
+      <input id="dnaKeywords" placeholder="Palavras-chave">
+      <input id="dnaRestrictions" placeholder="Restrições / evitar">
+    </div>
+    <textarea id="dnaReferences" style="margin-top:12px" placeholder="Referências, diferenciais, campanhas anteriores e observações estratégicas."></textarea>
+    <div class="message-card">
+      <strong>Registros de DNA salvos</strong>
+      <p>${dbDNA.length || 0} cliente(s) com base estratégica cadastrada.</p>
+    </div>
+  </div>`;
+}
+
+async function login(){
+  const msg = document.getElementById("loginMsg");
+  const emailInput = document.getElementById("email");
+  const passInput = document.getElementById("password");
+  const email = emailInput ? emailInput.value.trim() : "";
+  const password = passInput ? passInput.value.trim() : "";
+
+  if(!email || !password){
+    if(msg) msg.textContent = "Preencha e-mail e senha.";
+    return;
+  }
+
+  const {data,error}=await supa.auth.signInWithPassword({email,password});
+  if(error){
+    if(msg) msg.textContent="Login inválido ou não cadastrado.";
+    return;
+  }
+
+  currentUser=data.user;
+  await loadProfile();
+  await loadAll();
+  openApp();
 }
 </script>
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V31 BETA</title>
+<title>HAIA OS V32 CORE</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -115,6 +115,64 @@ textarea{min-height:110px;resize:vertical}
   .grid-4,.grid-3,.approval-board,.calendar-board,.form-grid,.mini-board{grid-template-columns:1fr}
   .operation-item,.v-row{display:block}
 }
+
+/* HAIA OS V32 CORE */
+.core-status{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+.core-status .status-card{
+  background:rgba(255,255,255,.44);
+  border:1px solid rgba(255,255,255,.68);
+  border-radius:22px;
+  padding:16px;
+}
+.status-card strong{display:block;margin-bottom:6px;font-size:15px}
+.status-ok{color:#2f8a43;font-weight:950}
+.status-dev{color:#99650b;font-weight:950}
+.core-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.core-tabs button{min-height:40px;border-radius:999px}
+.table-like{display:grid;gap:10px}
+.table-row{
+  display:grid;
+  grid-template-columns:1.2fr .8fr .8fr .7fr;
+  gap:12px;
+  align-items:center;
+  padding:14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.44);
+  border:1px solid rgba(255,255,255,.62);
+}
+.client-view-banner{
+  padding:18px;
+  border-radius:24px;
+  background:linear-gradient(135deg,rgba(233,201,135,.28),rgba(255,126,170,.10));
+  border:1px solid rgba(255,255,255,.72);
+  margin-bottom:16px;
+}
+.upload-zone{
+  display:grid;
+  place-items:center;
+  min-height:160px;
+  border:2px dashed rgba(140,102,52,.30);
+  border-radius:24px;
+  background:rgba(255,255,255,.28);
+  text-align:center;
+  padding:18px;
+  margin:14px 0;
+}
+.roadmap-core{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.roadmap-core .card{min-height:120px}
+@media(max-width:1100px){
+  .core-status,.roadmap-core,.table-row{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -122,9 +180,9 @@ textarea{min-height:110px;resize:vertical}
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V31 BETA</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V32 CORE</div>
     <h1>Entrar no sistema</h1>
-    <p style="margin-top:16px">Beta operacional com banco real, workspaces, aprovações, arquivos, calendário e DNA contextual.</p>
+    <p style="margin-top:16px">Core operacional com banco real, multiworkspace, portal do cliente, aprovação, arquivos e calendário.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
       <input id="email" type="email" placeholder="E-mail" autocomplete="username">
       <input id="password" type="password" placeholder="Senha" autocomplete="current-password">
@@ -166,9 +224,9 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V31 BETA</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V32 CORE</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
-      <p id="moduleText">Sistema operacional beta da HAIA.</p>
+      <p id="moduleText">Sistema operacional core da HAIA.</p>
     </section>
 
     <section class="content" id="dynamicContent"></section>
@@ -243,7 +301,7 @@ function openApp(){document.getElementById("loginScreen").style.display="none";d
 
 function showModule(name,btn){
   setActive(btn || [...document.querySelectorAll(".nav button")].find(b=>b.textContent.toLowerCase().includes(name)));
-  const titles={dashboard:["Boa tarde, Mariah 👋","Resumo vivo da operação HAIA."],clientes:["Clientes","Workspaces e operação por cliente."],planos:["Serviços & Planos","Planos, escopos e serviços."],calendario:["Calendário","Agenda operacional."],conteudos:["Conteúdos","Banco de conteúdos."],aprovacoes:["Aprovações","Fluxo de aprovação."],tarefas:["Tarefas","Checklist operacional."],dna:["DNA","Memória estratégica."],arquivos:["Arquivos","Materiais por cliente."],portal:["Portal","Visão cliente."],ia:["IA HAIA","Inteligência contextual."]};
+  const titles={dashboard:["Boa tarde, Mariah 👋","Resumo real da operação HAIA."],clientes:["Clientes","Workspaces e operação por cliente."],planos:["Serviços & Planos","Planos, escopos e serviços."],calendario:["Calendário","Agenda operacional."],conteudos:["Conteúdos","Banco de conteúdos."],aprovacoes:["Aprovações","Fluxo de aprovação."],tarefas:["Tarefas","Checklist operacional."],dna:["DNA","Memória estratégica."],arquivos:["Arquivos","Materiais por cliente."],portal:["Portal","Visão cliente."],ia:["IA HAIA","Inteligência contextual."]};
   document.getElementById("moduleTitle").textContent=titles[name]?.[0]||name;
   document.getElementById("moduleText").textContent=titles[name]?.[1]||"";
   const map={dashboard:renderDashboard,clientes:renderClients,planos:renderPlans,calendario:renderCalendar,conteudos:renderContents,aprovacoes:renderApprovals,tarefas:renderTasks,dna:renderDNA,arquivos:renderFiles,portal:renderPortal,ia:renderAI};
@@ -292,5 +350,140 @@ function copy(text){navigator.clipboard?.writeText(text);toast("Copiado.")}
 async function init(){const slug=new URLSearchParams(location.search).get("cliente");if(slug){await loadClients();const c=clients.find(x=>x.workspace_slug===slug);document.getElementById("loginScreen").style.display="none";document.getElementById("publicPortal").style.display="block";document.getElementById("publicClientName").textContent=c?.name||"Cliente";document.getElementById("publicClientPlan").textContent=c?.plan||"Operação HAIA";document.getElementById("publicContent").innerHTML=renderPortal();return}try{await supa.auth.signOut()}catch(e){}}
 init();
 </script>
+
+<script>
+/* HAIA OS V32 CORE - camada de produto */
+
+function renderDashboard(){
+  return `<div class="core-status">
+    <div class="status-card"><strong>Banco</strong><span class="status-ok">Supabase ready</span><p>Tabelas principais preparadas.</p></div>
+    <div class="status-card"><strong>Auth</strong><span class="status-ok">Login real</span><p>Supabase Auth ativo.</p></div>
+    <div class="status-card"><strong>Workspace</strong><span class="status-ok">Multi-cliente</span><p>Slug individual por cliente.</p></div>
+    <div class="status-card"><strong>Portal</strong><span class="status-dev">Beta</span><p>Visão cliente separada.</p></div>
+    <div class="status-card"><strong>Storage</strong><span class="status-dev">Próximo</span><p>Upload real preparado.</p></div>
+  </div>
+
+  <div class="grid-4">
+    ${metric("Clientes",clients.length,"ativos","var(--champagne)")}
+    ${metric("Conteúdos",contents.length,"salvos","var(--green)")}
+    ${metric("Tarefas",tasks.filter(t=>t.status!=="concluida").length,"abertas","var(--orange)")}
+    ${metric("Aprovações",approvals.filter(a=>a.status==="pendente").length,"pendentes","var(--pink)")}
+  </div>
+
+  <div class="panel">
+    <div class="section-head">
+      <div>
+        <h2>Core operacional</h2>
+        <p>O V32 consolida banco, workspace, portal, aprovações, arquivos, conteúdos e tarefas em uma única base de produto.</p>
+      </div>
+    </div>
+    <div class="roadmap-core">
+      <div class="card"><h3>01. Operação</h3><p>Clientes, entregas, tarefas e status.</p><span class="saved">core ativo</span></div>
+      <div class="card"><h3>02. Cliente</h3><p>Portal isolado por workspace e link público.</p><span class="saved">portal beta</span></div>
+      <div class="card"><h3>03. Crescimento</h3><p>Pronto para IA contextual, automações e analytics.</p><span class="saved">expansível</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-head"><div><h2>Workspaces</h2><p>Clientes ativos do HAIA OS.</p></div></div>
+    ${clients.length?`<div class="grid-3">${clients.slice(0,6).map(clientCard).join("")}</div>`:`<div class="card"><h3>Nenhum cliente ainda</h3><p>Crie o primeiro workspace na aba Clientes.</p></div>`}
+  </div>`;
+}
+
+function renderClients(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Clientes cadastrados</h2><p>Workspaces reais com portal individual.</p></div>
+      <button class="primary-btn" onclick="openClientModal()">+ Novo cliente</button>
+    </div>
+    ${clients.length?`<div class="grid-3">${clients.map(clientCard).join("")}</div>`:`<div class="card"><h3>Nenhum cliente cadastrado</h3><p>Cadastre o primeiro cliente.</p></div>`}
+  </div>
+  <div class="panel">
+    <h2>Estrutura multiworkspace</h2>
+    <p>Cada cliente precisa ter slug próprio, link público e dados filtrados por cliente.</p>
+    <div class="table-like" style="margin-top:14px">
+      <div class="table-row"><strong>Cliente</strong><strong>Slug</strong><strong>Portal</strong><strong>Status</strong></div>
+      ${clients.map(c=>`<div class="table-row"><span>${c.name}</span><span>${c.workspace_slug||slugify(c.name)}</span><span>${workspaceUrl(c)}</span><span class="badge">${c.status||"ativo"}</span></div>`).join("") || `<div class="card">Sem clientes.</div>`}
+    </div>
+  </div>`;
+}
+
+function renderPortal(){
+  const c=selectedClient||clients[0]||{name:"Cliente",plan:"Operação",progress:0};
+  return `<div class="client-view-banner">
+    <div class="eyebrow">Prévia do Portal do Cliente</div>
+    <h2>${c.name}</h2>
+    <p>Essa é a visão que o cliente acompanha: entregas, aprovações, arquivos e calendário.</p>
+  </div>
+  <div class="panel">
+    <div style="display:flex;gap:18px;align-items:center">
+      <div class="client-logo">${c.initials||initials(c.name)}</div>
+      <div><div class="eyebrow">Workspace público</div><h2>${c.name}</h2><p>${c.plan||"Operação HAIA"}</p></div>
+    </div>
+    <div class="grid-3" style="margin-top:18px">
+      ${metric("Progresso",c.progress||0,"%","var(--champagne)")}
+      ${metric("Aprovações",approvals.filter(a=>a.client_id===c.id).length,"itens","var(--pink)")}
+      ${metric("Arquivos",files.filter(f=>f.client_id===c.id).length,"materiais","var(--green)")}
+    </div>
+    <div class="workspace-link">${workspaceUrl(c)}</div>
+    <button class="primary-btn" style="margin-top:12px" onclick="copy('${workspaceUrl(c)}')">Copiar link do portal</button>
+  </div>`;
+}
+
+function renderFiles(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Arquivos</h2><p>Materiais por cliente. Upload real via Supabase Storage entra na próxima estabilização.</p></div>
+      <button class="primary-btn" onclick="openFileModal()">+ Novo arquivo</button>
+    </div>
+    <div class="upload-zone">
+      <div>
+        <h3>Área de upload preparada</h3>
+        <p>No V32 CORE, links e registros já funcionam. Storage real fica pronto no patch de estabilidade.</p>
+      </div>
+    </div>
+    <div class="grid-3">
+      ${files.map(f=>`<div class="file-card"><h3>📎 ${f.file_name}</h3><span class="badge">${f.file_category||"Geral"}</span><p>${f.haia_os_clients?.name||""}</p><p>${f.description||""}</p>${f.file_url?`<button class="ghost-btn" onclick="window.open('${f.file_url}','_blank')">Abrir</button>`:""}</div>`).join("")||`<div class="card">Nenhum arquivo.</div>`}
+    </div>
+  </div>`;
+}
+
+function renderApprovals(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Aprovações</h2><p>Fluxo real de status para aprovação, revisão e publicação.</p></div>
+      <button class="primary-btn" onclick="openApprovalModal()">+ Nova aprovação</button>
+    </div>
+    <div class="approval-board">
+      ${["pendente","revisao","aprovado","publicado"].map(s=>`<div class="approval-column"><h3>${s}</h3>${approvals.filter(a=>a.status===s).map(a=>`<div class="approval-card"><div class="preview">Preview</div><h3>${a.title}</h3><p>${a.haia_os_clients?.name||""}</p><p>${a.description||""}</p><div class="row-actions"><button class="ghost-btn" onclick="setApproval('${a.id}','revisao')">Revisão</button><button class="primary-btn" onclick="setApproval('${a.id}','aprovado')">Aprovar</button><button class="ghost-btn" onclick="setApproval('${a.id}','publicado')">Publicado</button></div></div>`).join("")||`<div class="card">Vazio</div>`}</div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderAI(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>IA HAIA Contextual</h2><p>Inteligência baseada no DNA de cada cliente.</p></div>
+    </div>
+    <div class="form-grid">
+      <select id="aiClient">${clientOptions()}</select>
+      <select id="aiAction"><option>Criar calendário</option><option>Gerar Reels</option><option>Analisar perfil</option><option>Criar sequência de stories</option></select>
+    </div>
+    <textarea id="aiPrompt" style="margin-top:12px" placeholder="Ex: crie uma semana de conteúdos com foco em autoridade e conversão."></textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="generateAIContext()">Gerar com IA HAIA</button>
+    <div class="message-card" id="aiResult" style="display:none"></div>
+  </div>`;
+}
+
+function generateAIContext(){
+  const client = selectedClientName("aiClient");
+  const action = document.getElementById("aiAction").value;
+  const prompt = document.getElementById("aiPrompt").value || "sem briefing adicional";
+  const box = document.getElementById("aiResult");
+  box.style.display = "block";
+  box.innerHTML = `<strong>Resposta contextual simulada</strong><p><b>Cliente:</b> ${client}</p><p><b>Ação:</b> ${action}</p><p>Direção estratégica: usar o DNA do cliente, manter posicionamento premium e transformar o pedido em entregáveis práticos. Briefing: ${prompt}</p><span class="saved">IA pronta para conexão API</span>`;
+}
+</script>
+
 </body>
 </html>

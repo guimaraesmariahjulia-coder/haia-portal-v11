@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAIA OS V30.3.1 • App</title>
+<title>HAIA OS V30.4.1 • App</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -246,7 +246,7 @@ textarea{min-height:110px;resize:vertical}
 @media(max-width:1100px){.v291-section-grid{grid-template-columns:1fr}.v291-row{display:block}}
 
 
-/* HAIA OS V30.3 - PWA / App polish */
+/* HAIA OS V30.4 - PWA / App polish */
 html{
   overscroll-behavior:none;
 }
@@ -364,7 +364,7 @@ body{
 }
 
 
-/* HAIA OS V30.3 fixes */
+/* HAIA OS V30.4 fixes */
 .public-portal{
   min-height:100svh;
   padding:28px;
@@ -417,7 +417,7 @@ body{
 }
 
 
-/* HAIA OS V30.3 - infraestrutura */
+/* HAIA OS V30.4 - infraestrutura */
 .infra-status{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -444,7 +444,7 @@ body{
 @media(max-width:900px){.infra-status{grid-template-columns:1fr}}
 
 
-/* HAIA OS V30.3 - CRUD inicial */
+/* HAIA OS V30.4 - CRUD inicial */
 .crud-badge{
   display:inline-flex;
   align-items:center;
@@ -462,6 +462,47 @@ body{
   background:rgba(255,255,255,.42);
   border:1px solid rgba(255,255,255,.68);
   color:var(--muted);
+}
+
+
+/* HAIA OS V30.4 - CRUD visual completo */
+.v304-saved{
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(114,201,130,.16);
+  color:#2f8a43;
+  font-size:12px;
+  font-weight:900;
+  margin-top:8px;
+}
+.v304-empty{
+  padding:16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.42);
+  border:1px solid rgba(255,255,255,.64);
+  color:var(--muted);
+  margin-top:10px;
+}
+.v304-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.v304-actions button{
+  min-height:34px;
+  padding:0 12px;
+  border-radius:13px;
+  font-size:12px;
+}
+.v304-inline-form{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+@media(max-width:900px){
+  .v304-inline-form{grid-template-columns:1fr}
 }
 
 </style>
@@ -482,7 +523,7 @@ body{
 <section class="login" id="loginScreen">
   <div class="login-card">
     <div class="logo">HAIA</div>
-    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.3</div>
+    <div style="margin-top:34px" class="eyebrow">HAIA OS • V30.4</div>
     <h1>Entrar no sistema</h1>
     <p style="margin-top:16px">Operação integrada com planos, clientes, calendário, aprovações, portal, arquivos e base PWA.</p>
     <div style="display:grid;gap:12px;margin-top:24px">
@@ -564,7 +605,7 @@ body{
     </div>
 
     <section class="hero">
-      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.3</div>
+      <div class="eyebrow" id="moduleEyebrow">HAIA OS V30.4</div>
       <h1 id="moduleTitle">Boa tarde, Mariah 👋</h1>
       <p id="moduleText">Sistema consolidado e estável para a operação HAIA.</p>
     </section>
@@ -857,11 +898,11 @@ function renderPlaceholder(name){return `<div class="panel"><h2>${name}</h2><p>M
     <button class="primary-btn" style="margin-top:14px" onclick="savePlanVisual()">Salvar plano</button>
   </div>
 </div>
-<div class="v29-mobile-ready">V30.3 • CRUD inicial</div>
+<div class="v29-mobile-ready">V30.4 • CRUD visual</div>
 
 
 <script>
-/* HAIA OS V30.3 - correção definitiva dos módulos operacionais */
+/* HAIA OS V30.4 - correção definitiva dos módulos operacionais */
 
 function renderPlans(){
   return `<div class="panel">
@@ -1104,11 +1145,11 @@ function setTopAction(name){
     <button class="ghost-btn" onclick="document.getElementById('installCard').classList.remove('active')">Fechar</button>
   </div>
 </div>
-<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.3 • app</div>
+<div class="v30-app-badge" onclick="document.getElementById('installCard').classList.add('active')">V30.4 • app</div>
 
 
 <script>
-/* HAIA OS V30.3 - PWA */
+/* HAIA OS V30.4 - PWA */
 let deferredInstallPrompt = null;
 
 window.addEventListener("beforeinstallprompt", function(event){
@@ -1138,7 +1179,7 @@ if("serviceWorker" in navigator){
 
 
 <script>
-/* HAIA OS V30.3 - login manual, portal público e botões funcionais */
+/* HAIA OS V30.4 - login manual, portal público e botões funcionais */
 
 function getClientSlugFromURL(){
   const params = new URLSearchParams(window.location.search);
@@ -1462,7 +1503,7 @@ document.addEventListener("DOMContentLoaded", initV301);
 
 
 <script>
-/* HAIA OS V30.3 - Infraestrutura real */
+/* HAIA OS V30.4 - Infraestrutura real */
 
 const HAIA_VERSION = "V30.2";
 let routeMode = "admin";
@@ -1763,7 +1804,7 @@ document.addEventListener("DOMContentLoaded", initV302);
 
 
 <script>
-/* HAIA OS V30.3 - correção dos botões de Serviços & Planos */
+/* HAIA OS V30.4 - correção dos botões de Serviços & Planos */
 
 function planOptions(){
   return plans.map((p,i)=>`<option value="${i}">${p.name}</option>`).join("");
@@ -1968,7 +2009,7 @@ function renderPlans(){
 
 
 <script>
-/* HAIA OS V30.3 - CRUD inicial real com Supabase */
+/* HAIA OS V30.4 - CRUD inicial real com Supabase */
 
 let dbContents = [];
 let dbTasks = [];
@@ -2294,6 +2335,438 @@ async function login(){
   await loadProfile();
   await loadAll();
   openApp();
+}
+</script>
+
+
+<script>
+/* HAIA OS V30.4 - CRUD visual completo com persistência local segura */
+
+const V304_KEYS = {
+  contents: "haia_v304_contents",
+  tasks: "haia_v304_tasks",
+  dna: "haia_v304_dna",
+  files: "haia_v304_files",
+  plans: "haia_v304_plans"
+};
+
+let localContents = JSON.parse(localStorage.getItem(V304_KEYS.contents) || "[]");
+let localTasks = JSON.parse(localStorage.getItem(V304_KEYS.tasks) || "[]");
+let localDNA = JSON.parse(localStorage.getItem(V304_KEYS.dna) || "[]");
+let localFiles = JSON.parse(localStorage.getItem(V304_KEYS.files) || "[]");
+let localPlans = JSON.parse(localStorage.getItem(V304_KEYS.plans) || "[]");
+
+function persistV304(){
+  localStorage.setItem(V304_KEYS.contents, JSON.stringify(localContents));
+  localStorage.setItem(V304_KEYS.tasks, JSON.stringify(localTasks));
+  localStorage.setItem(V304_KEYS.dna, JSON.stringify(localDNA));
+  localStorage.setItem(V304_KEYS.files, JSON.stringify(localFiles));
+  localStorage.setItem(V304_KEYS.plans, JSON.stringify(localPlans));
+}
+
+function safeClientOptions(){
+  return (clients && clients.length)
+    ? clients.map((c,i)=>`<option value="${i}">${c.name}</option>`).join("")
+    : `<option value="0">Studio Cristal</option><option value="1">Mariah Biquínis</option><option value="2">Kaife Fitness</option>`;
+}
+
+function safeClientName(index){
+  if(clients && clients[index]) return clients[index].name;
+  return ["Studio Cristal","Mariah Biquínis","Kaife Fitness"][index] || "Cliente";
+}
+
+function openQuickModal(type){
+  const modal = document.getElementById("quickModal");
+  const title = document.getElementById("quickModalTitle");
+  const text = document.getElementById("quickModalText");
+  const body = document.getElementById("quickModalBody");
+
+  if(!modal || !title || !text || !body){
+    showToast("Modal não encontrado.");
+    return;
+  }
+
+  const configs = {
+    content:{
+      title:"Novo conteúdo",
+      text:"Cadastre um conteúdo dentro do fluxo operacional.",
+      body:`<div class="form-grid">
+        <select id="v304ContentClient">${safeClientOptions()}</select>
+        <select id="v304ContentStatus"><option value="ideia">Ideia</option><option value="producao">Em produção</option><option value="pronto">Pronto</option><option value="aprovacao">Em aprovação</option></select>
+        <input id="v304ContentTitle" placeholder="Título do conteúdo">
+        <input id="v304ContentFormat" placeholder="Formato. Ex: Reels, Carrossel, Stories">
+      </div>
+      <textarea id="v304ContentDescription" style="margin-top:12px" placeholder="Roteiro, descrição ou observações"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveContentV304()">Salvar conteúdo</button>`
+    },
+    task:{
+      title:"Nova tarefa",
+      text:"Crie uma tarefa real na operação.",
+      body:`<div class="form-grid">
+        <select id="v304TaskClient">${safeClientOptions()}</select>
+        <input id="v304TaskTitle" placeholder="Título da tarefa">
+        <input id="v304TaskDate" placeholder="Prazo. Ex: Hoje, Sexta, 20/05">
+        <select id="v304TaskPriority"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+      </div>
+      <textarea id="v304TaskDescription" style="margin-top:12px" placeholder="Descrição da tarefa"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveTaskV304()">Salvar tarefa</button>`
+    },
+    dna:{
+      title:"Salvar DNA",
+      text:"Salve a base estratégica local do cliente.",
+      body:`<div class="quick-modal-note">O DNA será salvo nesta versão com persistência local. No V30.5, conectamos isso ao Supabase real.</div>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveDNAV304()">Confirmar salvamento</button>`
+    },
+    file:{
+      title:"Novo arquivo",
+      text:"Cadastre um arquivo ou link de material.",
+      body:`<div class="form-grid">
+        <select id="v304FileClient">${safeClientOptions()}</select>
+        <select id="v304FileCategory"><option>Estratégia</option><option>Branding</option><option>Conteúdo</option><option>Financeiro</option></select>
+        <input id="v304FileName" placeholder="Nome do arquivo">
+        <input id="v304FileUrl" placeholder="Link do arquivo">
+      </div>
+      <textarea id="v304FileDescription" style="margin-top:12px" placeholder="Descrição ou observações"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveFileV304()">Salvar arquivo</button>`
+    },
+    message:{
+      title:"Nova mensagem",
+      text:"Crie uma mensagem operacional.",
+      body:`<div class="form-grid">
+        <select id="v304MessageClient">${safeClientOptions()}</select>
+        <input id="v304MessageTitle" placeholder="Título da mensagem">
+      </div>
+      <textarea id="v304MessageText" style="margin-top:12px" placeholder="Texto da mensagem"></textarea>
+      <button class="primary-btn" style="margin-top:12px" onclick="saveMockAction('Mensagem')">Salvar mensagem</button>`
+    }
+  };
+
+  const c = configs[type] || configs.content;
+  title.textContent = c.title;
+  text.textContent = c.text;
+  body.innerHTML = c.body;
+  modal.classList.add("active");
+}
+
+function saveContentV304(){
+  const title = document.getElementById("v304ContentTitle")?.value.trim();
+  if(!title){ showToast("Digite o título do conteúdo."); return; }
+
+  const idx = Number(document.getElementById("v304ContentClient")?.value || 0);
+  localContents.unshift({
+    id: Date.now(),
+    title,
+    client: safeClientName(idx),
+    status: document.getElementById("v304ContentStatus")?.value || "ideia",
+    format: document.getElementById("v304ContentFormat")?.value || "Conteúdo",
+    description: document.getElementById("v304ContentDescription")?.value || ""
+  });
+  persistV304();
+  closeQuickModal();
+  showToast("Conteúdo salvo no V30.4.");
+  showModule("conteudos");
+}
+
+function deleteContentV304(id){
+  localContents = localContents.filter(i=>i.id!==id);
+  persistV304();
+  showToast("Conteúdo excluído.");
+  showModule("conteudos");
+}
+
+function moveContentV304(id,status){
+  localContents = localContents.map(i=> i.id===id ? {...i,status} : i);
+  persistV304();
+  showToast("Status atualizado.");
+  showModule("conteudos");
+}
+
+function saveTaskV304(){
+  const title = document.getElementById("v304TaskTitle")?.value.trim();
+  if(!title){ showToast("Digite o título da tarefa."); return; }
+
+  const idx = Number(document.getElementById("v304TaskClient")?.value || 0);
+  localTasks.unshift({
+    id: Date.now(),
+    title,
+    client: safeClientName(idx),
+    due: document.getElementById("v304TaskDate")?.value || "Sem prazo",
+    priority: document.getElementById("v304TaskPriority")?.value || "Média",
+    description: document.getElementById("v304TaskDescription")?.value || "",
+    done:false
+  });
+  persistV304();
+  closeQuickModal();
+  showToast("Tarefa salva no V30.4.");
+  showModule("tarefas");
+}
+
+function toggleTaskV304(id){
+  localTasks = localTasks.map(i=>i.id===id ? {...i,done:!i.done} : i);
+  persistV304();
+  showModule("tarefas");
+}
+
+function deleteTaskV304(id){
+  localTasks = localTasks.filter(i=>i.id!==id);
+  persistV304();
+  showToast("Tarefa excluída.");
+  showModule("tarefas");
+}
+
+function saveDNAV304(){
+  const select = document.getElementById("dnaClientSelect");
+  const idx = Number(select?.value || 0);
+  const client = safeClientName(idx);
+
+  const item = {
+    id: Date.now(),
+    client,
+    niche: document.getElementById("dnaNiche")?.value || "",
+    tone: document.getElementById("dnaTone")?.value || "",
+    aesthetic: document.getElementById("dnaAesthetic")?.value || "",
+    goal: document.getElementById("dnaGoal")?.value || "",
+    cta: document.getElementById("dnaCTA")?.value || "",
+    keywords: document.getElementById("dnaKeywords")?.value || "",
+    restrictions: document.getElementById("dnaRestrictions")?.value || "",
+    references: document.getElementById("dnaReferences")?.value || ""
+  };
+
+  localDNA = localDNA.filter(i=>i.client!==client);
+  localDNA.unshift(item);
+  persistV304();
+  closeQuickModal();
+  showToast("DNA salvo no V30.4.");
+  showModule("dna");
+}
+
+function deleteDNAV304(id){
+  localDNA = localDNA.filter(i=>i.id!==id);
+  persistV304();
+  showModule("dna");
+}
+
+function saveFileV304(){
+  const name = document.getElementById("v304FileName")?.value.trim();
+  if(!name){ showToast("Digite o nome do arquivo."); return; }
+
+  const idx = Number(document.getElementById("v304FileClient")?.value || 0);
+  localFiles.unshift({
+    id: Date.now(),
+    name,
+    client: safeClientName(idx),
+    category: document.getElementById("v304FileCategory")?.value || "Geral",
+    url: document.getElementById("v304FileUrl")?.value || "",
+    description: document.getElementById("v304FileDescription")?.value || ""
+  });
+  persistV304();
+  closeQuickModal();
+  showToast("Arquivo salvo no V30.4.");
+  showModule("arquivos");
+}
+
+function deleteFileV304(id){
+  localFiles = localFiles.filter(i=>i.id!==id);
+  persistV304();
+  showModule("arquivos");
+}
+
+function renderContent(){
+  const seed = [
+    {id:null,title:"Reels autoridade", status:"ideia", format:"Reels", client:"Studio Cristal", description:"roteiro inicial"},
+    {id:null,title:"Carrossel educativo", status:"ideia", format:"Carrossel", client:"Mariah Biquínis", description:"conteúdo de valor"},
+    {id:null,title:"Stories de venda", status:"producao", format:"Stories", client:"Kaife Fitness", description:"sequência comercial"},
+    {id:null,title:"Post prova social", status:"pronto", format:"Post", client:"Noir Makeup", description:"aguardando aprovação"}
+  ];
+  const all = [...localContents, ...seed];
+
+  const col = (status,label) => `<div class="mini-column">
+    <h3>${label}</h3>
+    ${all.filter(i=>i.status===status).map(i=>`<div class="message-card">
+      <strong>${i.title}</strong>
+      <p>${i.client} • ${i.format}</p>
+      <p>${i.description || ""}</p>
+      ${i.id ? `<span class="v304-saved">salvo local</span>
+      <div class="v304-actions">
+        <button class="ghost-btn" onclick="moveContentV304(${i.id},'ideia')">Ideia</button>
+        <button class="ghost-btn" onclick="moveContentV304(${i.id},'producao')">Produção</button>
+        <button class="ghost-btn" onclick="moveContentV304(${i.id},'pronto')">Pronto</button>
+        <button class="ghost-btn" onclick="deleteContentV304(${i.id})">Excluir</button>
+      </div>` : ""}
+    </div>`).join("") || '<div class="v304-empty">Nenhum conteúdo aqui.</div>'}
+  </div>`;
+
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Conteúdos</h2><p>Banco de conteúdos, roteiros e publicações com persistência local.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('content')">+ Novo conteúdo</button>
+    </div>
+    <div class="mini-board">
+      ${col("ideia","Ideias")}
+      ${col("producao","Em produção")}
+      ${col("pronto","Pronto")}
+    </div>
+  </div>`;
+}
+
+function renderTasks(){
+  const seed = [
+    {id:null,title:"Revisar calendário Studio Cristal", due:"Hoje", priority:"Alta", client:"Studio Cristal", done:false},
+    {id:null,title:"Finalizar carrossel Mariah Biquínis", due:"Amanhã", priority:"Média", client:"Mariah Biquínis", done:false},
+    {id:null,title:"Enviar relatório Kaife Fitness", due:"Sexta", priority:"Alta", client:"Kaife Fitness", done:false}
+  ];
+  const data = [...localTasks, ...seed];
+
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Tarefas</h2><p>Checklist operacional da equipe HAIA com persistência local.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('task')">+ Nova tarefa</button>
+    </div>
+
+    <div class="operation-list">
+      ${data.map(t=>`<div class="v291-row" style="${t.done?'opacity:.45;text-decoration:line-through':''}">
+        <div>
+          <strong>${t.title}</strong>
+          <p>${t.due || "Sem prazo"} • prioridade ${t.priority || "Média"} • ${t.client || "Cliente"}</p>
+          ${t.id ? '<span class="v304-saved">salva local</span>' : ''}
+        </div>
+        ${t.id ? `<div class="v304-actions"><button class="ghost-btn" onclick="toggleTaskV304(${t.id})">${t.done?'Reabrir':'Concluir'}</button><button class="ghost-btn" onclick="deleteTaskV304(${t.id})">Excluir</button></div>` : `<button class="ghost-btn" onclick="completeTask(this)">Concluir</button>`}
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderDNA(){
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>DNA dos Clientes</h2><p>Base estratégica usada pela IA contextual.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('dna')">Salvar DNA</button>
+    </div>
+
+    <div class="form-grid">
+      <select id="dnaClientSelect">${safeClientOptions()}</select>
+      <input id="dnaNiche" placeholder="Nicho">
+      <input id="dnaTone" placeholder="Tom de voz">
+      <input id="dnaAesthetic" placeholder="Estética">
+      <input id="dnaGoal" placeholder="Objetivo principal">
+      <input id="dnaCTA" placeholder="CTA principal">
+      <input id="dnaKeywords" placeholder="Palavras-chave">
+      <input id="dnaRestrictions" placeholder="Restrições / evitar">
+    </div>
+    <textarea id="dnaReferences" style="margin-top:12px" placeholder="Referências, diferenciais, campanhas anteriores e observações estratégicas."></textarea>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>DNA salvo</h2>
+      ${localDNA.length ? localDNA.map(i=>`<div class="v291-row">
+        <div><strong>${i.client}</strong><p>${i.tone || "Tom não definido"} • ${i.aesthetic || "Estética não definida"}</p><span class="v304-saved">salvo local</span></div>
+        <button class="ghost-btn" onclick="deleteDNAV304(${i.id})">Excluir</button>
+      </div>`).join("") : '<div class="v304-empty">Nenhum DNA salvo ainda.</div>'}
+    </div>
+  </div>`;
+}
+
+function renderFiles(){
+  const seed = [
+    {id:null,name:"Planejamento Junho.pdf", category:"Estratégia", client:"Studio Cristal", description:"Planejamento mensal."},
+    {id:null,name:"Moodboard Coleção.png", category:"Branding", client:"Mariah Biquínis", description:"Referências visuais."}
+  ];
+  const data = [...localFiles, ...seed];
+
+  return `<div class="panel">
+    <div class="section-head">
+      <div><h2>Arquivos</h2><p>Central de documentos e materiais por cliente.</p></div>
+      <button class="primary-btn" onclick="openQuickModal('file')">+ Novo arquivo</button>
+    </div>
+    <div class="v291-upload-box">
+      <strong>Área de upload</strong>
+      <p>Nesta versão, salve nome + link. Upload real entra no V30.5.</p>
+    </div>
+    <div class="v29-filter-row">
+      <button class="ghost-btn">Todos</button>
+      <button class="ghost-btn">Estratégia</button>
+      <button class="ghost-btn">Branding</button>
+      <button class="ghost-btn">Conteúdo</button>
+      <button class="ghost-btn">Financeiro</button>
+    </div>
+    <div class="grid-3">
+      ${data.map(f=>`<div class="client-card">
+        <h3>📎 ${f.name}</h3>
+        <span class="badge">${f.category}</span>
+        <p>${f.client}</p>
+        <p>${f.description || ""}</p>
+        ${f.url ? `<button class="ghost-btn" onclick="window.open('${f.url}','_blank')">Abrir link</button>` : ""}
+        ${f.id ? `<div class="v304-actions"><span class="v304-saved">salvo local</span><button class="ghost-btn" onclick="deleteFileV304(${f.id})">Excluir</button></div>` : ""}
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderDashboard(){
+  const totalContents = localContents.length + 47;
+  const openTasks = localTasks.filter(t=>!t.done).length + 12;
+  return `<div class="infra-status">
+    <div class="infra-card"><strong>Auth</strong><span class="infra-ok">Login manual</span><p>Sem entrada automática.</p></div>
+    <div class="infra-card"><strong>Portal cliente</strong><span class="infra-ok">Rota pública</span><p>?cliente=slug separado do admin.</p></div>
+    <div class="infra-card"><strong>CRUD</strong><span class="infra-ok">Visual ativo</span><p>Dados persistem localmente.</p></div>
+    <div class="infra-card"><strong>Supabase</strong><span class="infra-warn">Próximo</span><p>V30.5 conecta banco real.</p></div>
+  </div>
+  <div class="grid-4">
+    ${metric("Clientes ativos",clients.length || 2,"operação ativa", "var(--champagne)")}
+    ${metric("Conteúdos salvos",localContents.length,"persistência local", "var(--green)")}
+    ${metric("Conteúdos agendados",totalContents,"semana atual", "var(--purple)")}
+    ${metric("Tarefas abertas",openTasks,"em andamento", "var(--orange)")}
+  </div>
+  <div class="panel">
+    <div class="section-head"><div><h2>Clientes em operação</h2><p>Workspaces ativos do HAIA OS.</p></div></div>
+    ${clients && clients.length ? `<div class="grid-3">${clients.slice(0,6).map(clientCard).join("")}</div>` : `<div class="client-card"><h3>Clientes carregando</h3><p>Use a aba Clientes para cadastrar ou visualizar workspaces.</p></div>`}
+  </div>`;
+}
+
+function openEditPlan(index){
+  const p = plans[index] || {};
+  const modal = document.getElementById("quickModal");
+  document.getElementById("quickModalTitle").textContent = "Editar plano";
+  document.getElementById("quickModalText").textContent = "Ajuste nome, valor, entregas e escopo do plano.";
+  document.getElementById("quickModalBody").innerHTML = `
+    <div class="form-grid">
+      <input id="editPlanName" value="${p.name || ""}" placeholder="Nome do plano">
+      <input id="editPlanValue" value="${p.value || ""}" placeholder="Valor">
+      <input id="editPlanReels" value="${p.reels || ""}" placeholder="Qtd. Reels">
+      <input id="editPlanPosts" value="${p.posts || ""}" placeholder="Qtd. Posts">
+      <input id="editPlanStories" value="${p.stories || ""}" placeholder="Stories">
+      <select id="editPlanStatus">
+        <option ${p.status==="Ativo"?"selected":""}>Ativo</option>
+        <option ${p.status==="Pausado"?"selected":""}>Pausado</option>
+        <option ${p.status==="Encerrado"?"selected":""}>Encerrado</option>
+      </select>
+    </div>
+    <textarea id="editPlanScope" style="margin-top:12px" placeholder="Escopo">${p.scope || ""}</textarea>
+    <button class="primary-btn" style="margin-top:12px" onclick="saveEditedPlan(${index})">Salvar alterações</button>
+  `;
+  modal.classList.add("active");
+}
+
+function saveEditedPlan(index){
+  if(!plans[index]) return;
+  plans[index] = {
+    ...plans[index],
+    name: document.getElementById("editPlanName").value || plans[index].name,
+    value: document.getElementById("editPlanValue").value || plans[index].value,
+    reels: document.getElementById("editPlanReels").value || plans[index].reels,
+    posts: document.getElementById("editPlanPosts").value || plans[index].posts,
+    stories: document.getElementById("editPlanStories").value || plans[index].stories,
+    status: document.getElementById("editPlanStatus").value || plans[index].status,
+    scope: document.getElementById("editPlanScope").value || plans[index].scope
+  };
+  localPlans = plans;
+  persistV304();
+  closeQuickModal();
+  showToast("Plano atualizado localmente.");
+  showModule("planos");
+}
+
+if(localPlans.length){
+  plans = localPlans;
 }
 </script>
 
